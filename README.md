@@ -7,3 +7,7 @@
 请先阅读 [CONTRIBUTING.md](./CONTRIBUTING.md)。
 
 **重要：** 所有合并进 `main` 的改动都必须通过 Pull Request，并经过审查（含 Code Owners 审核）后才能合并。
+
+## 许可证
+
+本项目采用 [MIT License](./LICENSE)。
