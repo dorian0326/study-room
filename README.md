@@ -27,9 +27,9 @@
 
 | 层级 | 技术 |
 |------|------|
-| 后端 | ASP.NET（.NET 9+），Controller / Service / DbContext 三层 |
+| 后端 | Python（后端 API） |
 | 数据库 | PostgreSQL |
-| 前端 | Vue 3 |
+| 前端 | Vue.js（Vue 3） |
 | 工程实践 | 敏捷（Scrum）双迭代，DevOps / CodeArts 流水线 |
 
 ## 参与贡献
