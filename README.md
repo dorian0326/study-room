@@ -36,6 +36,29 @@
 
 > 时间基准统一为 Asia/Shanghai（UTC+8，HD-39），后端通过 `app.timeutil.now()` 取当前时间。
 
+### 一键脚本（推荐）
+
+`scripts/dev.py` 只用 Python 标准库，macOS / Linux / Windows 通用。需要 Python 3.11+、Node.js 20+。
+
+```bash
+# macOS / Linux 用 python3；Windows 用 py（Python 启动器），也可用 python
+python3 scripts/dev.py setup       # 建 backend/.venv、装依赖、迁移数据库、npm ci
+python3 scripts/dev.py demo-data   # 创建演示账号（仅限本地开发，可重复运行）
+python3 scripts/dev.py             # 同时启动后端 :8000 和前端 :5173，Ctrl+C 一起停止
+python3 scripts/dev.py test        # ruff + pytest + 前端 lint/format:check/build
+python3 scripts/dev.py create-user --student-no A0001 --name 张三 --role admin --password Passw0rd
+```
+
+```powershell
+py scripts\dev.py setup
+py scripts\dev.py demo-data
+py scripts\dev.py
+```
+
+演示账号：`A0000001 / Admin1234`（管理员）、`O0000001 / Ops12345`（运维）、`20260001 / Demo1234`（学生）。
+前端端口可用 `dev --frontend-port 5174` 修改；后端固定 8000，因为前端 `/api` 代理写死了这个端口。
+不需要先激活虚拟环境。下面的手动步骤仍然可用。
+
 ### 后端（`backend/`）
 
 需要 Python 3.11 及以上。
