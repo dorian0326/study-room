@@ -43,9 +43,13 @@ class PublicSeat(BaseModel):
 
 
 class ReservationIn(BaseModel):
+    """创建预约：指定座位，或只选房间+区域由系统自动分配（BR-012）。"""
+
     model_config = ConfigDict(extra="forbid")
 
-    seat_id: int = Field(gt=0)
+    seat_id: int | None = Field(None, gt=0)
+    room_id: int | None = Field(None, gt=0)
+    zone_type: ZoneType | None = None
     start_time: AwareDatetime
     end_time: AwareDatetime
 
@@ -57,6 +61,14 @@ class ReservationIn(BaseModel):
             raise ValueError("开始时间必须早于结束时间")
         if self.start_time.date() != self.end_time.date():
             raise ValueError("预约不可跨零点")
+        by_seat = self.seat_id is not None
+        by_zone = self.room_id is not None and self.zone_type is not None and self.seat_id is None
+        if not (by_seat or by_zone):
+            raise ValueError("请指定座位，或同时提供自习室与区域以自动分配")
+        if by_seat and (self.room_id is not None or self.zone_type is not None):
+            # 允许附带 room/zone 作为提示，但以 seat_id 为准；清空以免混淆。
+            object.__setattr__(self, "room_id", None)
+            object.__setattr__(self, "zone_type", None)
         return self
 
 

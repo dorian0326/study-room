@@ -91,9 +91,10 @@ class EndMethod(StrEnum):
 
 
 class ViolationType(StrEnum):
-    LEFT_UNDECLARED = "left_undeclared"  # 离开图书馆超时未声明
+    LEFT_UNDECLARED = "left_undeclared"  # 离开图书馆未声明（违规一/闸机）
+    TEMP_LEAVE_TIMEOUT = "temp_leave_timeout"  # 声明暂离后超时未归（BR-071）
     NO_SHOW = "no_show"  # 预约未到达
-    NO_CHECKOUT = "no_checkout"  # 未签退
+    NO_CHECKOUT = "no_checkout"  # 未签退（违规三，按 missed_checkout_merge 合并）
     LATE_CANCEL = "late_cancel"  # 预约开始前≤15min取消
 
 

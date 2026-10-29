@@ -2,12 +2,12 @@
 
 from datetime import timedelta
 
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.db import transaction
-from app.models import AuthSession, PasswordResetToken, Role, User
+from app.models import AuthSession, LoginLog, PasswordResetToken, Role, User
 from app.models.enums import AccountStatus, RoleName
 from app.security import (
     hash_password,
@@ -28,6 +28,9 @@ class AuthError(Exception):
         self.status = status
         self.message = message
         self.code = code
+
+
+_INVALID = AuthError(401, "学号或密码错误", "invalid_credentials")
 
 
 def _check_password(password: str) -> None:
@@ -55,12 +58,38 @@ def register(session: Session, *, student_no: str, name: str, password: str, **e
     return user
 
 
+def _assert_not_locked(session: Session, student_no: str) -> None:
+    """连续失败达到阈值后，在锁定窗口内拒绝登录。"""
+    settings = get_settings()
+    if settings.login_max_failures <= 0:
+        return
+    since = now() - timedelta(minutes=settings.login_lockout_minutes)
+    fails = int(
+        session.scalar(
+            select(func.count(LoginLog.id)).where(
+                LoginLog.student_no == student_no.strip(),
+                LoginLog.event == "login",
+                LoginLog.success.is_(False),
+                LoginLog.occurred_at >= since,
+            )
+        )
+        or 0
+    )
+    if fails >= settings.login_max_failures:
+        raise AuthError(
+            429,
+            f"登录失败次数过多，请 {settings.login_lockout_minutes} 分钟后再试",
+            "login_locked",
+        )
+
+
 def authenticate(session: Session, student_no: str, password: str) -> User:
-    user = session.scalar(select(User).where(User.student_no == student_no.strip()))
-    if user is None:
-        raise AuthError(401, "学号未注册", "user_not_found")
-    if not verify_password(password, user.password_hash):
-        raise AuthError(401, "密码错误", "wrong_password")
+    student_no = student_no.strip()
+    _assert_not_locked(session, student_no)
+    user = session.scalar(select(User).where(User.student_no == student_no))
+    # 统一错误提示，不暴露学号是否存在或密码是否正确。
+    if user is None or not verify_password(password, user.password_hash):
+        raise _INVALID
     if user.status != AccountStatus.NORMAL:
         raise AuthError(403, "账户已被禁用，请联系管理员", "account_disabled")
     return user
@@ -111,7 +140,6 @@ def change_password(session: Session, user: User, old: str, new: str) -> None:
     _check_password(new)
     with transaction(session):
         user.password_hash = hash_password(new)
-        # 改密后所有会话失效，需重新登录
         revoke_all_sessions(session, user.id)
 
 

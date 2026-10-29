@@ -134,6 +134,9 @@ def list_seats(
     room_id: Annotated[int | None, Query(gt=0)] = None,
     zone_type: E.ZoneType | None = None,
     available_only: bool = False,
+    has_power: bool | None = None,
+    by_window: bool | None = None,
+    accessible: bool | None = None,
     day: Annotated[date | None, Query(alias="date")] = None,
     start_time: time | None = None,
     end_time: time | None = None,
@@ -141,7 +144,17 @@ def list_seats(
     start, end = _window(day, start_time, end_time)
     service.expire_due(session)
     with Session(session.get_bind()) as read:
-        return catalog.seat_list(read, start, end, room_id, zone_type, available_only)
+        return catalog.seat_list(
+            read,
+            start,
+            end,
+            room_id,
+            zone_type,
+            available_only,
+            has_power=has_power,
+            by_window=by_window,
+            accessible=accessible,
+        )
 
 
 @router.get("/seats/{seat_id}")
@@ -230,7 +243,11 @@ def reserve_seat(
         key = sha256(f"{user.id}:{body.request_key}".encode()).hexdigest()
     try:
         payload = ReservationIn(
-            seat_id=body.seat_id, start_time=body.start_time, end_time=body.end_time
+            seat_id=body.seat_id,
+            room_id=body.room_id,
+            zone_type=body.zone_type,
+            start_time=body.start_time,
+            end_time=body.end_time,
         )
     except ValidationError as exc:
         detail = "; ".join(err.get("msg", "校验失败") for err in exc.errors()) or "请求无效"

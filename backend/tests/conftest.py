@@ -7,6 +7,9 @@ _tmp = tempfile.mkdtemp()
 os.environ["STUDYROOM_DATABASE_URL"] = f"sqlite:///{_tmp}/test.db"
 os.environ["STUDYROOM_BCRYPT_ROUNDS"] = "4"
 os.environ["STUDYROOM_RESERVATION_SWEEP_INTERVAL_SECONDS"] = "0"
+os.environ["STUDYROOM_BACKUP_INTERVAL_SECONDS"] = "0"
+os.environ["STUDYROOM_LOG_PURGE_INTERVAL_SECONDS"] = "0"
+os.environ.setdefault("STUDYROOM_ENV", "test")
 
 import pytest  # noqa: E402
 from alembic import command  # noqa: E402

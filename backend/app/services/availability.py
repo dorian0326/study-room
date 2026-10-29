@@ -150,6 +150,10 @@ def seat_list(
     room_id: int | None,
     zone_type: E.ZoneType | None,
     available_only: bool,
+    *,
+    has_power: bool | None = None,
+    by_window: bool | None = None,
+    accessible: bool | None = None,
 ) -> list[PublicSeat]:
     query = select(Seat).options(selectinload(Seat.room)).order_by(Seat.room_id, Seat.code)
     if room_id is not None:
@@ -158,5 +162,11 @@ def seat_list(
         query = query.where(Seat.room_id == room_id)
     if zone_type is not None:
         query = query.where(Seat.zone_type == zone_type)
+    if has_power is not None:
+        query = query.where(Seat.has_power.is_(has_power))
+    if by_window is not None:
+        query = query.where(Seat.by_window.is_(by_window))
+    if accessible is not None:
+        query = query.where(Seat.accessible.is_(accessible))
     result = [seat_out(session, seat, start, end) for seat in session.scalars(query)]
     return [s for s in result if s.status == E.SeatStatus.AVAILABLE] if available_only else result
