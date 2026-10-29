@@ -206,9 +206,16 @@ def test_overlap_person_overlap_adjacent_and_utc_conversion(client, actors, seat
 
 
 def test_idempotency_key_required_and_scoped_to_payload_and_user(client, actors, seats, api_db):
-    body = payload(seats.a)
     # 幂等键可选：无键也可创建；有键时同键同载荷重放，不同载荷/用户冲突。
-    assert client.post("/api/reservations", headers=actors.a, json=payload(seats.c)).status_code == 201
+    # 使用不与后续 seats.a 9–10 点冲突的时段。
+    assert (
+        client.post(
+            "/api/reservations",
+            headers=actors.a,
+            json=payload(seats.c, "2026-11-02T11:00:00+08:00", "2026-11-02T12:00:00+08:00"),
+        ).status_code
+        == 201
+    )
     key = uuid4().hex
     first = reserve(client, actors.a, seats.a, key=key)
     replay = reserve(client, actors.a, seats.a, key=key)
@@ -223,7 +230,7 @@ def test_idempotency_key_required_and_scoped_to_payload_and_user(client, actors,
     assert reserve(client, actors.a, seats.a, key=key).json()["seat_id"] == seats.b
     client.post(f"/api/reservations/{rid}/cancel", headers=actors.a)
     assert reserve(client, actors.a, seats.a, key=key).json()["status"] == "CANCELLED"
-    assert count(api_db, Reservation) == 1
+    assert count(api_db, Reservation) == 2
 
 
 def test_change_seat_rechecks_conflicts_and_preserves_original_on_failure(client, actors, seats):
@@ -352,15 +359,15 @@ def test_unattended_expiry_worker_and_dedup(api_db, seats, actors, clock, monkey
     from app.services import reservation_worker as worker
 
     completed = Event()
-    original = worker.sweep
+    original = worker.full_sweep
 
-    def sweep():
+    def full_sweep():
         result = original()
         completed.set()
         return result
 
     monkeypatch.setattr(worker, "SessionLocal", api_db)
-    monkeypatch.setattr(worker, "sweep", sweep)
+    monkeypatch.setattr(worker, "full_sweep", full_sweep)
     monkeypatch.setattr(get_settings(), "reservation_sweep_interval_seconds", 0.02)
     # 没有任何 HTTP 请求也必须自动失效。
     with TestClient(create_app()):

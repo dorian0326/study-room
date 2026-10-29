@@ -85,6 +85,7 @@ class CheckInIn(BaseModel):
 class ReservationOut(BaseModel):
     id: int
     reservation_no: str
+    user_id: int
     room_id: int
     room_name: str
     seat_id: int

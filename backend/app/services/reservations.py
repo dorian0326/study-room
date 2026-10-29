@@ -11,10 +11,10 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 from uuid import uuid4
 
-from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError, OperationalError
 from fastapi import HTTPException
 from fastapi import status as http_status
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError, OperationalError
 from sqlalchemy.orm import Session
 
 from app import timeutil
@@ -26,9 +26,12 @@ from app.services import audit
 from app.services.availability import BLOCKED_SEAT_STATUSES, BookingError, covers, overlapping
 from app.services.notifications import create_notification
 from app.services.settings import get_business_settings
+from app.services.violations import record_violation
 
-# 供测试 monkeypatch；默认指向 Asia/Shanghai 的 now。
-now = timeutil.now
+
+def now():
+    """可被测试替换；默认转发到 timeutil.now（clock 夹具会 patch 后者）。"""
+    return timeutil.now()
 
 
 @contextmanager
@@ -129,6 +132,7 @@ def reservation_out(session: Session, reservation: Reservation) -> ReservationOu
     return ReservationOut(
         id=reservation.id,
         reservation_no=reservation.reservation_no,
+        user_id=reservation.user_id,
         room_id=reservation.room_id,
         room_name=reservation.seat.room.name,
         seat_id=reservation.seat_id,
@@ -319,7 +323,10 @@ def create(
             session,
             user_id=user_id,
             notification_type=E.NotificationType.RESERVATION_CONFIRMED,
-            content=f"预约成功：{seat.room.name} {seat.code}，{body.start_time:%Y-%m-%d %H:%M}–{body.end_time:%H:%M}。",
+            content=(
+                f"预约成功：{seat.room.name} {seat.code}，"
+                f"{body.start_time:%Y-%m-%d %H:%M}–{body.end_time:%H:%M}。"
+            ),
             idempotency_key=f"reservation:{reservation.id}:confirmed",
         )
         _sync_seat(session, seat, at)
@@ -377,7 +384,9 @@ def cancel(source: Session, user_id: int, rid: int) -> ReservationOut:
         return reservation_out(session, reservation)
 
 
-def check_in(source: Session, user_id: int, rid: int, body: CheckInIn | None = None) -> ReservationOut:
+def check_in(
+    source: Session, user_id: int, rid: int, body: CheckInIn | None = None
+) -> ReservationOut:
     expired = False
     with write_transaction(source) as session:
         _user(session, user_id)
@@ -446,13 +455,7 @@ def check_in(source: Session, user_id: int, rid: int, body: CheckInIn | None = N
     return result
 
 
-
 # ---- #33 暂离 / 结束使用 / 全量扫描（与 #34 预约核心并存）----
-
-from app.services.violations import record_violation
-from app.timeutil import now as _now_alias
-
-# 兼容 #33 测试对 app.services.reservations.now 的 monkeypatch
 
 
 def create_reservation(session: Session, user: User, body) -> Reservation:
@@ -471,7 +474,9 @@ def start_temporary_leave(session: Session, user: User, reservation_id: int) -> 
     with transaction(session, immediate=True):
         moment = now()
         reservation = session.scalar(
-            select(Reservation).where(Reservation.id == reservation_id, Reservation.user_id == user.id)
+            select(Reservation).where(
+                Reservation.id == reservation_id, Reservation.user_id == user.id
+            )
         )
         if reservation is None:
             raise HTTPException(http_status.HTTP_404_NOT_FOUND, "预约不存在")
@@ -499,7 +504,9 @@ def return_from_temporary_leave(session: Session, user: User, reservation_id: in
     with transaction(session, immediate=True):
         moment = now()
         reservation = session.scalar(
-            select(Reservation).where(Reservation.id == reservation_id, Reservation.user_id == user.id)
+            select(Reservation).where(
+                Reservation.id == reservation_id, Reservation.user_id == user.id
+            )
         )
         if reservation is None:
             raise HTTPException(http_status.HTTP_404_NOT_FOUND, "预约不存在")
@@ -511,7 +518,9 @@ def return_from_temporary_leave(session: Session, user: User, reservation_id: in
             raise HTTPException(http_status.HTTP_409_CONFLICT, "该预约没有待返回的临时离开记录")
         deadline = reservation.temp_leave_at + timedelta(minutes=settings.temp_leave_minutes)
         if moment > deadline:
-            raise HTTPException(http_status.HTTP_409_CONFLICT, "临时离开已超时，预约正在等待系统释放")
+            raise HTTPException(
+                http_status.HTTP_409_CONFLICT, "临时离开已超时，预约正在等待系统释放"
+            )
         if reservation.end_time <= moment:
             raise HTTPException(http_status.HTTP_409_CONFLICT, "预约时段已结束，不能再恢复使用")
         reservation.status = E.ReservationStatus.ACTIVE
@@ -537,7 +546,9 @@ def end_use(
     with transaction(session, immediate=True):
         moment = now()
         first = session.scalar(
-            select(Reservation).where(Reservation.id == reservation_id, Reservation.user_id == user.id)
+            select(Reservation).where(
+                Reservation.id == reservation_id, Reservation.user_id == user.id
+            )
         )
         if first is None:
             raise HTTPException(http_status.HTTP_404_NOT_FOUND, "预约不存在")
@@ -578,7 +589,10 @@ def end_use(
 
         total_seconds = 0
         for reservation in chain:
-            if reservation.status == E.ReservationStatus.RESERVED or reservation.start_time > moment:
+            if (
+                reservation.status == E.ReservationStatus.RESERVED
+                or reservation.start_time > moment
+            ):
                 reservation.status = E.ReservationStatus.CANCELLED
                 reservation.cancel_type = E.CancelType.NORMAL
                 reservation.cancelled_at = moment
@@ -601,7 +615,9 @@ def end_use(
                 if arrival.arrived_at is not None:
                     total_seconds += max(
                         0,
-                        int((min(moment, reservation.end_time) - arrival.arrived_at).total_seconds()),
+                        int(
+                            (min(moment, reservation.end_time) - arrival.arrived_at).total_seconds()
+                        ),
                     )
             reservation.status = E.ReservationStatus.COMPLETED
             reservation.temp_leave_state = (
@@ -771,4 +787,3 @@ def sweep_reservations(session: Session, moment: datetime | None = None) -> dict
             )
             counts["reminders"] += 1
     return counts
-

@@ -4,7 +4,17 @@ from datetime import date, datetime, time, timedelta
 from hashlib import sha256
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Depends, Header, HTTPException, Query, Request, Response, status
+from fastapi import (
+    APIRouter,
+    Body,
+    Depends,
+    Header,
+    HTTPException,
+    Query,
+    Response,
+    status,
+)
+from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -27,8 +37,11 @@ from app.schemas.workflows import (
 from app.services import availability as catalog
 from app.services import reservations as service
 
-# 供既有测试 monkeypatch。
-now = timeutil.now
+
+def now():
+    """可被测试替换；默认转发到 timeutil.now。"""
+    return timeutil.now()
+
 
 router = APIRouter(tags=["student-workflows"])
 Reader = Annotated[User, Depends(require_permission("room:read"))]
@@ -102,7 +115,8 @@ def public_rooms(
                             "accessible": seat.accessible,
                             "status": (
                                 E.SeatStatus.RESERVED
-                                if seat.id in busy_seat_ids and seat.status == E.SeatStatus.AVAILABLE
+                                if seat.id in busy_seat_ids
+                                and seat.status == E.SeatStatus.AVAILABLE
                                 else seat.status
                             ),
                         }
@@ -214,13 +228,19 @@ def reserve_seat(
     key = idempotency_key
     if key is None and body.request_key:
         key = sha256(f"{user.id}:{body.request_key}".encode()).hexdigest()
-    payload = ReservationIn(
-        seat_id=body.seat_id, start_time=body.start_time, end_time=body.end_time
-    )
+    try:
+        payload = ReservationIn(
+            seat_id=body.seat_id, start_time=body.start_time, end_time=body.end_time
+        )
+    except ValidationError as exc:
+        detail = "; ".join(err.get("msg", "校验失败") for err in exc.errors()) or "请求无效"
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, detail=detail) from exc
     result, replay = service.create(session, user.id, payload, key)
     if replay:
-        response.status_code = 200
         response.headers["Idempotent-Replayed"] = "true"
+        # Header 幂等键走 200 重放；body.request_key 保持 201，兼容 #33 用例。
+        if idempotency_key is not None:
+            response.status_code = 200
     return result
 
 
@@ -238,20 +258,16 @@ def check_in_reservation(
     body: Annotated[CheckInIn | None, Body()] = None,
 ):
     """验证预约归属和签到窗口；若带扫码座位信息则校验座位一致。"""
-    # 同步 API 层 now monkeypatch 到服务层（兼容既有测试）。
-    service.now = now
     return service.check_in(session, user.id, reservation_id, body)
 
 
 @router.post("/reservations/{reservation_id}/temporary-leave", response_model=ReservationOut)
 def temporary_leave(reservation_id: int, user: Owner, session: SessionDep):
-    service.now = now
     return service.start_temporary_leave(session, user, reservation_id)
 
 
 @router.post("/reservations/{reservation_id}/return", response_model=ReservationOut)
 def return_to_seat(reservation_id: int, user: Owner, session: SessionDep):
-    service.now = now
     return service.return_from_temporary_leave(session, user, reservation_id)
 
 
@@ -262,7 +278,6 @@ def end_reservation(
     user: Owner,
     session: SessionDep,
 ):
-    service.now = now
     ended, duration_minutes = service.end_use(session, user, reservation_id, confirmed=body.confirm)
     return {
         "ended_reservations": [item.id for item in ended],
@@ -279,7 +294,6 @@ def cancel_reservation(
 ):
     if not confirm:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "取消预约前必须确认")
-    service.now = now
     return service.cancel(session, user.id, reservation_id)
 
 
