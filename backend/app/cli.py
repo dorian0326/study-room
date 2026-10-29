@@ -33,7 +33,29 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--password", help="不传则交互输入")
     p = sub.add_parser("purge-logs", help="清理超过保留期的操作日志与登录日志")
     p.add_argument("--days", type=int, help="保留天数，默认取 STUDYROOM_LOG_RETENTION_DAYS")
+    sub.add_parser("backup", help="立即备份数据库")
+    sub.add_parser("list-backups", help="列出备份")
+    p = sub.add_parser("restore", help="从备份恢复（必须先停止服务）")
+    p.add_argument("name")
+    p.add_argument("--yes", action="store_true", help="确认覆盖当前数据库")
     args = parser.parse_args(argv)
+
+    if args.cmd in ("backup", "list-backups", "restore"):
+        from app.db import engine
+        from app.services import backup
+
+        if args.cmd == "backup":
+            print(backup.create_backup(engine))
+        elif args.cmd == "list-backups":
+            for b in backup.list_backups():
+                print(b.name)
+        else:
+            if not args.yes:
+                print("将覆盖当前数据库，请先停止服务并加 --yes 确认")
+                return 1
+            backup.create_backup(engine)  # 恢复前先留一份当前状态
+            print("已恢复自", backup.restore_backup(engine, args.name))
+        return 0
 
     if args.cmd == "purge-logs":
         from app.services.logs import purge_expired
