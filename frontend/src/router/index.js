@@ -13,10 +13,12 @@ import ViolationsView from '../views/ViolationsView.vue'
 import AdminSeatsView from '../views/AdminSeatsView.vue'
 import AdminReportsView from '../views/AdminReportsView.vue'
 import AdminAppealsView from '../views/AdminAppealsView.vue'
+import CheckInView from '../views/CheckInView.vue'
 
 export const routes = [
   { path: '/', component: HomeView, meta: { auth: true } },
   { path: '/workflows', component: WorkflowsView, meta: { auth: true } },
+  { path: '/check-in', component: CheckInView, meta: { auth: true } },
   { path: '/violations', component: ViolationsView, meta: { auth: true } },
   { path: '/notifications', component: NotificationsView, meta: { auth: true } },
   { path: '/admin/seats', component: AdminSeatsView, meta: { auth: true, perm: 'room:manage' } },

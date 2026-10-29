@@ -17,7 +17,8 @@ async function onLogout() {
     <strong>智慧自习室管理系统</strong>
     <template v-if="auth.user">
       <RouterLink to="/">首页</RouterLink>
-      <RouterLink to="/workflows">业务工作台</RouterLink>
+      <RouterLink to="/workflows">预约自习室</RouterLink>
+      <RouterLink to="/check-in">扫码签到</RouterLink>
       <RouterLink to="/violations">违规与申诉</RouterLink>
       <RouterLink to="/notifications">站内通知</RouterLink>
       <RouterLink v-if="can('room:manage')" to="/admin/config">系统配置</RouterLink>
@@ -56,7 +57,7 @@ body {
 }
 main {
   padding: 1rem;
-  max-width: 960px;
+  max-width: 1100px;
 }
 form.card {
   display: grid;

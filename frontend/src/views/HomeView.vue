@@ -24,6 +24,10 @@ onMounted(loadHealth)
   <p>角色：{{ auth.user?.roles.join('、') }}</p>
   <p v-if="health">后端状态：{{ health.status }}（{{ health.database }}，{{ health.timezone }}）</p>
   <p v-else-if="error">后端不可用：{{ error }}</p>
-  <p>在工作台管理预约、座位、违规申诉、站内通知和统计报表。</p>
-  <RouterLink to="/workflows">打开业务工作台</RouterLink>
+  <p>可浏览自习室与座位、创建/改约/取消预约，并用桌上二维码签到。</p>
+  <p>
+    <RouterLink to="/workflows">预约自习室</RouterLink>
+    ·
+    <RouterLink to="/check-in">扫码签到</RouterLink>
+  </p>
 </template>

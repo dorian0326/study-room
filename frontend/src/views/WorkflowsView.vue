@@ -1,246 +1,481 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { api } from '../api/client.js'
 
-const rooms = ref([])
-const reservations = ref([])
-const roomId = ref('')
-const seatId = ref('')
-const scope = ref('all')
+const router = useRouter()
+
+const STATUS = {
+  RESERVED: '已预约',
+  ACTIVE: '使用中',
+  TEMP_LEAVE: '暂离',
+  COMPLETED: '已完成',
+  CANCELLED: '已取消',
+  EXPIRED: '已过期',
+  NO_SHOW: '爽约',
+  available: '空闲',
+  AVAILABLE: '空闲',
+  reserved: '已预约',
+  in_use: '使用中',
+  IN_USE: '使用中',
+  maintenance: '维护中',
+  disabled: '停用',
+  closed: '关闭',
+  CLOSED: '关闭',
+}
+
+const ZONE = { quiet: '静音区', discussion: '讨论区', open: '开放区', exam_prep: '考研区' }
+
 const error = ref('')
 const notice = ref('')
+const rooms = ref([])
+const seats = ref([])
+const mine = ref([])
+const selectedSeat = ref(null)
 
-/** 生成浏览器本地日期，作为预约表单的默认日期。 */
-function todayForInput() {
-  // 直接读取本地年月日，避免 UTC 转换在午夜附近造成日期偏移。
-  const current = new Date()
-  const year = current.getFullYear()
-  const month = String(current.getMonth() + 1).padStart(2, '0')
-  const day = String(current.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
+const search = reactive({
+  room_id: '',
+  date: '',
+  start_time: '09:00',
+  end_time: '11:00',
+  zone_type: '',
+  available_only: true,
+})
+
+const form = reactive({
+  room_id: '',
+  seat_id: '',
+  start_time: '',
+  end_time: '',
+  request_key: '',
+})
+
+const changeForm = reactive({ reservation_id: '', seat_id: '' })
+
+const LATE_CANCEL_MINUTES = 15
+
+const roomOptions = computed(() => rooms.value)
+
+function fmt(value) {
+  if (!value) return '—'
+  return new Date(value).toLocaleString('zh-CN', { hour12: false })
 }
 
-const booking = reactive({ day: todayForInput(), start: '08:00', end: '09:00' })
-
-/** 读取预约表单当前选择的自习室。 */
-function readSelectedRoom() {
-  // 使用自习室编号定位，刷新列表后仍保留用户当前选择。
-  return rooms.value.find((room) => room.id === Number(roomId.value)) ?? null
+function hoursText(room) {
+  if (!room.opening_hours?.length) return '本日无开放时段'
+  return room.opening_hours
+    .map((w) => `${String(w.open_time).slice(0, 5)}–${String(w.close_time).slice(0, 5)}`)
+    .join('，')
 }
 
-const selectedRoom = computed(readSelectedRoom)
-
-/** 返回当前预约区间内可供新预约选择的座位。 */
-function readAvailableSeats() {
-  // 维护中和停用的座位保留在布局中显示，但不允许提交预约。
-  const room = selectedRoom.value
-  return room ? room.seats.filter((seat) => seat.status === 'available') : []
+function defaultDate() {
+  const d = new Date()
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 }
 
-const availableSeats = computed(readAvailableSeats)
+function toIso(date, time) {
+  return `${date}T${time}:00`
+}
 
-/** 加载开放自习室及座位属性，供预约表单选择。 */
+function isLateCancel(row) {
+  const start = new Date(row.start_time).getTime()
+  return start - Date.now() <= LATE_CANCEL_MINUTES * 60 * 1000
+}
+
+async function guard(fn, ok) {
+  error.value = ''
+  notice.value = ''
+  try {
+    await fn()
+    if (ok) notice.value = ok
+  } catch (cause) {
+    error.value = cause.message
+  }
+}
+
+/** 加载自习室目录（含楼层、容量、开放时段）。 */
 async function loadRooms() {
-  // 提交时后端会重新检查座位冲突与开放时间。
+  const day = search.date || defaultDate()
+  rooms.value = await api(`/rooms?date=${encodeURIComponent(day)}`)
+}
+
+/** 按条件搜索座位并刷新实时状态。 */
+async function loadSeats() {
   const params = new URLSearchParams()
-  if (booking.day && booking.start && booking.end) {
-    params.set('start_time', `${booking.day}T${booking.start}:00+08:00`)
-    params.set('end_time', `${booking.day}T${booking.end}:00+08:00`)
-  }
-  rooms.value = await api(`/rooms${params.size ? `?${params}` : ''}`)
-  if (!roomId.value && rooms.value.length) roomId.value = String(rooms.value[0].id)
-  if (availableSeats.value.length && !seatId.value) {
-    seatId.value = String(availableSeats.value[0].id)
-  }
+  if (search.room_id) params.set('room_id', search.room_id)
+  if (search.date) params.set('date', search.date)
+  if (search.start_time) params.set('start_time', search.start_time)
+  if (search.end_time) params.set('end_time', search.end_time)
+  if (search.zone_type) params.set('zone_type', search.zone_type)
+  if (search.available_only) params.set('available_only', 'true')
+  seats.value = await api(`/seats?${params}`)
 }
 
-/** 加载当前登录用户的当前预约或历史预约。 */
-async function loadReservations() {
-  // 接口会按当前登录账号过滤预约记录。
-  reservations.value = await api(`/reservations?scope=${scope.value}`)
+/** 查看单个座位实时详情。 */
+async function openSeat(seatId) {
+  return guard(async () => {
+    const params = new URLSearchParams()
+    if (search.date) params.set('date', search.date)
+    if (search.start_time) params.set('start_time', search.start_time)
+    if (search.end_time) params.set('end_time', search.end_time)
+    selectedSeat.value = await api(`/seats/${seatId}?${params}`)
+    form.seat_id = String(seatId)
+    form.room_id = String(selectedSeat.value.room_id)
+  })
 }
 
-/** 加载预约资源和历史记录，并在页面显示错误信息。 */
-async function loadWorkspace() {
-  error.value = ''
-  try {
-    await Promise.all([loadRooms(), loadReservations()])
-  } catch (cause) {
-    error.value = cause.message
-  }
+/** 加载本人当前预约。 */
+async function loadMine() {
+  mine.value = await api('/reservations?scope=current')
 }
 
-/** 按 README 的 Asia/Shanghai 时间约定创建预约。 */
-async function createBooking() {
-  error.value = ''
-  notice.value = ''
-  try {
-    await api('/reservations', {
-      method: 'POST',
-      body: {
-        seat_id: Number(seatId.value),
-        start_time: `${booking.day}T${booking.start}:00+08:00`,
-        end_time: `${booking.day}T${booking.end}:00+08:00`,
-        request_key: crypto.randomUUID(),
-      },
+async function refreshAll() {
+  return guard(async () => {
+    if (!search.date) search.date = defaultDate()
+    await loadRooms()
+    await loadSeats()
+    await loadMine()
+  })
+}
+
+/** 创建预约；409 冲突会由 api 客户端透出可读信息。 */
+function createReservation() {
+  return guard(async () => {
+    if (!form.seat_id || !form.start_time || !form.end_time) {
+      throw new Error('请填写座位与开始/结束时间')
+    }
+    const withTz = (value) => {
+      // datetime-local 无时区；后端要求 AwareDatetime，按北京时间补 +08:00。
+      if (/[zZ]|[+-]\d{2}:\d{2}$/.test(value)) return value
+      return `${value}:00+08:00`.replace(/:00:00\+/, ':00+')
+    }
+    const body = {
+      seat_id: Number(form.seat_id),
+      start_time: withTz(form.start_time),
+      end_time: withTz(form.end_time),
+    }
+    if (form.request_key.trim()) body.request_key = form.request_key.trim()
+    const created = await api('/reservations', { method: 'POST', body })
+    notice.value = `已预约 ${created.reservation_no}`
+    form.request_key = ''
+    await loadMine()
+    await loadSeats()
+  })
+}
+
+/** 改约到新座位（仍须同日同时段）。 */
+function changeSeat() {
+  return guard(async () => {
+    if (!changeForm.reservation_id || !changeForm.seat_id) {
+      throw new Error('请选择预约和新座位')
+    }
+    await api(`/reservations/${changeForm.reservation_id}/seat`, {
+      method: 'PATCH',
+      body: { seat_id: Number(changeForm.seat_id) },
     })
-    notice.value = '预约已提交，结果和签到提醒会发送到站内通知。'
-    await Promise.all([loadRooms(), loadReservations()])
-  } catch (cause) {
-    error.value = cause.message
-  }
+    changeForm.reservation_id = ''
+    changeForm.seat_id = ''
+    await loadMine()
+    await loadSeats()
+  }, '已改约座位')
 }
 
-/** 将预约状态转换为页面展示的中文名称。 */
-function reservationStatus(value) {
-  // 保留所有服务端状态名称，方便用户查看取消和超时记录。
-  const labels = {
-    RESERVED: '已预约',
-    ACTIVE: '使用中',
-    TEMP_LEAVE: '临时离开',
-    COMPLETED: '已结束',
-    CANCELLED: '已取消',
-    ADMIN_CANCELLED: '管理员取消',
-    EXPIRED: '未签到释放',
-    TIMED_OUT: '超时释放',
+/** 取消预约；距开始不足 15 分钟会二次确认违规风险。 */
+function cancelReservation(row) {
+  let msg = `确认取消预约 ${row.reservation_no}？`
+  if (isLateCancel(row) && ['RESERVED', 'reserved'].includes(row.status)) {
+    msg += `\n距开始不足 ${LATE_CANCEL_MINUTES} 分钟，取消将记迟到取消违规。`
   }
-  return labels[value] ?? value
+  if (!confirm(msg)) return
+  return guard(async () => {
+    await api(`/reservations/${row.id}/cancel?confirm=true`, { method: 'POST' })
+    await loadMine()
+    await loadSeats()
+  }, '已取消')
 }
 
-/** 将接口时间转换为浏览器本地显示格式。 */
-function formatTime(value) {
-  // ISO 时间包含服务端 UTC+8 时区偏移，由 Date 转换后展示。
-  return value ? new Date(value).toLocaleString('zh-CN') : '—'
+function tempLeave(row) {
+  return guard(async () => {
+    await api(`/reservations/${row.id}/temporary-leave`, { method: 'POST' })
+    await loadMine()
+  }, '已声明暂离，请在 30 分钟内返回')
 }
 
-/** 执行预约操作，并在服务端响应后刷新预约状态。 */
-async function operate(action, reservation) {
-  error.value = ''
-  notice.value = ''
-  if (action === 'end' && !window.confirm('确认结束本次连续使用？后续紧接的预约也会释放。')) return
-  if (action === 'cancel' && !window.confirm('确认取消这条预约？')) return
-  const paths = {
-    checkin: `/reservations/${reservation.id}/check-in`,
-    leave: `/reservations/${reservation.id}/temporary-leave`,
-    return: `/reservations/${reservation.id}/return`,
-    end: `/reservations/${reservation.id}/end`,
-    cancel: `/reservations/${reservation.id}/cancel`,
-  }
-  try {
-    const body = action === 'end' ? { confirm: true } : undefined
-    await api(paths[action], { method: 'POST', body })
-    notice.value = '操作已完成。'
-    await Promise.all([loadReservations(), loadRooms()])
-  } catch (cause) {
-    error.value = cause.message
-  }
+function endUse(row) {
+  return guard(async () => {
+    await api(`/reservations/${row.id}/end`, { method: 'POST', body: { confirm: true } })
+    await loadMine()
+    await loadSeats()
+  }, '已结束使用')
 }
 
-onMounted(loadWorkspace)
+function useSeatForBooking(seat) {
+  form.seat_id = String(seat.id)
+  form.room_id = String(seat.room_id)
+  if (search.date && search.start_time && search.end_time) {
+    form.start_time = toIso(search.date, search.start_time)
+    form.end_time = toIso(search.date, search.end_time)
+  }
+  selectedSeat.value = seat
+  notice.value = `已选座位 ${seat.room_name} / ${seat.code}`
+}
+
+function goCheckIn(row) {
+  router.push({ path: '/check-in', query: { reservation_id: String(row.id) } })
+}
+
+function pickRoomSeats(roomId) {
+  search.room_id = String(roomId)
+  return guard(loadSeats)
+}
+
+function startChange(row) {
+  changeForm.reservation_id = String(row.id)
+  notice.value = `正在为 ${row.reservation_no} 改约，请在下方填写新座位`
+}
+
+onMounted(() => {
+  search.date = defaultDate()
+  const start = new Date()
+  start.setMinutes(0, 0, 0)
+  start.setHours(start.getHours() + 1)
+  const end = new Date(start)
+  end.setHours(end.getHours() + 2)
+  const pad = (n) => String(n).padStart(2, '0')
+  const local = (d) =>
+    `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+  form.start_time = local(start)
+  form.end_time = local(end)
+  refreshAll()
+})
 </script>
 
 <template>
-  <h2>预约与使用</h2>
+  <h2>自习室预约</h2>
+  <p class="hint">浏览自习室与座位、创建/改约/取消，以及进入扫码签到。</p>
   <p v-if="error" class="error">{{ error }}</p>
   <p v-if="notice" class="ok">{{ notice }}</p>
 
   <section class="panel">
-    <h3>新建预约</h3>
-    <form class="booking-form" @submit.prevent="createBooking">
+    <div class="row between">
+      <h3>自习室目录</h3>
+      <button type="button" @click="refreshAll">刷新</button>
+    </div>
+    <div class="filters">
       <label>
-        自习室
-        <select v-model="roomId" @change="seatId = String(availableSeats[0]?.id ?? '')">
-          <option v-for="room in rooms" :key="room.id" :value="String(room.id)">
-            {{ room.name }}{{ room.location ? ` · ${room.location}` : '' }}
-          </option>
-        </select>
+        日期
+        <input v-model="search.date" type="date" @change="refreshAll" />
       </label>
-      <label>
-        座位
-        <select v-model="seatId" required>
-          <option v-for="seat in availableSeats" :key="seat.id" :value="String(seat.id)">
-            {{ seat.code }} · {{ seat.zone_type }}{{ seat.by_window ? ' · 靠窗' : ''
-            }}{{ seat.has_power ? ' · 有电源' : '' }}
-          </option>
-        </select>
-      </label>
-      <label>日期 <input v-model="booking.day" type="date" required @change="loadRooms" /></label>
-      <label
-        >开始 <input v-model="booking.start" type="time" step="1800" required @change="loadRooms"
-      /></label>
-      <label
-        >结束 <input v-model="booking.end" type="time" step="1800" required @change="loadRooms"
-      /></label>
-      <button :disabled="!seatId">确认预约</button>
-    </form>
-    <p class="hint">预约按 30 分钟粒度提交，系统会校验开放时间和座位冲突。</p>
+    </div>
+    <div class="cards">
+      <article v-for="room in roomOptions" :key="room.id" class="card">
+        <header>
+          <strong>{{ room.name }}</strong>
+          <span class="tag">{{ room.status === 'open' ? '开放' : '关闭' }}</span>
+        </header>
+        <p>楼层：{{ room.floor || '—' }} · 容量 {{ room.capacity }}</p>
+        <p>位置：{{ room.location || '—' }}</p>
+        <p>开放：{{ hoursText(room) }}</p>
+        <p v-if="room.facilities" class="muted">设施：{{ room.facilities }}</p>
+        <button type="button" @click="pickRoomSeats(room.id)">查看座位</button>
+      </article>
+      <p v-if="!rooms.length" class="hint">暂无自习室。</p>
+    </div>
   </section>
 
   <section class="panel">
-    <div class="section-title">
-      <h3>我的预约</h3>
-      <select v-model="scope" @change="loadReservations">
-        <option value="all">全部记录</option>
-        <option value="current">当前与待开始</option>
-        <option value="history">历史与已结束</option>
-      </select>
+    <h3>座位搜索</h3>
+    <div class="filters">
+      <label>
+        自习室
+        <select v-model="search.room_id">
+          <option value="">全部</option>
+          <option v-for="room in rooms" :key="room.id" :value="String(room.id)">
+            {{ room.name }}
+          </option>
+        </select>
+      </label>
+      <label>
+        开始
+        <input v-model="search.start_time" type="time" />
+      </label>
+      <label>
+        结束
+        <input v-model="search.end_time" type="time" />
+      </label>
+      <label>
+        区域
+        <select v-model="search.zone_type">
+          <option value="">全部</option>
+          <option value="quiet">静音区</option>
+          <option value="discussion">讨论区</option>
+          <option value="open">开放区</option>
+          <option value="exam_prep">考研区</option>
+        </select>
+      </label>
+      <label class="check">
+        <input v-model="search.available_only" type="checkbox" />
+        仅空闲
+      </label>
+      <button type="button" @click="guard(loadSeats)">搜索</button>
     </div>
-    <p v-if="!reservations.length">暂无预约记录。</p>
-    <div class="table-scroll">
-      <table v-if="reservations.length">
-        <thead>
-          <tr>
-            <th>预约号</th>
-            <th>自习室 / 座位</th>
-            <th>开始 – 结束</th>
-            <th>状态</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="reservation in reservations" :key="reservation.id">
-            <td>{{ reservation.reservation_no }}</td>
-            <td>{{ reservation.room_name }} / {{ reservation.seat_code }}</td>
-            <td>
-              {{ formatTime(reservation.start_time) }}<br />{{ formatTime(reservation.end_time) }}
-            </td>
-            <td>{{ reservationStatus(reservation.status) }}</td>
-            <td class="actions">
-              <button
-                v-if="reservation.status === 'RESERVED'"
-                @click="operate('checkin', reservation)"
-              >
-                签到
-              </button>
-              <button
-                v-if="reservation.status === 'RESERVED'"
-                @click="operate('cancel', reservation)"
-              >
-                取消
-              </button>
-              <button v-if="reservation.status === 'ACTIVE'" @click="operate('leave', reservation)">
-                临时离开
-              </button>
-              <button
-                v-if="reservation.status === 'TEMP_LEAVE'"
-                @click="operate('return', reservation)"
-              >
-                我已返回
-              </button>
-              <button
-                v-if="['ACTIVE', 'TEMP_LEAVE'].includes(reservation.status)"
-                @click="operate('end', reservation)"
-              >
-                结束使用
-              </button>
-              <span v-if="!['RESERVED', 'ACTIVE', 'TEMP_LEAVE'].includes(reservation.status)"
-                >—</span
-              >
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>座位</th>
+          <th>自习室</th>
+          <th>楼层</th>
+          <th>区域</th>
+          <th>状态</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="seat in seats" :key="seat.id">
+          <td>{{ seat.code }}</td>
+          <td>{{ seat.room_name }}</td>
+          <td>{{ seat.floor || '—' }}</td>
+          <td>{{ ZONE[seat.zone_type] || seat.zone_type }}</td>
+          <td>{{ STATUS[seat.status] || seat.status }}</td>
+          <td class="actions">
+            <button type="button" @click="openSeat(seat.id)">详情</button>
+            <button
+              type="button"
+              :disabled="!['available', 'AVAILABLE'].includes(seat.status)"
+              @click="useSeatForBooking(seat)"
+            >
+              选用
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p v-if="!seats.length" class="hint">没有符合条件的座位。</p>
+  </section>
+
+  <section v-if="selectedSeat" class="panel">
+    <h3>座位详情</h3>
+    <dl class="detail">
+      <div>
+        <dt>座位</dt>
+        <dd>{{ selectedSeat.room_name }} / {{ selectedSeat.code }}</dd>
+      </div>
+      <div>
+        <dt>楼层 / 位置</dt>
+        <dd>{{ selectedSeat.floor || '—' }} · {{ selectedSeat.location || '—' }}</dd>
+      </div>
+      <div>
+        <dt>区域</dt>
+        <dd>{{ ZONE[selectedSeat.zone_type] || selectedSeat.zone_type }}</dd>
+      </div>
+      <div>
+        <dt>状态</dt>
+        <dd>{{ STATUS[selectedSeat.status] || selectedSeat.status }}</dd>
+      </div>
+      <div>
+        <dt>设施</dt>
+        <dd>
+          电源 {{ selectedSeat.has_power ? '有' : '无' }} · 靠窗
+          {{ selectedSeat.by_window ? '是' : '否' }} · 无障碍
+          {{ selectedSeat.accessible ? '是' : '否' }}
+        </dd>
+      </div>
+      <div>
+        <dt>签到二维码载荷</dt>
+        <dd>
+          <code>{{ selectedSeat.qr_payload }}</code>
+        </dd>
+      </div>
+    </dl>
+    <button type="button" @click="useSeatForBooking(selectedSeat)">用此座位预约</button>
+  </section>
+
+  <section class="panel">
+    <h3>创建预约</h3>
+    <form class="grid" @submit.prevent="createReservation">
+      <label>
+        座位 ID
+        <input v-model="form.seat_id" required />
+      </label>
+      <label>
+        开始
+        <input v-model="form.start_time" type="datetime-local" required />
+      </label>
+      <label>
+        结束
+        <input v-model="form.end_time" type="datetime-local" required />
+      </label>
+      <label>
+        幂等键（可选）
+        <input v-model="form.request_key" placeholder="至少 8 位，刷新重试时保持不变" />
+      </label>
+      <button>提交预约</button>
+    </form>
+    <p class="hint">同一时段只能约一个座位；冲突会返回 409 并提示对方预约号。</p>
+  </section>
+
+  <section class="panel">
+    <h3>我的当前预约</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>单号</th>
+          <th>座位</th>
+          <th>时段</th>
+          <th>状态</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="row in mine" :key="row.id">
+          <td>{{ row.reservation_no }}</td>
+          <td>{{ row.room_name }} / {{ row.seat_code }}</td>
+          <td>{{ fmt(row.start_time) }} → {{ fmt(row.end_time) }}</td>
+          <td>
+            {{ STATUS[row.status] || row.status }}
+            <span v-if="isLateCancel(row) && row.status === 'RESERVED'" class="warn">
+              · 临近开始
+            </span>
+          </td>
+          <td class="actions">
+            <button v-if="row.status === 'RESERVED'" type="button" @click="goCheckIn(row)">
+              签到
+            </button>
+            <button v-if="row.status === 'RESERVED'" type="button" @click="startChange(row)">
+              改座位
+            </button>
+            <button v-if="row.status === 'ACTIVE'" type="button" @click="tempLeave(row)">
+              暂离
+            </button>
+            <button
+              v-if="row.status === 'ACTIVE' || row.status === 'TEMP_LEAVE'"
+              type="button"
+              @click="endUse(row)"
+            >
+              结束
+            </button>
+            <button v-if="row.status === 'RESERVED'" type="button" @click="cancelReservation(row)">
+              取消
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p v-if="!mine.length" class="hint">暂无进行中的预约。</p>
+
+    <form class="grid tight" @submit.prevent="changeSeat">
+      <h4>改约座位</h4>
+      <label>
+        预约 ID
+        <input v-model="changeForm.reservation_id" required />
+      </label>
+      <label>
+        新座位 ID
+        <input v-model="changeForm.seat_id" required />
+      </label>
+      <button>确认改约</button>
+    </form>
   </section>
 </template>
 
@@ -250,31 +485,97 @@ onMounted(loadWorkspace)
   padding: 1rem;
   border: 1px solid #d9e2dc;
   border-radius: 0.75rem;
-}
-.booking-form {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: end;
+  display: grid;
   gap: 0.75rem;
 }
-.booking-form label {
+.row.between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+.filters,
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: end;
+}
+.grid.tight {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #d9e2dc;
+}
+.filters label,
+.grid label {
   display: grid;
   gap: 0.3rem;
+  font-size: 0.9rem;
 }
-.section-title {
-  display: flex;
+.check {
+  display: flex !important;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.4rem;
 }
-.table-scroll {
-  overflow-x: auto;
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+.card {
+  border: 1px solid #e5ece8;
+  border-radius: 0.6rem;
+  padding: 0.75rem;
+  display: grid;
+  gap: 0.35rem;
+  background: #fbfcfb;
+}
+.card header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.tag {
+  font-size: 0.75rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  background: #e7f5ec;
+  color: #1f6b3a;
+}
+.muted,
+.hint {
+  color: #53635b;
+}
+.detail {
+  display: grid;
+  gap: 0.4rem;
+}
+.detail > div {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: 0.5rem;
+}
+.detail dt {
+  color: #53635b;
 }
 .actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
 }
-.hint {
-  color: #53635b;
+.warn {
+  color: #a15c00;
+  font-size: 0.85rem;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th,
+td {
+  border-bottom: 1px solid #e5ece8;
+  padding: 0.45rem 0.35rem;
+  text-align: left;
+  vertical-align: top;
 }
 </style>
