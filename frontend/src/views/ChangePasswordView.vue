@@ -27,11 +27,24 @@ async function submit() {
 </script>
 
 <template>
-  <h2>修改密码</h2>
-  <form class="card" @submit.prevent="submit">
-    <input v-model="oldPassword" type="password" placeholder="原密码" required />
-    <input v-model="newPassword" type="password" placeholder="新密码" required />
-    <button>确认修改</button>
-    <p v-if="error" class="error">{{ error }}</p>
-  </form>
+  <div class="auth-wrap">
+    <section class="auth-card">
+      <header>
+        <h2>修改密码</h2>
+        <p class="hint">修改后需要重新登录</p>
+      </header>
+      <form @submit.prevent="submit">
+        <label class="field">
+          原密码
+          <input v-model="oldPassword" type="password" placeholder="原密码" required />
+        </label>
+        <label class="field">
+          新密码
+          <input v-model="newPassword" type="password" placeholder="新密码" required />
+        </label>
+        <p v-if="error" class="error">{{ error }}</p>
+        <button class="primary">确认修改</button>
+      </form>
+    </section>
+  </div>
 </template>

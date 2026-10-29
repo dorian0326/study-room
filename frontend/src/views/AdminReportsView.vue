@@ -139,39 +139,3 @@ onMounted(loadReport)
     </section>
   </template>
 </template>
-
-<style scoped>
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: end;
-  gap: 0.75rem;
-}
-.filters label {
-  display: grid;
-  gap: 0.3rem;
-}
-.metrics {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 0.75rem;
-  margin: 1rem 0;
-}
-.metrics article,
-.panel {
-  padding: 1rem;
-  border: 1px solid #d9e2dc;
-  border-radius: 0.75rem;
-}
-.metrics article {
-  display: grid;
-  gap: 0.4rem;
-}
-.metrics strong {
-  font-size: 1.5rem;
-  color: #285c4d;
-}
-.hint {
-  color: #53635b;
-}
-</style>

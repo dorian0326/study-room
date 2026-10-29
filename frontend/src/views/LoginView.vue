@@ -25,23 +25,35 @@ async function submit() {
 </script>
 
 <template>
-  <h2>登录</h2>
-  <form class="card" @submit.prevent="submit">
-    <input v-model="studentNo" placeholder="学号" autocomplete="username" required />
-    <input
-      v-model="password"
-      type="password"
-      placeholder="密码"
-      autocomplete="current-password"
-      required
-    />
-    <button :disabled="busy">登录</button>
-    <p v-if="error" class="error">{{ error }}</p>
-  </form>
-  <p>
-    没有账号？<RouterLink to="/register">注册</RouterLink>；忘记密码？<RouterLink
-      to="/reset-password"
-      >用重置码重置</RouterLink
-    >
-  </p>
+  <div class="auth-wrap">
+    <section class="auth-card">
+      <header>
+        <h2>欢迎回来</h2>
+        <p class="hint">登录智慧自习室，预约你的专属座位</p>
+      </header>
+      <form @submit.prevent="submit">
+        <label class="field">
+          学号
+          <input v-model="studentNo" placeholder="请输入学号" autocomplete="username" required />
+        </label>
+        <label class="field">
+          密码
+          <input
+            v-model="password"
+            type="password"
+            placeholder="请输入密码"
+            autocomplete="current-password"
+            required
+          />
+        </label>
+        <p v-if="error" class="error">{{ error }}</p>
+        <button class="primary" :class="{ loading: busy }" :disabled="busy">登录</button>
+      </form>
+      <footer>
+        没有账号？<RouterLink to="/register">立即注册</RouterLink>
+        <span class="sep">·</span>
+        <RouterLink to="/reset-password">忘记密码</RouterLink>
+      </footer>
+    </section>
+  </div>
 </template>

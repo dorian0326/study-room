@@ -151,7 +151,13 @@ onBeforeUnmount(stopScan)
   <section class="panel">
     <h3>摄像头扫码</h3>
     <div class="scan-actions">
-      <button v-if="!scanning" type="button" :disabled="!reservationId" @click="startScan">
+      <button
+        v-if="!scanning"
+        type="button"
+        class="primary"
+        :disabled="!reservationId"
+        @click="startScan"
+      >
         打开摄像头
       </button>
       <button v-else type="button" @click="stopScan">关闭摄像头</button>
@@ -170,7 +176,7 @@ onBeforeUnmount(stopScan)
         autocomplete="off"
         spellcheck="false"
       />
-      <button :disabled="!reservationId">签到</button>
+      <button class="primary" :disabled="!reservationId">签到</button>
       <button type="button" :disabled="!reservationId" @click="submitCheckIn('')">
         无码手动签到
       </button>
@@ -179,18 +185,6 @@ onBeforeUnmount(stopScan)
 </template>
 
 <style scoped>
-.panel {
-  margin: 1rem 0;
-  padding: 1rem;
-  border: 1px solid #d9e2dc;
-  border-radius: 0.75rem;
-  display: grid;
-  gap: 0.75rem;
-}
-.panel label {
-  display: grid;
-  gap: 0.35rem;
-}
 .scan-actions,
 .manual {
   display: flex;
@@ -206,8 +200,5 @@ onBeforeUnmount(stopScan)
   width: min(100%, 420px);
   border-radius: 0.5rem;
   background: #111;
-}
-.hint {
-  color: #53635b;
 }
 </style>

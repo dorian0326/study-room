@@ -158,29 +158,3 @@ onMounted(refresh)
     <p v-if="!backups.length" class="hint">还没有备份文件。</p>
   </section>
 </template>
-
-<style scoped>
-.row {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin: 0.75rem 0;
-}
-.panel {
-  margin: 0.75rem 0;
-  display: grid;
-  gap: 0.75rem;
-}
-.detail {
-  display: grid;
-  gap: 0.45rem;
-}
-.detail > div {
-  display: grid;
-  grid-template-columns: 7rem 1fr;
-  gap: 0.5rem;
-}
-.detail dt {
-  color: var(--muted);
-}
-</style>
