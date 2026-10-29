@@ -28,6 +28,10 @@ class Settings(BaseSettings):
     # 管理员签发的密码重置码有效期（分钟）
     password_reset_ttl_minutes: int = 30
 
+    # ---- 日志（#8）----
+    # 操作日志、登录日志保留天数（BR-105：保留一个学期，按 180 天计）
+    log_retention_days: int = 180
+
 
 @lru_cache
 def get_settings() -> Settings:

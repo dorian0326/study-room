@@ -1,8 +1,10 @@
 """认证接口（FR-001~004，UC-001~003）。"""
 
 from fastapi import APIRouter, HTTPException, Request, status
+from sqlalchemy import select
 
 from app.deps import AuthDep, CurrentUser, SessionDep
+from app.models import User
 from app.permissions import permissions_of
 from app.schemas.auth import (
     ChangePasswordIn,
@@ -13,6 +15,7 @@ from app.schemas.auth import (
     UserOut,
 )
 from app.services import auth as svc
+from app.services.logs import record_login
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -52,22 +55,32 @@ def register(body: RegisterIn, session: SessionDep) -> UserOut:
 
 @router.post("/login", response_model=LoginOut)
 def login(body: LoginIn, request: Request, session: SessionDep) -> LoginOut:
+    ip = request.client.host if request.client else None
+    ua = request.headers.get("user-agent")
+    log = {"student_no": body.student_no, "ip": ip, "user_agent": ua}
     try:
         user = svc.authenticate(session, body.student_no, body.password)
     except svc.AuthError as e:
+        known = session.scalar(select(User).where(User.student_no == body.student_no.strip()))
+        record_login(session, user=known, success=False, reason=e.code, **log)
         raise _err(e) from e
-    token, ttl = svc.create_session(
-        session,
-        user,
-        ip=request.client.host if request.client else None,
-        user_agent=request.headers.get("user-agent"),
-    )
+    token, ttl = svc.create_session(session, user, ip=ip, user_agent=ua)
+    record_login(session, user=user, success=True, **log)
     return LoginOut(access_token=token, expires_in=ttl, user=user_out(user))
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
-def logout(auth: AuthDep, session: SessionDep) -> None:
+def logout(auth: AuthDep, session: SessionDep, request: Request) -> None:
     svc.revoke_session(session, auth[1])
+    record_login(
+        session,
+        student_no=auth[0].student_no,
+        user=auth[0],
+        event="logout",
+        success=True,
+        ip=request.client.host if request.client else None,
+        user_agent=request.headers.get("user-agent"),
+    )
 
 
 @router.get("/me", response_model=UserOut)

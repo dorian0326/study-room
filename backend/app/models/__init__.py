@@ -20,6 +20,7 @@ from app.models.entities import (
     role_permissions,
     user_roles,
 )
+from app.models.logs import LoginLog
 
 __all__ = [
     "Appeal",
@@ -29,6 +30,7 @@ __all__ = [
     "Base",
     "CalendarDay",
     "EntryExitRecord",
+    "LoginLog",
     "Notification",
     "OpeningSchedule",
     "PasswordResetToken",
