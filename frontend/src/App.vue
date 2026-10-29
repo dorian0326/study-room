@@ -15,6 +15,7 @@ async function onLogout() {
     <strong>智慧自习室管理系统</strong>
     <template v-if="auth.user">
       <RouterLink to="/">首页</RouterLink>
+      <RouterLink v-if="can('room:manage')" to="/admin/config">系统配置</RouterLink>
       <RouterLink v-if="can('user:manage')" to="/admin/users">用户管理</RouterLink>
       <RouterLink to="/change-password">修改密码</RouterLink>
       <span class="spacer" />

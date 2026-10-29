@@ -6,6 +6,7 @@ import RegisterView from '../views/RegisterView.vue'
 import ChangePasswordView from '../views/ChangePasswordView.vue'
 import ResetPasswordView from '../views/ResetPasswordView.vue'
 import AdminUsersView from '../views/AdminUsersView.vue'
+import AdminConfigView from '../views/AdminConfigView.vue'
 
 export const routes = [
   { path: '/', component: HomeView, meta: { auth: true } },
@@ -13,6 +14,7 @@ export const routes = [
   { path: '/register', component: RegisterView },
   { path: '/reset-password', component: ResetPasswordView },
   { path: '/change-password', component: ChangePasswordView, meta: { auth: true } },
+  { path: '/admin/config', component: AdminConfigView, meta: { auth: true, perm: 'room:manage' } },
   { path: '/admin/users', component: AdminUsersView, meta: { auth: true, perm: 'user:manage' } },
 ]
 

@@ -1,6 +1,7 @@
 from app.models import enums
 from app.models.auth import AuthSession, PasswordResetToken
 from app.models.base import Base
+from app.models.config import CalendarDay, SystemSetting
 from app.models.entities import (
     Appeal,
     ArrivalRecord,
@@ -26,6 +27,7 @@ __all__ = [
     "AuditLog",
     "AuthSession",
     "Base",
+    "CalendarDay",
     "EntryExitRecord",
     "Notification",
     "OpeningSchedule",
@@ -36,6 +38,7 @@ __all__ = [
     "Role",
     "Seat",
     "StudyRoom",
+    "SystemSetting",
     "User",
     "ViolationRecord",
     "enums",
