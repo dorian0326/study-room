@@ -43,19 +43,37 @@
 ```bash
 # macOS / Linux 用 python3；Windows 用 py（Python 启动器），也可用 python
 python3 scripts/dev.py setup       # 建 backend/.venv、装依赖、迁移数据库、npm ci
-python3 scripts/dev.py demo-data   # 创建演示账号（仅限本地开发，可重复运行）
-python3 scripts/dev.py             # 同时启动后端 :8000 和前端 :5173，Ctrl+C 一起停止
+python3 scripts/dev.py             # 迁移 + 自动导入演示数据，再同时启动后端 :8000 和前端 :5173，Ctrl+C 一起停止
 python3 scripts/dev.py test        # ruff + pytest + 前端 lint/format:check/build
 python3 scripts/dev.py create-user --student-no A0001 --name 张三 --role admin --password Passw0rd
 ```
 
 ```powershell
 py scripts\dev.py setup
-py scripts\dev.py demo-data
 py scripts\dev.py
 ```
 
-演示账号：`A0000001 / Admin1234`（管理员）、`O0000001 / Ops12345`（运维）、`20260001 / Demo1234`（学生）。
+### 演示数据 / 助教运行说明
+
+`python3 scripts/dev.py`（Windows：`py scripts\dev.py`）启动前会自动执行数据库迁移并导入一组 Mock 数据，启动后终端会打印演示账号。首次 `setup` 后直接运行这一条即可看到完整页面效果。
+
+| 账号 | 密码 | 角色 | 说明 |
+| --- | --- | --- | --- |
+| `A0000001` | `Admin1234` | 管理员 | 报表、申诉审核、日志、座位/用户/配置管理 |
+| `O0000001` | `Ops12345` | 运维 | 运维面板、闸机 |
+| `20260001` | `Demo1234` | 学生 | 主演示账号，有历史预约（开放时段内导入时还有进行中的预约） |
+| `20260002` | `Demo1234` | 学生 | 暂离中（开放时段内导入时） |
+| `20260004` | `Demo1234` | 学生 | 有待审核申诉、明天的预约 |
+| `20260014` | `Demo1234` | 学生 | 违规累计已被限制预约，有待审核申诉 |
+| `20260015` | `Demo1234` | 学生 | 已停用，登录返回 403 |
+
+其余学生 `20260003`–`20260013` 密码同为 `Demo1234`。数据包括 4 个自习室、40 个座位（1 个维修中）、16 条开放时段、节假日/考试周日历，以及近 14 天约 200 条预约（完成、取消、超时取消、管理员取消、爽约、暂离超时）、违规与申诉（待审/通过/驳回）、闸机进出、登录日志、操作日志和通知。数据按导入时刻生成，均符合业务规则（无时段冲突、在开放时间内、每人最多 1 个有效预约）。
+
+- 已导入过则自动跳过，不会重复或覆盖你自己的数据；只删除/重建 Mock 数据用 `python3 scripts/dev.py --reset-mock`。
+- 不想导入：`python3 scripts/dev.py --no-mock`。单独导入：`python3 scripts/dev.py demo-data [--reset]` 或 `cd backend && python -m app.cli seed-mock [--reset]`。
+- 仅当 `STUDYROOM_ENV` 为 `dev` 或 `test` 时才会导入，其他环境会拒绝。
+- 时间相关的状态（进行中、暂离、明天的预约）以导入时刻为准；隔天演示时运行一次 `--reset-mock` 刷新。
+
 前端端口可用 `dev --frontend-port 5174` 修改；后端固定 8000，因为前端 `/api` 代理写死了这个端口。
 不需要先激活虚拟环境。下面的手动步骤仍然可用。
 
