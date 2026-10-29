@@ -14,6 +14,9 @@ import AdminSeatsView from '../views/AdminSeatsView.vue'
 import AdminReportsView from '../views/AdminReportsView.vue'
 import AdminAppealsView from '../views/AdminAppealsView.vue'
 import CheckInView from '../views/CheckInView.vue'
+import AdminLogsView from '../views/AdminLogsView.vue'
+import AdminOpsView from '../views/AdminOpsView.vue'
+import AdminGateView from '../views/AdminGateView.vue'
 
 export const routes = [
   { path: '/', component: HomeView, meta: { auth: true } },
@@ -28,6 +31,21 @@ export const routes = [
     component: AdminAppealsView,
     meta: { auth: true, perm: 'appeal:manage' },
   },
+  {
+    path: '/admin/logs',
+    component: AdminLogsView,
+    meta: { auth: true, anyPerm: ['audit_log:read', 'system_log:read'] },
+  },
+  {
+    path: '/admin/ops',
+    component: AdminOpsView,
+    meta: { auth: true, anyPerm: ['system:backup', 'system_log:read'] },
+  },
+  {
+    path: '/admin/gate',
+    component: AdminGateView,
+    meta: { auth: true, perm: 'entry_exit:read' },
+  },
   { path: '/login', component: LoginView },
   { path: '/register', component: RegisterView },
   { path: '/reset-password', component: ResetPasswordView },
@@ -40,11 +58,13 @@ const router = createRouter({ history: createWebHistory(), routes })
 
 /** 验证页面所需的登录状态和权限码。 */
 async function authorizeNavigation(to) {
-  // 未登录用户先回到登录页，登录后仍可返回原目标页面。
   if (!auth.loaded) await loadMe()
   if (to.meta.auth && !auth.user) return { path: '/login', query: { next: to.fullPath } }
-  // 需要特定权限码的页面由前端拦截，后端接口仍会独立复核权限。
   if (to.meta.perm && !auth.user.permissions.includes(to.meta.perm)) return '/'
+  if (to.meta.anyPerm) {
+    const ok = to.meta.anyPerm.some((p) => auth.user.permissions.includes(p))
+    if (!ok) return '/'
+  }
   return true
 }
 
