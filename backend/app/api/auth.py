@@ -3,6 +3,7 @@
 from fastapi import APIRouter, HTTPException, Request, status
 
 from app.deps import AuthDep, CurrentUser, SessionDep
+from app.permissions import permissions_of
 from app.schemas.auth import (
     ChangePasswordIn,
     LoginIn,
@@ -29,6 +30,7 @@ def user_out(user) -> UserOut:  # noqa: ANN001
         contact=user.contact,
         status=user.status,
         roles=sorted(r.name for r in user.roles),
+        permissions=sorted(permissions_of(r.name for r in user.roles)),
     )
 
 

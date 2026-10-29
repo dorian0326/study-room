@@ -1,6 +1,6 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { auth, logout } from './auth.js'
+import { auth, can, logout } from './auth.js'
 
 const router = useRouter()
 
@@ -15,6 +15,7 @@ async function onLogout() {
     <strong>智慧自习室管理系统</strong>
     <template v-if="auth.user">
       <RouterLink to="/">首页</RouterLink>
+      <RouterLink v-if="can('user:manage')" to="/admin/users">用户管理</RouterLink>
       <RouterLink to="/change-password">修改密码</RouterLink>
       <span class="spacer" />
       <span>{{ auth.user.name }}（{{ auth.user.student_no }}）</span>
