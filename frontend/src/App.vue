@@ -1,26 +1,62 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import { fetchHealth } from './api/health.js'
+import { useRouter } from 'vue-router'
+import { auth, logout } from './auth.js'
 
-const health = ref(null)
-const error = ref('')
+const router = useRouter()
 
-onMounted(async () => {
-  try {
-    health.value = await fetchHealth()
-  } catch (e) {
-    error.value = String(e)
-  }
-})
+async function onLogout() {
+  await logout()
+  router.push('/login')
+}
 </script>
 
 <template>
-  <main>
-    <h1>智慧自习室管理系统</h1>
-    <p v-if="health">
-      后端状态：{{ health.status }}（{{ health.database }}，{{ health.timezone }}）
-    </p>
-    <p v-else-if="error">后端不可用：{{ error }}</p>
-    <p v-else>正在连接后端…</p>
-  </main>
+  <header class="nav">
+    <strong>智慧自习室管理系统</strong>
+    <template v-if="auth.user">
+      <RouterLink to="/">首页</RouterLink>
+      <RouterLink to="/change-password">修改密码</RouterLink>
+      <span class="spacer" />
+      <span>{{ auth.user.name }}（{{ auth.user.student_no }}）</span>
+      <button @click="onLogout">退出登录</button>
+    </template>
+    <template v-else>
+      <span class="spacer" />
+      <RouterLink to="/login">登录</RouterLink>
+      <RouterLink to="/register">注册</RouterLink>
+    </template>
+  </header>
+  <main><RouterView /></main>
 </template>
+
+<style>
+body {
+  font-family: system-ui, sans-serif;
+  margin: 0;
+}
+.nav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #ddd;
+}
+.spacer {
+  flex: 1;
+}
+main {
+  padding: 1rem;
+  max-width: 960px;
+}
+form.card {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 320px;
+}
+.error {
+  color: #c00;
+}
+.ok {
+  color: #080;
+}
+</style>

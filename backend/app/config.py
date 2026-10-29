@@ -16,6 +16,18 @@ class Settings(BaseSettings):
     # SQLite 写锁等待时间（毫秒）
     sqlite_busy_timeout_ms: int = 5000
 
+    # ---- 认证（#6）----
+    # 登录会话有效期（分钟），默认 12 小时
+    session_ttl_minutes: int = 12 * 60
+    # 学号格式（HD-45 要求校验，具体格式待确认，先用 6–20 位字母数字）
+    student_no_pattern: str = r"^[0-9A-Za-z]{6,20}$"
+    # 密码策略：最短长度，且须同时包含字母和数字
+    password_min_length: int = 8
+    # bcrypt 成本因子（测试中调低以加速）
+    bcrypt_rounds: int = 12
+    # 管理员签发的密码重置码有效期（分钟）
+    password_reset_ttl_minutes: int = 30
+
 
 @lru_cache
 def get_settings() -> Settings:
