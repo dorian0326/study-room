@@ -31,7 +31,16 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--name", required=True)
     p.add_argument("--role", action="append", choices=[r.value for r in RoleName])
     p.add_argument("--password", help="不传则交互输入")
+    p = sub.add_parser("purge-logs", help="清理超过保留期的操作日志与登录日志")
+    p.add_argument("--days", type=int, help="保留天数，默认取 STUDYROOM_LOG_RETENTION_DAYS")
     args = parser.parse_args(argv)
+
+    if args.cmd == "purge-logs":
+        from app.services.logs import purge_expired
+
+        with SessionLocal() as session:
+            print(purge_expired(session, args.days))
+        return 0
 
     if args.cmd == "create-user":
         password = args.password or getpass.getpass("密码：")
