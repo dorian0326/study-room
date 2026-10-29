@@ -92,6 +92,10 @@ npm run build     # 生产构建
 
 推送和 PR 会触发 GitHub Actions（`.github/workflows/ci.yml`），运行后端 ruff + pytest 与前端 lint + build。
 
+## 已知限制
+
+实现与需求文档的有意差异见 [docs/limitations.md](./docs/limitations.md)。
+
 ## 参与贡献
 
 请先阅读 [CONTRIBUTING.md](./CONTRIBUTING.md)。向 `main` 的改动须经 Pull Request，并由 CODEOWNERS（@dorian0326）审核通过后才能合并。
