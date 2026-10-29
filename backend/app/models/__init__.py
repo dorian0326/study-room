@@ -1,4 +1,5 @@
 from app.models import enums
+from app.models.auth import AuthSession, PasswordResetToken
 from app.models.base import Base
 from app.models.entities import (
     Appeal,
@@ -23,10 +24,12 @@ __all__ = [
     "Appeal",
     "ArrivalRecord",
     "AuditLog",
+    "AuthSession",
     "Base",
     "EntryExitRecord",
     "Notification",
     "OpeningSchedule",
+    "PasswordResetToken",
     "Permission",
     "Reservation",
     "Restriction",

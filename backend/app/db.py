@@ -57,10 +57,11 @@ def transaction(session: Session, *, immediate: bool = False) -> Iterator[Sessio
 
     immediate=True 时以 BEGIN IMMEDIATE 开始，提前拿到 SQLite 写锁，
     用于“先查冲突再写入”的场景（如创建预约），避免并发写入时的检查-写入竞态。
+    非 immediate 时允许接续此前查询自动开启的（只读）事务。
     """
-    if session.in_transaction():
-        raise RuntimeError("会话中已有未结束的事务")
     if immediate:
+        if session.in_transaction():
+            raise RuntimeError("会话中已有未结束的事务，无法以 BEGIN IMMEDIATE 开始")
         session.connection(execution_options={"sqlite_begin": "BEGIN IMMEDIATE"})
     try:
         yield session

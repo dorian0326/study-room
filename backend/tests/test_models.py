@@ -4,7 +4,6 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 from alembic import command
-from alembic.config import Config
 from alembic.script import ScriptDirectory
 from sqlalchemy import inspect, select, text
 from sqlalchemy.exc import IntegrityError, StatementError
@@ -22,15 +21,9 @@ from app.models import (
 )
 from app.models import enums as E
 from app.timeutil import now
+from tests.conftest import alembic_cfg
 
-BACKEND_DIR = __import__("pathlib").Path(__file__).resolve().parents[1]
-
-
-def _alembic_cfg(url: str) -> Config:
-    cfg = Config(str(BACKEND_DIR / "alembic.ini"))
-    cfg.set_main_option("script_location", str(BACKEND_DIR / "migrations"))
-    cfg.set_main_option("sqlalchemy.url", url)
-    return cfg
+_alembic_cfg = alembic_cfg
 
 
 @pytest.fixture
