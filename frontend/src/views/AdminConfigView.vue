@@ -22,7 +22,14 @@ const SETTING_LABELS = {
 const error = ref('')
 const notice = ref('')
 const rooms = ref([])
-const roomForm = reactive({ id: null, name: '', location: '', capacity: 0, facilities: '' })
+const roomForm = reactive({
+  id: null,
+  name: '',
+  location: '',
+  floor: '',
+  capacity: 0,
+  facilities: '',
+})
 const current = ref(null)
 const schedules = ref([])
 const schForm = reactive({ day_type: 'weekday', open_time: '08:00', close_time: '22:00' })
@@ -58,7 +65,14 @@ function saveRoom() {
   return guard(async () => {
     const { id, ...body } = roomForm
     await api(id ? `/admin/rooms/${id}` : '/admin/rooms', { method: id ? 'PUT' : 'POST', body })
-    Object.assign(roomForm, { id: null, name: '', location: '', capacity: 0, facilities: '' })
+    Object.assign(roomForm, {
+      id: null,
+      name: '',
+      location: '',
+      floor: '',
+      capacity: 0,
+      facilities: '',
+    })
     await loadRooms()
   }, '已保存自习室')
 }
@@ -156,6 +170,7 @@ onMounted(loadInitialConfig)
       <tr v-for="r in rooms" :key="r.id">
         <td>{{ r.name }}</td>
         <td>{{ r.location }}</td>
+        <td>{{ r.floor || '—' }}</td>
         <td>容量 {{ r.capacity }}</td>
         <td>{{ r.status === 'open' ? '开放' : '关闭' }}</td>
         <td>
@@ -169,6 +184,7 @@ onMounted(loadInitialConfig)
     <form @submit.prevent="saveRoom">
       <input v-model="roomForm.name" placeholder="名称" required />
       <input v-model="roomForm.location" placeholder="位置" />
+      <input v-model="roomForm.floor" placeholder="楼层" />
       <input v-model.number="roomForm.capacity" type="number" min="0" placeholder="容量" />
       <input v-model="roomForm.facilities" placeholder="设施" />
       <button>{{ roomForm.id ? '保存修改' : '新增自习室' }}</button>
