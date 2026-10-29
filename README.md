@@ -99,3 +99,10 @@ npm run build     # 生产构建
 ## 许可证
 
 [MIT](./LICENSE) © 2026 Dorian Zhang
+
+## 部署环境变量
+
+| 变量 | 说明 |
+| --- | --- |
+| `STUDYROOM_ENV` | 运行环境，默认 `dev`；测试用 `test`，部署设为 `prod` 等其他值。 |
+| `STUDYROOM_GATE_HMAC_SECRET` | 门禁脱敏用户键的 HMAC 密钥。`STUDYROOM_ENV` 不是 `dev`/`test` 时必须设置为独立随机值，否则后端拒绝启动。 |
