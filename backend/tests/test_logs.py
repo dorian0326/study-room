@@ -25,8 +25,8 @@ def test_login_events_are_logged(client, make_user, login, api_db):
         rows = [(r.student_no, r.event, r.success, r.reason, r.user_id is not None)
                 for r in s.scalars(select(LoginLog).order_by(LoginLog.id))]  # fmt: skip
     assert rows == [
-        ("20260001", "login", False, "wrong_password", True),
-        ("nobody99", "login", False, "user_not_found", False),
+        ("20260001", "login", False, "invalid_credentials", True),
+        ("nobody99", "login", False, "invalid_credentials", False),
         ("20260001", "login", True, None, True),
         ("20260001", "logout", True, None, True),
     ]
@@ -42,7 +42,7 @@ def test_login_logs_only_for_ops(client, make_user, login):
     )
 
     data = client.get("/api/ops/login-logs", headers=ops, params={"success": False}).json()
-    assert data["total"] == 1 and data["items"][0]["reason"] == "wrong_password"
+    assert data["total"] == 1 and data["items"][0]["reason"] == "invalid_credentials"
     data = client.get("/api/ops/login-logs", headers=ops, params={"student_no": "A0000001"}).json()
     assert data["total"] == 1
     future = (now() + timedelta(hours=1)).isoformat()

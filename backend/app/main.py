@@ -23,7 +23,7 @@ from app.api import (
 )
 from app.config import get_settings
 from app.metrics import MetricsMiddleware
-from app.services import reservation_worker
+from app.services import ops_worker, reservation_worker
 from app.services.availability import BookingError
 
 logger = logging.getLogger(__name__)
@@ -31,18 +31,20 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    """管理预约后台任务：interval>0 时启动；测试可设为 0 关闭。"""
+    """管理预约扫尾、备份与日志清理后台任务；interval=0 时不启动（测试默认）。"""
     settings = get_settings()
     stop = asyncio.Event()
-    task = None
+    tasks = []
     if settings.reservation_sweep_interval_seconds > 0:
-        task = asyncio.create_task(reservation_worker.run(stop))
+        tasks.append(asyncio.create_task(reservation_worker.run(stop)))
+    if settings.backup_interval_seconds > 0 or settings.log_purge_interval_seconds > 0:
+        tasks.append(asyncio.create_task(ops_worker.run(stop)))
     try:
         yield
     finally:
         stop.set()
-        if task is not None:
-            await task
+        if tasks:
+            await asyncio.gather(*tasks, return_exceptions=True)
 
 
 def create_app() -> FastAPI:

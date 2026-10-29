@@ -54,10 +54,31 @@ def test_register_rejects_duplicate_and_bad_input(client):
 
 def test_login_failures_have_clear_messages(client, make_user):
     make_user()
+    # 统一提示，不暴露学号是否存在。
     r = _login(client, "99999999")
-    assert r.status_code == 401 and r.json()["detail"]["message"] == "学号未注册"
+    assert r.status_code == 401
+    assert r.json()["detail"]["message"] == "学号或密码错误"
+    assert r.json()["detail"]["code"] == "invalid_credentials"
     r = _login(client, password="wrong1234")
-    assert r.status_code == 401 and r.json()["detail"]["message"] == "密码错误"
+    assert r.status_code == 401
+    assert r.json()["detail"]["message"] == "学号或密码错误"
+    assert r.json()["detail"]["code"] == "invalid_credentials"
+
+
+def test_login_lockout_after_failures(client, make_user, monkeypatch):
+    make_user()
+    from app.config import get_settings
+
+    settings = get_settings()
+    monkeypatch.setattr(settings, "login_max_failures", 3)
+    monkeypatch.setattr(settings, "login_lockout_minutes", 15)
+    for _ in range(3):
+        assert _login(client, password="wrong1234").status_code == 401
+    locked = _login(client, password="wrong1234")
+    assert locked.status_code == 429
+    assert locked.json()["detail"]["code"] == "login_locked"
+    # 正确密码在锁定窗口内也被拒绝
+    assert _login(client).status_code == 429
 
 
 def test_disabled_account_cannot_login(client, make_user):

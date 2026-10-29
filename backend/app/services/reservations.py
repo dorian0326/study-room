@@ -26,7 +26,7 @@ from app.services import audit
 from app.services.availability import BLOCKED_SEAT_STATUSES, BookingError, covers, overlapping
 from app.services.notifications import create_notification
 from app.services.settings import get_business_settings
-from app.services.violations import record_violation
+from app.services.violations import archive_expired_violations, record_violation
 
 
 def now():
@@ -270,12 +270,58 @@ def expire_due(source: Session) -> int:
         return _expire_due(session, now())
 
 
+def _pick_seat_for_zone(
+    session: Session,
+    room_id: int,
+    zone_type: E.ZoneType,
+    start: datetime,
+    end: datetime,
+    user_id: int,
+) -> Seat:
+    """BR-012：在指定房间与区域内按编号顺序挑第一个可用座位。"""
+    from app.models import StudyRoom as _StudyRoom
+
+    room = session.get(_StudyRoom, room_id)
+    if room is None:
+        raise BookingError(404, "自习室不存在")
+    if room.status != E.RoomStatus.OPEN:
+        raise BookingError(409, "自习室已关闭，无法预约")
+    seats = list(
+        session.scalars(
+            select(Seat)
+            .where(
+                Seat.room_id == room_id,
+                Seat.zone_type == zone_type,
+                Seat.status == E.SeatStatus.AVAILABLE,
+            )
+            .order_by(Seat.code)
+        )
+    )
+    if not seats:
+        raise BookingError(409, "该区域暂无可用座位")
+    for seat in seats:
+        try:
+            _check_slot(session, seat, start, end, user_id)
+            return seat
+        except BookingError:
+            continue
+    raise BookingError(409, "该区域在所选时段已约满，请换时段或区域")
+
+
 def create(
     source: Session, user_id: int, body: ReservationIn, key: str | None
 ) -> tuple[ReservationOut, bool]:
+    # 指纹包含座位或区域，便于幂等比对自动分配结果。
     fingerprint = hashlib.sha256(
         json.dumps(
-            [user_id, body.seat_id, body.start_time.isoformat(), body.end_time.isoformat()]
+            [
+                user_id,
+                body.seat_id,
+                body.room_id,
+                body.zone_type.value if body.zone_type else None,
+                body.start_time.isoformat(),
+                body.end_time.isoformat(),
+            ]
         ).encode()
     ).hexdigest()
     with write_transaction(source) as session:
@@ -295,8 +341,13 @@ def create(
         if body.start_time.date() > at.date() + timedelta(days=advance):
             raise BookingError(422, "最多提前1天预约，请调整日期")
         _restriction(session, user_id, at)
-        seat = _seat(session, body.seat_id)
-        _check_slot(session, seat, body.start_time, body.end_time, user_id)
+        if body.seat_id is not None:
+            seat = _seat(session, body.seat_id)
+            _check_slot(session, seat, body.start_time, body.end_time, user_id)
+        else:
+            seat = _pick_seat_for_zone(
+                session, body.room_id, body.zone_type, body.start_time, body.end_time, user_id
+            )
         # 与 #33 一致：预约号带时间前缀，便于人工排查。
         reservation = Reservation(
             reservation_no=f"SR{at:%Y%m%d%H%M%S}{uuid4().hex[:6].upper()}",
@@ -640,7 +691,13 @@ def sweep_reservations(session: Session, moment: datetime | None = None) -> dict
     """幂等释放未签到、未签退和临时离开超时预约，并投递提醒通知。"""
     moment = moment or now()
     settings = get_business_settings(session)
-    counts = {"no_show": 0, "no_checkout": 0, "temp_leave": 0, "reminders": 0}
+    counts = {
+        "no_show": 0,
+        "no_checkout": 0,
+        "temp_leave": 0,
+        "reminders": 0,
+        "archived_violations": 0,
+    }
     session.commit()
     with transaction(session, immediate=True):
         expired_restrictions = list(
@@ -717,7 +774,7 @@ def sweep_reservations(session: Session, moment: datetime | None = None) -> dict
             reservation.expire_reason = "temp_leave_timeout" if left_too_long else "period_end"
             if left_too_long:
                 reservation.temp_leave_state = E.TempLeaveState.TIMED_OUT
-                violation_type = E.ViolationType.LEFT_UNDECLARED
+                violation_type = E.ViolationType.TEMP_LEAVE_TIMEOUT
                 counts["temp_leave"] += 1
             else:
                 violation_type = E.ViolationType.NO_CHECKOUT
@@ -786,4 +843,6 @@ def sweep_reservations(session: Session, moment: datetime | None = None) -> dict
                 idempotency_key=f"reservation:{reservation.id}:leave-expiry-reminder",
             )
             counts["reminders"] += 1
+        counts["archived_violations"] = archive_expired_violations(session, moment)
+
     return counts

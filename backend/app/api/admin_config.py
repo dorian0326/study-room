@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 from app.db import transaction
 from app.deps import SessionDep, client_ip, require_permission
 from app.models import CalendarDay, OpeningSchedule, Reservation, Seat, StudyRoom, User
-from app.models.enums import AuditOpType
+from app.models.enums import AuditOpType, RoomStatus
 from app.schemas.admin import (
     BusinessSettings,
     CalendarDayIn,
@@ -26,6 +26,7 @@ from app.schemas.admin import (
     ScheduleOut,
 )
 from app.services import audit
+from app.services.admin_force_cancel import cancel_for_room_close, cancel_for_schedule_change
 from app.services.settings import get_business_settings, save_business_settings
 
 router = APIRouter(prefix="/admin", tags=["admin-config"])
@@ -95,11 +96,15 @@ def update_room(room_id: int, body: RoomIn, op: RoomAdmin, session: SessionDep, 
 def set_room_status(
     room_id: int, body: RoomStatusIn, op: RoomAdmin, session: SessionDep, request: Request
 ):
-    """开放/关闭自习室。关闭后不再接受新预约（BR-065，由预约模块按 status 过滤）。"""
-    room = _room(session, room_id)
-    before = room.status
-    with transaction(session):
+    """开放/关闭自习室。关闭时强制取消未来预约并通知（BR-065）。"""
+    session.commit()  # 结束鉴权只读事务后再拿写锁
+    with transaction(session, immediate=True):
+        room = _room(session, room_id)
+        before = room.status
         room.status = body.status
+        cancelled = 0
+        if body.status != RoomStatus.OPEN and before == RoomStatus.OPEN:
+            cancelled = cancel_for_room_close(session, room, op)
         _log(
             session,
             request,
@@ -107,7 +112,7 @@ def set_room_status(
             "study_room_status",
             room.id,
             {"status": before},
-            {"status": body.status},
+            {"status": body.status, "cancelled_reservations": cancelled},
         )
     return room
 
@@ -182,24 +187,32 @@ def create_schedule(
 def update_schedule(
     room_id: int, sid: int, body: ScheduleIn, op: RoomAdmin, session: SessionDep, request: Request
 ):
-    """修改开放时间：只影响之后的新预约，已有预约不追溯（BR-062，由预约模块执行）。"""
-    sch = _schedule(session, room_id, sid)
+    """修改开放时间：取消不再落在开放窗口内的未来预约并通知（BR-062）。"""
     _check_window(session, body)
-    before = _dump_sch(sch)
-    with transaction(session):
+    session.commit()
+    with transaction(session, immediate=True):
+        sch = _schedule(session, room_id, sid)
+        before = _dump_sch(sch)
         for k, v in body.model_dump().items():
             setattr(sch, k, v)
         session.flush()
-        _log(session, request, op, "opening_schedule", sch.id, before, _dump_sch(sch))
+        cancelled = cancel_for_schedule_change(session, room_id, op)
+        after = _dump_sch(sch)
+        after["cancelled_reservations"] = cancelled
+        _log(session, request, op, "opening_schedule", sch.id, before, after)
     return sch
 
 
 @router.delete("/rooms/{room_id}/schedules/{sid}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_schedule(room_id: int, sid: int, op: RoomAdmin, session: SessionDep, request: Request):
-    sch = _schedule(session, room_id, sid)
-    before = _dump_sch(sch)
-    with transaction(session):
+    session.commit()
+    with transaction(session, immediate=True):
+        sch = _schedule(session, room_id, sid)
+        before = _dump_sch(sch)
         session.delete(sch)
+        session.flush()
+        cancelled = cancel_for_schedule_change(session, room_id, op)
+        before["cancelled_reservations"] = cancelled
         _log(session, request, op, "opening_schedule", sid, before=before)
 
 

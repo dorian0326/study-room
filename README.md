@@ -106,3 +106,7 @@ npm run build     # 生产构建
 | --- | --- |
 | `STUDYROOM_ENV` | 运行环境，默认 `dev`；测试用 `test`，部署设为 `prod` 等其他值。 |
 | `STUDYROOM_GATE_HMAC_SECRET` | 门禁脱敏用户键的 HMAC 密钥。`STUDYROOM_ENV` 不是 `dev`/`test` 时必须设置为独立随机值，否则后端拒绝启动。 |
+| `STUDYROOM_LOGIN_MAX_FAILURES` | 连续登录失败锁定阈值，默认 `5`；`0` 关闭锁定。 |
+| `STUDYROOM_LOGIN_LOCKOUT_MINUTES` | 登录锁定分钟数，默认 `15`。 |
+| `STUDYROOM_BACKUP_INTERVAL_SECONDS` | 定时备份间隔（秒），默认 `0`（关闭）；生产可设 `86400`。CLI `python -m app.cli backup` 仍可用。 |
+| `STUDYROOM_LOG_PURGE_INTERVAL_SECONDS` | 定时日志清理间隔（秒），默认 `0`；保留天数见 `STUDYROOM_LOG_RETENTION_DAYS`（默认 180，约一学期）。CLI `python -m app.cli purge-logs` 仍可用。 |

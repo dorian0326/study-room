@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.models.enums import (
     AppealResult,
@@ -19,9 +19,11 @@ from app.models.enums import (
 
 
 class ReservationCreate(BaseModel):
-    """预约提交结构；时间必须带时区，防止跨客户端时区误判。"""
+    """预约提交结构；时间必须带时区。可指定座位，或房间+区域自动分配（BR-012）。"""
 
-    seat_id: int = Field(gt=0)
+    seat_id: int | None = Field(None, gt=0)
+    room_id: int | None = Field(None, gt=0)
+    zone_type: ZoneType | None = None
     start_time: datetime
     end_time: datetime
     request_key: str | None = Field(None, min_length=8, max_length=64)
@@ -33,6 +35,14 @@ class ReservationCreate(BaseModel):
         if value.tzinfo is None or value.utcoffset() is None:
             raise ValueError("预约时间必须包含时区")
         return value
+
+    @model_validator(mode="after")
+    def require_seat_or_zone(self):
+        by_seat = self.seat_id is not None
+        by_zone = self.room_id is not None and self.zone_type is not None and self.seat_id is None
+        if not (by_seat or by_zone):
+            raise ValueError("请指定座位，或同时提供自习室与区域以自动分配")
+        return self
 
 
 class ReservationOut(BaseModel):

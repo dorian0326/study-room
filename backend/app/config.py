@@ -49,11 +49,19 @@ class Settings(BaseSettings):
             )
         return self
 
+    # ---- 登录锁定 ----
+    # 连续失败次数阈值；0 表示关闭锁定。默认 5 次失败锁定 15 分钟。
+    login_max_failures: int = Field(5, ge=0)
+    login_lockout_minutes: int = Field(15, ge=1)
+
     # ---- 日志（#8）----
     # 操作日志、登录日志保留天数（BR-105：保留一个学期，按 180 天计）
     log_retention_days: int = 180
     backup_dir: str = "./data/backups"
     backup_keep: int = 14
+    # 定时备份/日志清理间隔（秒）；0 关闭后台任务（测试默认 0）。生产建议 86400。
+    backup_interval_seconds: float = Field(0, ge=0)
+    log_purge_interval_seconds: float = Field(0, ge=0)
 
 
 @lru_cache
