@@ -159,13 +159,18 @@ onMounted(loadWorkspace)
         座位
         <select v-model="seatId" required>
           <option v-for="seat in availableSeats" :key="seat.id" :value="String(seat.id)">
-            {{ seat.code }} · {{ seat.zone_type }}{{ seat.by_window ? ' · 靠窗' : '' }}{{ seat.has_power ? ' · 有电源' : '' }}
+            {{ seat.code }} · {{ seat.zone_type }}{{ seat.by_window ? ' · 靠窗' : ''
+            }}{{ seat.has_power ? ' · 有电源' : '' }}
           </option>
         </select>
       </label>
       <label>日期 <input v-model="booking.day" type="date" required @change="loadRooms" /></label>
-      <label>开始 <input v-model="booking.start" type="time" step="1800" required @change="loadRooms" /></label>
-      <label>结束 <input v-model="booking.end" type="time" step="1800" required @change="loadRooms" /></label>
+      <label
+        >开始 <input v-model="booking.start" type="time" step="1800" required @change="loadRooms"
+      /></label>
+      <label
+        >结束 <input v-model="booking.end" type="time" step="1800" required @change="loadRooms"
+      /></label>
       <button :disabled="!seatId">确认预约</button>
     </form>
     <p class="hint">预约按 30 分钟粒度提交，系统会校验开放时间和座位冲突。</p>
@@ -184,21 +189,53 @@ onMounted(loadWorkspace)
     <div class="table-scroll">
       <table v-if="reservations.length">
         <thead>
-          <tr><th>预约号</th><th>自习室 / 座位</th><th>开始 – 结束</th><th>状态</th><th>操作</th></tr>
+          <tr>
+            <th>预约号</th>
+            <th>自习室 / 座位</th>
+            <th>开始 – 结束</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
         </thead>
         <tbody>
           <tr v-for="reservation in reservations" :key="reservation.id">
             <td>{{ reservation.reservation_no }}</td>
             <td>{{ reservation.room_name }} / {{ reservation.seat_code }}</td>
-            <td>{{ formatTime(reservation.start_time) }}<br />{{ formatTime(reservation.end_time) }}</td>
+            <td>
+              {{ formatTime(reservation.start_time) }}<br />{{ formatTime(reservation.end_time) }}
+            </td>
             <td>{{ reservationStatus(reservation.status) }}</td>
             <td class="actions">
-              <button v-if="reservation.status === 'RESERVED'" @click="operate('checkin', reservation)">签到</button>
-              <button v-if="reservation.status === 'RESERVED'" @click="operate('cancel', reservation)">取消</button>
-              <button v-if="reservation.status === 'ACTIVE'" @click="operate('leave', reservation)">临时离开</button>
-              <button v-if="reservation.status === 'TEMP_LEAVE'" @click="operate('return', reservation)">我已返回</button>
-              <button v-if="['ACTIVE', 'TEMP_LEAVE'].includes(reservation.status)" @click="operate('end', reservation)">结束使用</button>
-              <span v-if="!['RESERVED', 'ACTIVE', 'TEMP_LEAVE'].includes(reservation.status)">—</span>
+              <button
+                v-if="reservation.status === 'RESERVED'"
+                @click="operate('checkin', reservation)"
+              >
+                签到
+              </button>
+              <button
+                v-if="reservation.status === 'RESERVED'"
+                @click="operate('cancel', reservation)"
+              >
+                取消
+              </button>
+              <button v-if="reservation.status === 'ACTIVE'" @click="operate('leave', reservation)">
+                临时离开
+              </button>
+              <button
+                v-if="reservation.status === 'TEMP_LEAVE'"
+                @click="operate('return', reservation)"
+              >
+                我已返回
+              </button>
+              <button
+                v-if="['ACTIVE', 'TEMP_LEAVE'].includes(reservation.status)"
+                @click="operate('end', reservation)"
+              >
+                结束使用
+              </button>
+              <span v-if="!['RESERVED', 'ACTIVE', 'TEMP_LEAVE'].includes(reservation.status)"
+                >—</span
+              >
             </td>
           </tr>
         </tbody>
@@ -208,11 +245,36 @@ onMounted(loadWorkspace)
 </template>
 
 <style scoped>
-.panel { margin: 1rem 0; padding: 1rem; border: 1px solid #d9e2dc; border-radius: 0.75rem; }
-.booking-form { display: flex; flex-wrap: wrap; align-items: end; gap: 0.75rem; }
-.booking-form label { display: grid; gap: 0.3rem; }
-.section-title { display: flex; align-items: center; justify-content: space-between; }
-.table-scroll { overflow-x: auto; }
-.actions { display: flex; flex-wrap: wrap; gap: 0.35rem; }
-.hint { color: #53635b; }
+.panel {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid #d9e2dc;
+  border-radius: 0.75rem;
+}
+.booking-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem;
+}
+.booking-form label {
+  display: grid;
+  gap: 0.3rem;
+}
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.table-scroll {
+  overflow-x: auto;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.hint {
+  color: #53635b;
+}
 </style>

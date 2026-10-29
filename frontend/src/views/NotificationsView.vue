@@ -55,11 +55,17 @@ onMounted(loadNotifications)
 
 <template>
   <h2>站内通知</h2>
-  <label class="filter"><input v-model="unreadOnly" type="checkbox" @change="loadNotifications" /> 只看未读</label>
+  <label class="filter"
+    ><input v-model="unreadOnly" type="checkbox" @change="loadNotifications" /> 只看未读</label
+  >
   <p v-if="error" class="error">{{ error }}</p>
   <p v-if="!notifications.length">暂无通知。</p>
   <ol class="inbox">
-    <li v-for="notification in notifications" :key="notification.id" :class="{ unread: !notification.is_read }">
+    <li
+      v-for="notification in notifications"
+      :key="notification.id"
+      :class="{ unread: !notification.is_read }"
+    >
       <div class="notice-heading">
         <strong>{{ typeLabel(notification.type) }}</strong>
         <time>{{ formatTime(notification.sent_at) }}</time>
@@ -72,10 +78,34 @@ onMounted(loadNotifications)
 </template>
 
 <style scoped>
-.filter { display: inline-flex; align-items: center; gap: 0.4rem; }
-.inbox { display: grid; gap: 0.75rem; padding: 0; list-style: none; }
-.inbox li { padding: 1rem; border: 1px solid #d9e2dc; border-radius: 0.75rem; }
-.inbox li.unread { border-left: 4px solid #28785d; background: #f4faf6; }
-.notice-heading { display: flex; justify-content: space-between; gap: 1rem; }
-.notice-heading time, .read-status { color: #66736d; font-size: 0.9rem; }
+.filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.inbox {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+.inbox li {
+  padding: 1rem;
+  border: 1px solid #d9e2dc;
+  border-radius: 0.75rem;
+}
+.inbox li.unread {
+  border-left: 4px solid #28785d;
+  background: #f4faf6;
+}
+.notice-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.notice-heading time,
+.read-status {
+  color: #66736d;
+  font-size: 0.9rem;
+}
 </style>

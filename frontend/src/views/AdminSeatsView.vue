@@ -7,7 +7,9 @@ const seats = ref([])
 const roomId = ref('')
 const error = ref('')
 const notice = ref('')
-const csvText = ref('code,zone_type,has_power,by_window,accessible,status\nA01,quiet,true,false,false,available')
+const csvText = ref(
+  'code,zone_type,has_power,by_window,accessible,status\nA01,quiet,true,false,false,available',
+)
 const seatForm = reactive({
   id: null,
   code: '',
@@ -76,7 +78,11 @@ async function saveSeat() {
 
 /** 修改座位状态，并在维护操作前确认预约取消后果。 */
 async function changeStatus(seat, status) {
-  if (status === 'maintenance' && !window.confirm('进入维护后，所有未开始预约将被取消且不补偿。继续？')) return
+  if (
+    status === 'maintenance' &&
+    !window.confirm('进入维护后，所有未开始预约将被取消且不补偿。继续？')
+  )
+    return
   error.value = ''
   notice.value = ''
   try {
@@ -87,7 +93,10 @@ async function changeStatus(seat, status) {
         reason: status === 'maintenance' ? '管理员将座位设为维护中' : '管理员恢复座位状态',
       },
     })
-    notice.value = status === 'maintenance' ? `座位已维护，取消 ${result.cancelled_reservations ?? 0} 条待开始预约。` : '座位状态已更新。'
+    notice.value =
+      status === 'maintenance'
+        ? `座位已维护，取消 ${result.cancelled_reservations ?? 0} 条待开始预约。`
+        : '座位状态已更新。'
     await loadSeats()
   } catch (cause) {
     error.value = cause.message
@@ -150,20 +159,36 @@ onMounted(refresh)
   <h2>座位布局与维护</h2>
   <p v-if="error" class="error">{{ error }}</p>
   <p v-if="notice" class="ok">{{ notice }}</p>
-  <label>自习室
+  <label
+    >自习室
     <select v-model="roomId" @change="loadSeats">
       <option v-for="room in rooms" :key="room.id" :value="String(room.id)">{{ room.name }}</option>
     </select>
   </label>
   <div class="table-scroll">
     <table>
-      <thead><tr><th>座位</th><th>区域</th><th>靠窗</th><th>电源</th><th>状态</th><th>维护操作</th></tr></thead>
+      <thead>
+        <tr>
+          <th>座位</th>
+          <th>区域</th>
+          <th>靠窗</th>
+          <th>电源</th>
+          <th>状态</th>
+          <th>维护操作</th>
+        </tr>
+      </thead>
       <tbody>
         <tr v-for="seat in seats" :key="seat.id">
-          <td>{{ seat.code }}</td><td>{{ seat.zone_type }}</td><td>{{ seat.by_window ? '是' : '否' }}</td><td>{{ seat.has_power ? '是' : '否' }}</td><td>{{ statusLabel(seat.status) }}</td>
+          <td>{{ seat.code }}</td>
+          <td>{{ seat.zone_type }}</td>
+          <td>{{ seat.by_window ? '是' : '否' }}</td>
+          <td>{{ seat.has_power ? '是' : '否' }}</td>
+          <td>{{ statusLabel(seat.status) }}</td>
           <td class="actions">
             <button @click="editSeat(seat)">编辑</button>
-            <button v-if="seat.status !== 'maintenance'" @click="changeStatus(seat, 'maintenance')">维护并取消待开始预约</button>
+            <button v-if="seat.status !== 'maintenance'" @click="changeStatus(seat, 'maintenance')">
+              维护并取消待开始预约
+            </button>
             <button v-else @click="changeStatus(seat, 'available')">恢复可用</button>
             <button @click="deleteSeat(seat)">删除</button>
           </td>
@@ -176,7 +201,14 @@ onMounted(refresh)
     <h3>{{ seatForm.id ? '修改座位' : '新增座位' }}</h3>
     <form class="seat-form" @submit.prevent="saveSeat">
       <label>编号 <input v-model="seatForm.code" maxlength="32" required /></label>
-      <label>区域 <select v-model="seatForm.zone_type"><option value="quiet">静音区</option><option value="discussion">讨论区</option><option value="exam_prep">考研区</option></select></label>
+      <label
+        >区域
+        <select v-model="seatForm.zone_type">
+          <option value="quiet">静音区</option>
+          <option value="discussion">讨论区</option>
+          <option value="exam_prep">考研区</option>
+        </select></label
+      >
       <label><input v-model="seatForm.by_window" type="checkbox" /> 靠窗</label>
       <label><input v-model="seatForm.has_power" type="checkbox" /> 有电源</label>
       <label><input v-model="seatForm.accessible" type="checkbox" /> 无障碍</label>
@@ -186,7 +218,10 @@ onMounted(refresh)
 
   <section class="panel">
     <h3>批量导入座位配置（CSV）</h3>
-    <p>列名：code, zone_type, has_power, by_window, accessible, status；状态变化为维护时会依规则取消未开始预约。</p>
+    <p>
+      列名：code, zone_type, has_power, by_window, accessible,
+      status；状态变化为维护时会依规则取消未开始预约。
+    </p>
     <input type="file" accept=".csv,text/csv" @change="readCsvFile" />
     <textarea v-model="csvText" rows="7" spellcheck="false" />
     <button @click="importCsv">校验并导入</button>
@@ -194,10 +229,34 @@ onMounted(refresh)
 </template>
 
 <style scoped>
-.panel { margin: 1rem 0; padding: 1rem; border: 1px solid #d9e2dc; border-radius: 0.75rem; }
-.seat-form { display: flex; flex-wrap: wrap; align-items: end; gap: 0.8rem; }
-.seat-form label { display: grid; gap: 0.3rem; }
-.table-scroll { overflow-x: auto; }
-.actions { display: flex; flex-wrap: wrap; gap: 0.3rem; }
-textarea { display: block; width: min(100%, 760px); margin: 0.75rem 0; font-family: monospace; }
+.panel {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid #d9e2dc;
+  border-radius: 0.75rem;
+}
+.seat-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.8rem;
+}
+.seat-form label {
+  display: grid;
+  gap: 0.3rem;
+}
+.table-scroll {
+  overflow-x: auto;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+textarea {
+  display: block;
+  width: min(100%, 760px);
+  margin: 0.75rem 0;
+  font-family: monospace;
+}
 </style>

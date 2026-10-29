@@ -79,31 +79,99 @@ onMounted(loadReport)
   <p v-if="error" class="error">{{ error }}</p>
   <template v-if="report">
     <section class="metrics">
-      <article><strong>{{ utilizationPercent() }}</strong><span>座位利用率</span></article>
-      <article><strong>{{ report.utilization.booked_hours }}</strong><span>已预约小时</span></article>
-      <article><strong>{{ report.utilization.available_hours }}</strong><span>计划开放座位小时</span></article>
-      <article><strong>{{ report.reservation_count }}</strong><span>预约记录</span></article>
+      <article>
+        <strong>{{ utilizationPercent() }}</strong
+        ><span>座位利用率</span>
+      </article>
+      <article>
+        <strong>{{ report.utilization.booked_hours }}</strong
+        ><span>已预约小时</span>
+      </article>
+      <article>
+        <strong>{{ report.utilization.available_hours }}</strong
+        ><span>计划开放座位小时</span>
+      </article>
+      <article>
+        <strong>{{ report.reservation_count }}</strong
+        ><span>预约记录</span>
+      </article>
     </section>
     <p class="hint">{{ report.definition.utilization }}</p>
     <section class="panel">
       <h3>预约高峰</h3>
       <p v-if="!report.booking_peaks.length">该期间没有预约。</p>
-      <table v-else><thead><tr><th>日期</th><th>开始小时</th><th>预约数</th></tr></thead><tbody><tr v-for="row in report.booking_peaks.slice(0, 20)" :key="`${row.day}-${row.hour}`"><td>{{ row.day }}</td><td>{{ String(row.hour).padStart(2, '0') }}:00</td><td>{{ row.reservations }}</td></tr></tbody></table>
+      <table v-else>
+        <thead>
+          <tr>
+            <th>日期</th>
+            <th>开始小时</th>
+            <th>预约数</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row in report.booking_peaks.slice(0, 20)" :key="`${row.day}-${row.hour}`">
+            <td>{{ row.day }}</td>
+            <td>{{ String(row.hour).padStart(2, '0') }}:00</td>
+            <td>{{ row.reservations }}</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
     <section class="panel">
       <h3>违规趋势</h3>
       <p v-if="!report.violation_trends.length">该期间没有违规记录。</p>
-      <table v-else><thead><tr><th>日期</th><th>类型</th><th>记录数</th></tr></thead><tbody><tr v-for="row in report.violation_trends" :key="`${row.day}-${row.type}`"><td>{{ row.day }}</td><td>{{ row.type }}</td><td>{{ row.count }}</td></tr></tbody></table>
+      <table v-else>
+        <thead>
+          <tr>
+            <th>日期</th>
+            <th>类型</th>
+            <th>记录数</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row in report.violation_trends" :key="`${row.day}-${row.type}`">
+            <td>{{ row.day }}</td>
+            <td>{{ row.type }}</td>
+            <td>{{ row.count }}</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
   </template>
 </template>
 
 <style scoped>
-.filters { display: flex; flex-wrap: wrap; align-items: end; gap: 0.75rem; }
-.filters label { display: grid; gap: 0.3rem; }
-.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin: 1rem 0; }
-.metrics article, .panel { padding: 1rem; border: 1px solid #d9e2dc; border-radius: 0.75rem; }
-.metrics article { display: grid; gap: 0.4rem; }
-.metrics strong { font-size: 1.5rem; color: #285c4d; }
-.hint { color: #53635b; }
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem;
+}
+.filters label {
+  display: grid;
+  gap: 0.3rem;
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.metrics article,
+.panel {
+  padding: 1rem;
+  border: 1px solid #d9e2dc;
+  border-radius: 0.75rem;
+}
+.metrics article {
+  display: grid;
+  gap: 0.4rem;
+}
+.metrics strong {
+  font-size: 1.5rem;
+  color: #285c4d;
+}
+.hint {
+  color: #53635b;
+}
 </style>

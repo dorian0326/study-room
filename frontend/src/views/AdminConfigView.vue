@@ -219,7 +219,13 @@ onMounted(loadInitialConfig)
       <label v-for="(label, key) in SETTING_LABELS" :key="key">
         {{ label }}
         <input v-if="key.startsWith('opening_')" v-model="settings[key]" type="time" step="60" />
-        <input v-else v-model.number="settings[key]" type="number" min="0" :disabled="key === 'temp_leave_minutes'" />
+        <input
+          v-else
+          v-model.number="settings[key]"
+          type="number"
+          min="0"
+          :disabled="key === 'temp_leave_minutes'"
+        />
       </label>
       <button>保存参数</button>
     </form>

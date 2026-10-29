@@ -21,7 +21,11 @@ export const routes = [
   { path: '/notifications', component: NotificationsView, meta: { auth: true } },
   { path: '/admin/seats', component: AdminSeatsView, meta: { auth: true, perm: 'room:manage' } },
   { path: '/admin/reports', component: AdminReportsView, meta: { auth: true, perm: 'stats:read' } },
-  { path: '/admin/appeals', component: AdminAppealsView, meta: { auth: true, perm: 'appeal:manage' } },
+  {
+    path: '/admin/appeals',
+    component: AdminAppealsView,
+    meta: { auth: true, perm: 'appeal:manage' },
+  },
   { path: '/login', component: LoginView },
   { path: '/register', component: RegisterView },
   { path: '/reset-password', component: ResetPasswordView },

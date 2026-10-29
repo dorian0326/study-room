@@ -44,9 +44,7 @@ async function submitGateAppeal() {
   error.value = ''
   notice.value = ''
   try {
-    const reservationId = manual.value.reservation_id
-      ? Number(manual.value.reservation_id)
-      : null
+    const reservationId = manual.value.reservation_id ? Number(manual.value.reservation_id) : null
     await api('/ops/entry-exit/manual-appeals', {
       method: 'POST',
       body: {
@@ -95,36 +93,80 @@ onMounted(loadCases)
     <h3>我的违规记录</h3>
     <p v-if="!violations.length">暂无违规记录。</p>
     <table v-if="violations.length">
-      <thead><tr><th>时间</th><th>类型</th><th>窗口次数</th><th>处理</th><th>操作</th></tr></thead>
+      <thead>
+        <tr>
+          <th>时间</th>
+          <th>类型</th>
+          <th>窗口次数</th>
+          <th>处理</th>
+          <th>操作</th>
+        </tr>
+      </thead>
       <tbody>
         <tr v-for="violation in violations" :key="violation.id">
           <td>{{ formatTime(violation.occurred_at) }}</td>
           <td>{{ violation.violation_type }}</td>
           <td>{{ violation.period_seq }}</td>
           <td>{{ stateLabel(violation.result) }} · {{ stateLabel(violation.appeal_status) }}</td>
-          <td><button v-if="violation.appeal_status !== 'pending'" @click="appealViolation(violation)">提交申诉</button></td>
+          <td>
+            <button
+              v-if="violation.appeal_status !== 'pending'"
+              @click="appealViolation(violation)"
+            >
+              提交申诉
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
   </section>
   <section class="panel">
     <h3>申诉进度</h3>
-    <ul><li v-for="appeal in appeals" :key="appeal.id">记录 #{{ appeal.violation_id }}：{{ stateLabel(appeal.result ?? 'pending') }}<span v-if="appeal.review_comment"> — {{ appeal.review_comment }}</span></li></ul>
+    <ul>
+      <li v-for="appeal in appeals" :key="appeal.id">
+        记录 #{{ appeal.violation_id }}：{{ stateLabel(appeal.result ?? 'pending')
+        }}<span v-if="appeal.review_comment"> — {{ appeal.review_comment }}</span>
+      </li>
+    </ul>
   </section>
   <section class="panel">
     <h3>门禁不可用时的人工核验</h3>
     <form class="manual-form" @submit.prevent="submitGateAppeal">
-      <label>类型 <select v-model="manual.record_type"><option value="entry">入馆</option><option value="exit">出馆</option></select></label>
-      <label>关联预约编号（可选）<input v-model="manual.reservation_id" type="number" min="1" /></label>
-      <label>情况说明 <textarea v-model="manual.reason" required minlength="5" maxlength="4000" /></label>
+      <label
+        >类型
+        <select v-model="manual.record_type">
+          <option value="entry">入馆</option>
+          <option value="exit">出馆</option>
+        </select></label
+      >
+      <label
+        >关联预约编号（可选）<input v-model="manual.reservation_id" type="number" min="1"
+      /></label>
+      <label
+        >情况说明 <textarea v-model="manual.reason" required minlength="5" maxlength="4000" />
+      </label>
       <button>提交人工核验</button>
     </form>
   </section>
 </template>
 
 <style scoped>
-.panel { margin: 1rem 0; padding: 1rem; border: 1px solid #d9e2dc; border-radius: 0.75rem; }
-.manual-form { display: grid; gap: 0.75rem; max-width: 640px; }
-.manual-form label { display: grid; gap: 0.3rem; }
-textarea { min-height: 6rem; }
+.panel {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid #d9e2dc;
+  border-radius: 0.75rem;
+}
+.manual-form {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 640px;
+}
+.manual-form label {
+  display: grid;
+  gap: 0.3rem;
+}
+textarea {
+  min-height: 6rem;
+}
 </style>

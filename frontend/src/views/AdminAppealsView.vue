@@ -62,6 +62,14 @@ onMounted(loadAppeals)
 </template>
 
 <style scoped>
-.panel { margin: 1rem 0; padding: 1rem; border: 1px solid #d9e2dc; border-radius: 0.75rem; }
-.actions { display: flex; gap: 0.5rem; }
+.panel {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid #d9e2dc;
+  border-radius: 0.75rem;
+}
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
 </style>
