@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     # 管理员签发的密码重置码有效期（分钟）
     password_reset_ttl_minutes: int = 30
 
+    # 门禁同步采用脱敏 keyed hash；部署时必须通过 STUDYROOM_GATE_HMAC_SECRET 覆盖开发值。
+    gate_hmac_secret: str = "local-development-only-change-this-secret"
+
     # ---- 日志（#8）----
     # 操作日志、登录日志保留天数（BR-105：保留一个学期，按 180 天计）
     log_retention_days: int = 180
@@ -37,4 +40,5 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
+    """读取并缓存由环境变量及后端 .env 文件覆盖的运行配置。"""
     return Settings()
