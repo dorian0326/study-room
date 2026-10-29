@@ -22,7 +22,7 @@ class BusinessSettings(BaseModel):
     late_cancel_minutes: int = Field(
         15, ge=0, le=120, description="开始前多久内取消记违规（P-017）"
     )
-    temp_leave_minutes: int = Field(30, ge=5, le=240, description="临时离开时长（P-021）")
+    temp_leave_minutes: int = Field(30, ge=30, le=30, description="临时离开时长固定 30 分钟")
     missed_checkout_merge: int = Field(
         2, ge=1, le=10, description="几次未结束使用合并为 1 次警告（P-009）"
     )

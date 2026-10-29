@@ -207,7 +207,8 @@ def test_overlap_person_overlap_adjacent_and_utc_conversion(client, actors, seat
 
 def test_idempotency_key_required_and_scoped_to_payload_and_user(client, actors, seats, api_db):
     body = payload(seats.a)
-    assert client.post("/api/reservations", headers=actors.a, json=body).status_code == 422
+    # 幂等键可选：无键也可创建；有键时同键同载荷重放，不同载荷/用户冲突。
+    assert client.post("/api/reservations", headers=actors.a, json=payload(seats.c)).status_code == 201
     key = uuid4().hex
     first = reserve(client, actors.a, seats.a, key=key)
     replay = reserve(client, actors.a, seats.a, key=key)

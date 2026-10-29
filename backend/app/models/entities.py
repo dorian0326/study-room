@@ -309,6 +309,8 @@ class Notification(Base):
     sent_at: Mapped[datetime] = mapped_column(LocalDateTime)
     channel: Mapped[str] = mapped_column(String(16), default="in_app")
     is_read: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    # 用业务事件键去重，确保后台轮询重复执行不会重复发送同一条站内通知。
+    idempotency_key: Mapped[str | None] = mapped_column(String(128), unique=True)
 
     __table_args__ = (
         CheckConstraint("channel = 'in_app'", name="in_app_only"),
@@ -351,5 +353,13 @@ class EntryExitRecord(Base):
     )
     received_at: Mapped[datetime] = mapped_column(LocalDateTime)
     expires_at: Mapped[datetime] = mapped_column(LocalDateTime)
+    sync_status: Mapped[str] = mapped_column(
+        String(16), default="pending", server_default=text("'pending'"), nullable=False
+    )
+    sync_delay_seconds: Mapped[int | None] = mapped_column(Integer)
+    reservation_id: Mapped[int | None] = mapped_column(
+        ForeignKey("reservations.id", ondelete="SET NULL")
+    )
+    manual_note: Mapped[str | None] = mapped_column(Text)
 
     __table_args__ = (UniqueConstraint("source_system", "external_id"),)

@@ -1,12 +1,18 @@
-"""可选楼层与创建预约请求指纹（#10、#13）。已有数据保持不变。"""
+"""可选楼层与创建预约请求指纹（#10、#13）。已有数据保持不变。
+
+修订编号：0007
+依赖编号：0006
+"""
+
+from collections.abc import Sequence
 
 import sqlalchemy as sa
 from alembic import op
 
-revision = "0006"
-down_revision = "0005"
-branch_labels = None
-depends_on = None
+revision: str = "0007"
+down_revision: str | None = "0006"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
