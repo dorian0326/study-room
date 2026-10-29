@@ -89,11 +89,6 @@ onMounted(loadNotifications)
   padding: 0;
   list-style: none;
 }
-.inbox li {
-  padding: 1rem;
-  border: 1px solid #d9e2dc;
-  border-radius: 0.75rem;
-}
 .inbox li.unread {
   border-left: 4px solid #28785d;
   background: #f4faf6;

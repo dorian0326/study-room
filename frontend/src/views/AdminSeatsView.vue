@@ -229,25 +229,6 @@ onMounted(refresh)
 </template>
 
 <style scoped>
-.panel {
-  margin: 1rem 0;
-  padding: 1rem;
-  border: 1px solid #d9e2dc;
-  border-radius: 0.75rem;
-}
-.seat-form {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: end;
-  gap: 0.8rem;
-}
-.seat-form label {
-  display: grid;
-  gap: 0.3rem;
-}
-.table-scroll {
-  overflow-x: auto;
-}
 .actions {
   display: flex;
   flex-wrap: wrap;

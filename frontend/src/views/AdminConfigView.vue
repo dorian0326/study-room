@@ -1,4 +1,5 @@
 <script setup>
+import StatusBadge from '../components/StatusBadge.vue'
 import { onMounted, reactive, ref } from 'vue'
 import { api } from '../api/client.js'
 
@@ -160,78 +161,119 @@ onMounted(loadInitialConfig)
 </script>
 
 <template>
-  <h2>系统配置</h2>
+  <header class="page-header">
+    <div>
+      <h2>系统配置</h2>
+      <p>管理自习室、开放时间、节假日与业务参数。</p>
+    </div>
+  </header>
   <p v-if="error" class="error">{{ error }}</p>
   <p v-if="notice" class="ok">{{ notice }}</p>
 
-  <section>
+  <section class="panel">
     <h3>自习室</h3>
-    <table>
-      <tr v-for="r in rooms" :key="r.id">
-        <td>{{ r.name }}</td>
-        <td>{{ r.location }}</td>
-        <td>{{ r.floor || '—' }}</td>
-        <td>容量 {{ r.capacity }}</td>
-        <td>{{ r.status === 'open' ? '开放' : '关闭' }}</td>
-        <td>
-          <button @click="editRoom(r)">编辑</button>
-          <button @click="toggleRoom(r)">{{ r.status === 'open' ? '关闭' : '开放' }}</button>
-          <button @click="openSchedules(r)">开放时间</button>
-          <button @click="deleteRoom(r)">删除</button>
-        </td>
-      </tr>
-    </table>
-    <form @submit.prevent="saveRoom">
-      <input v-model="roomForm.name" placeholder="名称" required />
-      <input v-model="roomForm.location" placeholder="位置" />
-      <input v-model="roomForm.floor" placeholder="楼层" />
-      <input v-model.number="roomForm.capacity" type="number" min="0" placeholder="容量" />
-      <input v-model="roomForm.facilities" placeholder="设施" />
-      <button>{{ roomForm.id ? '保存修改' : '新增自习室' }}</button>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>名称</th>
+            <th>位置</th>
+            <th>楼层</th>
+            <th>容量</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="r in rooms" :key="r.id">
+            <td>
+              <strong>{{ r.name }}</strong>
+            </td>
+            <td>{{ r.location }}</td>
+            <td>{{ r.floor || '—' }}</td>
+            <td>{{ r.capacity }} 座</td>
+            <td><StatusBadge :status="r.status === 'open' ? 'OPEN' : 'CLOSED'" /></td>
+            <td class="actions">
+              <button @click="editRoom(r)">编辑</button>
+              <button @click="toggleRoom(r)">{{ r.status === 'open' ? '关闭' : '开放' }}</button>
+              <button @click="openSchedules(r)">开放时间</button>
+              <button class="danger" @click="deleteRoom(r)">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <form class="form-grid sub-form" @submit.prevent="saveRoom">
+      <h4>{{ roomForm.id ? '编辑自习室' : '新增自习室' }}</h4>
+      <label>名称<input v-model="roomForm.name" placeholder="如 图书馆 302" required /></label>
+      <label>位置<input v-model="roomForm.location" placeholder="楼宇" /></label>
+      <label>楼层<input v-model="roomForm.floor" placeholder="如 3F" /></label>
+      <label>
+        容量
+        <input v-model.number="roomForm.capacity" type="number" min="0" placeholder="容量" />
+      </label>
+      <label>设施<input v-model="roomForm.facilities" placeholder="逗号分隔" /></label>
+      <button class="primary">{{ roomForm.id ? '保存修改' : '新增自习室' }}</button>
     </form>
   </section>
 
-  <section v-if="current">
-    <h3>{{ current.name }} 的开放时间（06:00–23:30 内，不跨零点）</h3>
-    <ul>
+  <section v-if="current" class="panel">
+    <h3>{{ current.name }} 的开放时间</h3>
+    <p class="hint">06:00–23:30 内，不跨零点。</p>
+    <ul class="list">
       <li v-for="s in schedules" :key="s.id">
-        {{ DAY_TYPES[s.day_type] }} {{ s.open_time.slice(0, 5) }}–{{ s.close_time.slice(0, 5) }}
-        <span v-if="s.effective_from">（{{ s.effective_from }} ~ {{ s.effective_to }}）</span>
-        <button @click="deleteSchedule(s)">删除</button>
+        <span>
+          <span class="tag">{{ DAY_TYPES[s.day_type] }}</span>
+          {{ s.open_time.slice(0, 5) }}–{{ s.close_time.slice(0, 5) }}
+          <span v-if="s.effective_from" class="muted">
+            （{{ s.effective_from }} ~ {{ s.effective_to }}）
+          </span>
+        </span>
+        <button class="danger small" @click="deleteSchedule(s)">删除</button>
       </li>
+      <li v-if="!schedules.length" class="muted">暂无开放时段</li>
     </ul>
-    <form @submit.prevent="addSchedule">
-      <select v-model="schForm.day_type">
-        <option v-for="(label, k) in DAY_TYPES" :key="k" :value="k">{{ label }}</option>
-      </select>
-      <input v-model="schForm.open_time" type="time" />
-      <input v-model="schForm.close_time" type="time" />
-      <button>添加</button>
+    <form class="form-grid" @submit.prevent="addSchedule">
+      <label>
+        日期类型
+        <select v-model="schForm.day_type">
+          <option v-for="(label, k) in DAY_TYPES" :key="k" :value="k">{{ label }}</option>
+        </select>
+      </label>
+      <label>开始<input v-model="schForm.open_time" type="time" /></label>
+      <label>结束<input v-model="schForm.close_time" type="time" /></label>
+      <button class="primary">添加时段</button>
     </form>
   </section>
 
-  <section>
+  <section class="panel">
     <h3>节假日 / 考试周</h3>
-    <ul>
+    <ul v-if="calendar.length" class="list">
       <li v-for="d in calendar" :key="d.day">
-        {{ d.day }} {{ DAY_TYPES[d.day_type] }} {{ d.note }}
-        <button @click="deleteDay(d)">删除</button>
+        <span>
+          {{ d.day }} <span class="tag tone-warn">{{ DAY_TYPES[d.day_type] }}</span>
+          <span class="muted">{{ d.note }}</span>
+        </span>
+        <button class="danger small" @click="deleteDay(d)">删除</button>
       </li>
     </ul>
-    <form @submit.prevent="saveDay">
-      <input v-model="dayForm.day" type="date" required />
-      <select v-model="dayForm.day_type">
-        <option value="holiday">节假日</option>
-        <option value="exam_week">考试周</option>
-      </select>
-      <input v-model="dayForm.note" placeholder="备注" />
-      <button>保存</button>
+    <form class="form-grid" @submit.prevent="saveDay">
+      <label>日期<input v-model="dayForm.day" type="date" required /></label>
+      <label>
+        类型
+        <select v-model="dayForm.day_type">
+          <option value="holiday">节假日</option>
+          <option value="exam_week">考试周</option>
+        </select>
+      </label>
+      <label>备注<input v-model="dayForm.note" placeholder="备注" /></label>
+      <button class="primary">保存</button>
     </form>
   </section>
 
-  <section v-if="settings">
+  <section v-if="settings" class="panel">
     <h3>业务参数</h3>
-    <form class="card" @submit.prevent="saveSettings">
+    <form class="form-grid settings" @submit.prevent="saveSettings">
       <label v-for="(label, key) in SETTING_LABELS" :key="key">
         {{ label }}
         <input v-if="key.startsWith('opening_')" v-model="settings[key]" type="time" step="60" />
@@ -243,7 +285,37 @@ onMounted(loadInitialConfig)
           :disabled="key === 'temp_leave_minutes'"
         />
       </label>
-      <button>保存参数</button>
+      <div class="form-end"><button class="primary">保存参数</button></div>
     </form>
   </section>
 </template>
+
+<style scoped>
+.sub-form {
+  padding-top: 16px;
+  border-top: 1px dashed var(--line-strong);
+}
+.sub-form h4,
+.form-end {
+  grid-column: 1 / -1;
+}
+.settings {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+</style>

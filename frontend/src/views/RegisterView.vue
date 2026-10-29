@@ -24,20 +24,43 @@ async function submit() {
 </script>
 
 <template>
-  <h2>注册</h2>
-  <form class="card" @submit.prevent="submit">
-    <input v-model="form.student_no" placeholder="学号" required />
-    <input v-model="form.name" placeholder="姓名" required />
-    <input
-      v-model="form.password"
-      type="password"
-      placeholder="密码（至少 8 位，含字母和数字）"
-      autocomplete="new-password"
-      required
-    />
-    <input v-model="form.department" placeholder="院系（可选）" />
-    <input v-model="form.contact" placeholder="联系方式（可选）" />
-    <button>注册</button>
-    <p v-if="error" class="error">{{ error }}</p>
-  </form>
+  <div class="auth-wrap">
+    <section class="auth-card">
+      <header>
+        <h2>注册账号</h2>
+        <p class="hint">使用学号注册，注册后即可预约座位</p>
+      </header>
+      <form @submit.prevent="submit">
+        <label class="field">
+          学号
+          <input v-model="form.student_no" placeholder="学号" required />
+        </label>
+        <label class="field">
+          姓名
+          <input v-model="form.name" placeholder="姓名" required />
+        </label>
+        <label class="field">
+          密码
+          <input
+            v-model="form.password"
+            type="password"
+            placeholder="至少 8 位，含字母和数字"
+            autocomplete="new-password"
+            required
+          />
+        </label>
+        <label class="field">
+          院系（可选）
+          <input v-model="form.department" placeholder="院系" />
+        </label>
+        <label class="field">
+          联系方式（可选）
+          <input v-model="form.contact" placeholder="手机或邮箱" />
+        </label>
+        <p v-if="error" class="error">{{ error }}</p>
+        <button class="primary">注册</button>
+      </form>
+      <footer>已有账号？<RouterLink to="/login">去登录</RouterLink></footer>
+    </section>
+  </div>
 </template>

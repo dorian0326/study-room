@@ -2,30 +2,9 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../api/client.js'
+import StatusBadge from '../components/StatusBadge.vue'
 
 const router = useRouter()
-
-const STATUS = {
-  RESERVED: '已预约',
-  ACTIVE: '使用中',
-  TEMP_LEAVE: '暂离',
-  COMPLETED: '已完成',
-  CANCELLED: '已取消',
-  ADMIN_CANCELLED: '管理员取消',
-  EXPIRED: '已过期',
-  NO_SHOW: '爽约',
-  available: '空闲',
-  AVAILABLE: '空闲',
-  reserved: '已预约',
-  in_use: '使用中',
-  IN_USE: '使用中',
-  maintenance: '维护中',
-  MAINTENANCE: '维护中',
-  disabled: '停用',
-  DISABLED: '停用',
-  closed: '关闭',
-  CLOSED: '关闭',
-}
 
 const ZONE = { quiet: '静音区', discussion: '讨论区', open: '开放区', exam_prep: '考研区' }
 
@@ -139,10 +118,6 @@ function facilityText(seat) {
   if (seat.by_window) bits.push('靠窗')
   if (seat.accessible) bits.push('无障碍')
   return bits.length ? bits.join('·') : '—'
-}
-
-function occupancyLabel(seat) {
-  return STATUS[seat.status] || seat.status || '—'
 }
 
 async function guard(fn, ok) {
@@ -325,18 +300,20 @@ onMounted(async () => {
 </script>
 
 <template>
-  <h2>自习室预约</h2>
-  <p class="hint">浏览自习室与座位、创建/改约/取消，以及进入扫码签到。</p>
+  <header class="page-header">
+    <div>
+      <h2>自习室预约</h2>
+      <p>浏览自习室与座位、创建/改约/取消，以及进入扫码签到。</p>
+    </div>
+    <button type="button" @click="refreshAll">刷新数据</button>
+  </header>
   <p v-if="error" class="error">{{ error }}</p>
   <p v-if="notice" class="ok">{{ notice }}</p>
 
   <section class="panel">
     <div class="row between">
       <h3>自习室目录</h3>
-      <button type="button" @click="refreshAll">刷新</button>
-    </div>
-    <div class="filters">
-      <label>
+      <label class="inline-field">
         日期
         <input v-model="search.date" type="date" @change="refreshAll" />
       </label>
@@ -345,15 +322,31 @@ onMounted(async () => {
       <article v-for="room in roomOptions" :key="room.id" class="card">
         <header>
           <strong>{{ room.name }}</strong>
-          <span class="tag">{{ room.status === 'open' ? '开放' : '关闭' }}</span>
+          <StatusBadge :status="room.status === 'open' ? 'OPEN' : 'CLOSED'" />
         </header>
-        <p>楼层：{{ room.floor || '—' }} · 容量 {{ room.capacity }}</p>
-        <p>位置：{{ room.location || '—' }}</p>
-        <p>开放：{{ hoursText(room) }}</p>
-        <p v-if="room.facilities" class="muted">设施：{{ room.facilities }}</p>
-        <button type="button" @click="pickRoomSeats(room.id)">查看座位</button>
+        <ul class="meta">
+          <li><span>位置</span>{{ room.location || '—' }} · {{ room.floor || '—' }}</li>
+          <li><span>容量</span>{{ room.capacity }} 座</li>
+          <li><span>开放</span>{{ hoursText(room) }}</li>
+        </ul>
+        <div v-if="room.facilities" class="chips">
+          <span
+            v-for="item in String(room.facilities).split(/[,，、]\s*/)"
+            :key="item"
+            class="chip"
+          >
+            {{ item }}
+          </span>
+        </div>
+        <button
+          type="button"
+          :class="{ primary: search.room_id === String(room.id) }"
+          @click="pickRoomSeats(room.id)"
+        >
+          查看座位
+        </button>
       </article>
-      <p v-if="!rooms.length" class="hint">暂无自习室。</p>
+      <div v-if="!rooms.length" class="empty">暂无自习室。</div>
     </div>
   </section>
 
@@ -387,46 +380,63 @@ onMounted(async () => {
           <option value="exam_prep">考研区</option>
         </select>
       </label>
-      <label class="check"><input v-model="search.available_only" type="checkbox" />仅空闲</label>
-      <label class="check"><input v-model="search.has_power" type="checkbox" />有电源</label>
-      <label class="check"><input v-model="search.by_window" type="checkbox" />靠窗</label>
-      <label class="check"><input v-model="search.accessible" type="checkbox" />无障碍</label>
-      <button type="button" class="primary" @click="guard(loadSeats)">搜索</button>
     </div>
-    <table>
-      <thead>
-        <tr>
-          <th>座位</th>
-          <th>自习室</th>
-          <th>楼层</th>
-          <th>区域</th>
-          <th>设施</th>
-          <th>占用状态</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="seat in seats" :key="seat.id">
-          <td>{{ seat.code }}</td>
-          <td>{{ seat.room_name }}</td>
-          <td>{{ seat.floor || '—' }}</td>
-          <td>{{ ZONE[seat.zone_type] || seat.zone_type }}</td>
-          <td>{{ facilityText(seat) }}</td>
-          <td>{{ occupancyLabel(seat) }}</td>
-          <td class="actions">
-            <button type="button" @click="openSeat(seat.id)">详情</button>
-            <button
-              type="button"
-              :disabled="!['available', 'AVAILABLE'].includes(seat.status)"
-              @click="useSeatForBooking(seat)"
-            >
-              选用
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <p v-if="!seats.length" class="hint">没有符合条件的座位。</p>
+    <div class="row between">
+      <div class="row checks">
+        <label class="check"><input v-model="search.available_only" type="checkbox" />仅空闲</label>
+        <label class="check"><input v-model="search.has_power" type="checkbox" />有电源</label>
+        <label class="check"><input v-model="search.by_window" type="checkbox" />靠窗</label>
+        <label class="check"><input v-model="search.accessible" type="checkbox" />无障碍</label>
+      </div>
+      <button type="button" class="primary" @click="guard(loadSeats)">搜索座位</button>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>座位</th>
+            <th>自习室</th>
+            <th>楼层</th>
+            <th>区域</th>
+            <th>设施</th>
+            <th>占用状态</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="seat in seats" :key="seat.id">
+            <td>
+              <strong>{{ seat.code }}</strong>
+            </td>
+            <td>{{ seat.room_name }}</td>
+            <td>{{ seat.floor || '—' }}</td>
+            <td>
+              <span class="tag tone-info">{{ ZONE[seat.zone_type] || seat.zone_type }}</span>
+            </td>
+            <td>
+              <span class="chips">
+                <span v-if="seat.has_power" class="chip">🔌 电源</span>
+                <span v-if="seat.by_window" class="chip">🪟 靠窗</span>
+                <span v-if="seat.accessible" class="chip">♿ 无障碍</span>
+                <span v-if="facilityText(seat) === '—'" class="muted">—</span>
+              </span>
+            </td>
+            <td><StatusBadge :status="seat.status" /></td>
+            <td class="actions">
+              <button type="button" @click="openSeat(seat.id)">详情</button>
+              <button
+                type="button"
+                :disabled="!['available', 'AVAILABLE'].includes(seat.status)"
+                @click="useSeatForBooking(seat)"
+              >
+                选用
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div v-if="!seats.length" class="empty">没有符合条件的座位，试试放宽筛选条件。</div>
   </section>
 
   <section v-if="selectedSeat" class="panel">
@@ -446,14 +456,14 @@ onMounted(async () => {
       </div>
       <div>
         <dt>占用状态</dt>
-        <dd>{{ occupancyLabel(selectedSeat) }}</dd>
+        <dd><StatusBadge :status="selectedSeat.status" /></dd>
       </div>
       <div>
         <dt>设施</dt>
-        <dd>
-          电源 {{ selectedSeat.has_power ? '有' : '无' }} · 靠窗
-          {{ selectedSeat.by_window ? '是' : '否' }} · 无障碍
-          {{ selectedSeat.accessible ? '是' : '否' }}
+        <dd class="chips">
+          <span class="chip" :class="{ off: !selectedSeat.has_power }">🔌 电源</span>
+          <span class="chip" :class="{ off: !selectedSeat.by_window }">🪟 靠窗</span>
+          <span class="chip" :class="{ off: !selectedSeat.accessible }">♿ 无障碍</span>
         </dd>
       </div>
       <div>
@@ -463,14 +473,16 @@ onMounted(async () => {
         </dd>
       </div>
     </dl>
-    <button type="button" class="primary" @click="useSeatForBooking(selectedSeat)">
-      用此座位预约
-    </button>
+    <div class="row">
+      <button type="button" class="primary" @click="useSeatForBooking(selectedSeat)">
+        用此座位预约
+      </button>
+    </div>
   </section>
 
   <section class="panel">
     <h3>创建预约</h3>
-    <div class="filters">
+    <div class="row">
       <label class="check">
         <input v-model="form.mode" type="radio" value="seat" />
         指定座位
@@ -524,52 +536,51 @@ onMounted(async () => {
 
   <section class="panel">
     <h3>我的当前预约</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>单号</th>
-          <th>座位</th>
-          <th>时段</th>
-          <th>状态</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="row in mine" :key="row.id">
-          <td>{{ row.reservation_no }}</td>
-          <td>{{ row.room_name }} / {{ row.seat_code }}</td>
-          <td>{{ fmt(row.start_time) }} → {{ fmt(row.end_time) }}</td>
-          <td>
-            {{ STATUS[row.status] || row.status }}
-            <span v-if="isLateCancel(row) && row.status === 'RESERVED'" class="warn">
-              · 临近开始
-            </span>
-          </td>
-          <td class="actions">
-            <button v-if="row.status === 'RESERVED'" type="button" @click="goCheckIn(row)">
-              签到
-            </button>
-            <button v-if="row.status === 'RESERVED'" type="button" @click="startChange(row)">
-              改座位
-            </button>
-            <button v-if="row.status === 'ACTIVE'" type="button" @click="tempLeave(row)">
-              暂离
-            </button>
-            <button
-              v-if="row.status === 'ACTIVE' || row.status === 'TEMP_LEAVE'"
-              type="button"
-              @click="endUse(row)"
-            >
-              结束
-            </button>
-            <button v-if="row.status === 'RESERVED'" type="button" @click="askCancel(row)">
-              取消
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <p v-if="!mine.length" class="hint">暂无进行中的预约。</p>
+    <div class="res-cards">
+      <article v-for="row in mine" :key="row.id" class="res-card" :class="`st-${row.status}`">
+        <header>
+          <div>
+            <strong>{{ row.room_name }} · {{ row.seat_code }}</strong>
+            <small class="muted">{{ row.reservation_no }}</small>
+          </div>
+          <StatusBadge :status="row.status" />
+        </header>
+        <p class="when">🕒 {{ fmt(row.start_time) }} → {{ fmt(row.end_time) }}</p>
+        <p v-if="isLateCancel(row) && row.status === 'RESERVED'" class="warn">
+          临近开始，请尽快签到
+        </p>
+        <div class="actions">
+          <button
+            v-if="row.status === 'RESERVED'"
+            type="button"
+            class="primary"
+            @click="goCheckIn(row)"
+          >
+            签到
+          </button>
+          <button v-if="row.status === 'RESERVED'" type="button" @click="startChange(row)">
+            改座位
+          </button>
+          <button v-if="row.status === 'ACTIVE'" type="button" @click="tempLeave(row)">暂离</button>
+          <button
+            v-if="row.status === 'ACTIVE' || row.status === 'TEMP_LEAVE'"
+            type="button"
+            @click="endUse(row)"
+          >
+            结束
+          </button>
+          <button
+            v-if="row.status === 'RESERVED'"
+            type="button"
+            class="danger"
+            @click="askCancel(row)"
+          >
+            取消
+          </button>
+        </div>
+      </article>
+    </div>
+    <div v-if="!mine.length" class="empty">暂无进行中的预约。</div>
 
     <form class="grid tight" @submit.prevent="changeSeat">
       <h4>改约座位</h4>
@@ -601,11 +612,11 @@ onMounted(async () => {
           <td>{{ row.reservation_no }}</td>
           <td>{{ row.room_name }} / {{ row.seat_code }}</td>
           <td>{{ fmt(row.start_time) }} → {{ fmt(row.end_time) }}</td>
-          <td>{{ STATUS[row.status] || row.status }}</td>
+          <td><StatusBadge :status="row.status" /></td>
         </tr>
       </tbody>
     </table>
-    <p v-if="!history.length" class="hint">暂无历史预约。</p>
+    <div v-if="!history.length" class="empty">暂无历史预约。</div>
   </section>
 
   <div v-if="cancelTarget" class="dialog-mask" @click.self="closeCancel">
@@ -628,73 +639,103 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.panel {
-  margin: 1rem 0;
-  display: grid;
-  gap: 0.75rem;
-}
-.row.between {
-  display: flex;
-  justify-content: space-between;
+.inline-field {
+  display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 8px;
 }
-.filters,
-.grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: end;
-}
-.grid.tight {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px dashed var(--line);
-}
-.filters label,
-.grid label {
-  display: grid;
-  gap: 0.3rem;
-  font-size: 0.9rem;
-}
-.check {
-  display: flex !important;
-  align-items: center;
-  gap: 0.4rem;
+.checks {
+  gap: 16px;
 }
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
 }
 .card {
-  border: 1px solid var(--line);
-  border-radius: 0.6rem;
-  padding: 0.75rem;
   display: grid;
-  gap: 0.35rem;
-  background: #fbfcfb;
+  gap: 10px;
+  align-content: start;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, #fbfcff 0%, #fff 60%);
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.card:hover {
+  border-color: #c5d6f5;
+  box-shadow: var(--shadow);
 }
 .card header {
   display: flex;
   justify-content: space-between;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 8px;
 }
-.detail {
+.card header strong {
+  font-size: 1rem;
+}
+.card > button {
+  justify-self: start;
+}
+.meta {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: grid;
-  gap: 0.4rem;
+  gap: 2px;
 }
-.detail > div {
-  display: grid;
-  grid-template-columns: 8rem 1fr;
-  gap: 0.5rem;
-}
-.detail dt {
+.meta span {
+  display: inline-block;
+  width: 3em;
   color: var(--muted);
 }
-.actions {
+.chip.off {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+.grid.tight {
+  margin-top: 4px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--line-strong);
+}
+.res-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+.res-card {
+  align-content: start;
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--brand);
+  border-radius: var(--radius-sm);
+  background: #fff;
+}
+.res-card.st-ACTIVE {
+  border-left-color: var(--ok);
+}
+.res-card.st-TEMP_LEAVE {
+  border-left-color: var(--warn);
+}
+.res-card header {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+.res-card header div {
+  display: grid;
+}
+.when {
+  color: var(--text);
+}
+.res-card .actions button {
+  height: 30px;
+  padding: 0 12px;
 }
 </style>

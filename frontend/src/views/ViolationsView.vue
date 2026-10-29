@@ -151,20 +151,10 @@ onMounted(loadCases)
 </template>
 
 <style scoped>
-.panel {
-  margin: 1rem 0;
-  padding: 1rem;
-  border: 1px solid #d9e2dc;
-  border-radius: 0.75rem;
-}
 .manual-form {
   display: grid;
   gap: 0.75rem;
   max-width: 640px;
-}
-.manual-form label {
-  display: grid;
-  gap: 0.3rem;
 }
 textarea {
   min-height: 6rem;

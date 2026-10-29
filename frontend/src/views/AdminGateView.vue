@@ -135,22 +135,6 @@ onMounted(refresh)
 </template>
 
 <style scoped>
-.panel {
-  margin: 0.75rem 0;
-  display: grid;
-  gap: 0.75rem;
-}
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: end;
-}
-.filters label {
-  display: grid;
-  gap: 0.3rem;
-  font-size: 0.9rem;
-}
 code {
   font-size: 0.85rem;
   word-break: break-all;

@@ -228,33 +228,3 @@ onMounted(refresh)
     </div>
   </section>
 </template>
-
-<style scoped>
-.tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin: 0.75rem 0;
-  flex-wrap: wrap;
-}
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: end;
-}
-.filters label {
-  display: grid;
-  gap: 0.3rem;
-  font-size: 0.9rem;
-}
-.pager {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-}
-.panel {
-  margin-top: 0.75rem;
-  display: grid;
-  gap: 0.75rem;
-}
-</style>
