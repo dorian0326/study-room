@@ -40,3 +40,21 @@ def get_current_user(auth: AuthDep) -> User:
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
+
+
+def require_permission(code: str):
+    """依赖工厂：当前用户的任一角色拥有该权限才放行，否则 403。"""
+    from app.permissions import roles_for
+
+    allowed = roles_for(code)
+
+    def _check(user: CurrentUser) -> User:
+        if not any(r.name in allowed for r in user.roles):
+            raise HTTPException(status.HTTP_403_FORBIDDEN, "无权限执行此操作")
+        return user
+
+    return _check
+
+
+def client_ip(request: Request) -> str | None:
+    return request.client.host if request.client else None

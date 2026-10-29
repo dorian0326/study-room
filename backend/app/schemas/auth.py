@@ -37,6 +37,7 @@ class UserOut(BaseModel):
     contact: str | None
     status: AccountStatus
     roles: list[RoleName]
+    permissions: list[str] = []
 
 
 class LoginOut(BaseModel):
@@ -49,3 +50,11 @@ class LoginOut(BaseModel):
 class ResetCodeOut(BaseModel):
     reset_code: str
     expires_in: int
+
+
+class RolesIn(BaseModel):
+    roles: list[RoleName] = Field(min_length=1)
+
+
+class StatusIn(BaseModel):
+    status: AccountStatus

@@ -37,3 +37,8 @@ export async function logout() {
 export function hasRole(...roles) {
   return !!auth.user && auth.user.roles.some((r) => roles.includes(r))
 }
+
+/** 前端按后端返回的权限码控制菜单与路由（后端仍会再次校验）。 */
+export function can(perm) {
+  return !!auth.user && auth.user.permissions.includes(perm)
+}
