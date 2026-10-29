@@ -9,7 +9,7 @@ const SETTING_LABELS = {
   checkin_open_before_minutes: '开始前可签到（分钟）',
   no_show_after_minutes: '未签到记爽约（分钟）',
   late_cancel_minutes: '开始前取消记违规（分钟）',
-  temp_leave_minutes: '临时离开时长（分钟）',
+  temp_leave_minutes: '临时离开时长（固定 30 分钟）',
   missed_checkout_merge: '几次未结束使用合并为 1 次警告',
   violation_window_days: '违规累计窗口（天）',
   penalty_base_threshold: '第 1 档处罚阈值（次）',
@@ -30,6 +30,7 @@ const calendar = ref([])
 const dayForm = reactive({ day: '', day_type: 'holiday', note: '' })
 const settings = ref(null)
 
+/** 运行系统配置操作并统一显示成功或失败消息。 */
 async function guard(fn, ok) {
   error.value = ''
   notice.value = ''
@@ -41,15 +42,19 @@ async function guard(fn, ok) {
   }
 }
 
+/** 加载管理员可配置的自习室列表。 */
 async function loadRooms() {
   rooms.value = await api('/admin/rooms')
 }
 
+/** 将指定自习室的数据载入编辑表单。 */
 function editRoom(r) {
   Object.assign(roomForm, r)
 }
 
+/** 新增或更新自习室并刷新列表。 */
 function saveRoom() {
+  // 按是否存在数据库编号选择新增或更新接口。
   return guard(async () => {
     const { id, ...body } = roomForm
     await api(id ? `/admin/rooms/${id}` : '/admin/rooms', { method: id ? 'PUT' : 'POST', body })
@@ -58,6 +63,7 @@ function saveRoom() {
   }, '已保存自习室')
 }
 
+/** 开放或关闭指定自习室。 */
 function toggleRoom(r) {
   const status = r.status === 'open' ? 'closed' : 'open'
   return guard(async () => {
@@ -66,6 +72,7 @@ function toggleRoom(r) {
   })
 }
 
+/** 删除尚未关联座位或预约历史的自习室。 */
 function deleteRoom(r) {
   if (!confirm(`删除自习室「${r.name}」？`)) return
   return guard(async () => {
@@ -75,6 +82,7 @@ function deleteRoom(r) {
   }, '已删除')
 }
 
+/** 读取指定自习室的开放时间列表。 */
 async function openSchedules(r) {
   current.value = r
   await guard(async () => {
@@ -82,6 +90,7 @@ async function openSchedules(r) {
   })
 }
 
+/** 为当前自习室新增开放时间。 */
 function addSchedule() {
   return guard(async () => {
     await api(`/admin/rooms/${current.value.id}/schedules`, { method: 'POST', body: schForm })
@@ -89,6 +98,7 @@ function addSchedule() {
   }, '已添加开放时段')
 }
 
+/** 删除选中的开放时间设置。 */
 function deleteSchedule(s) {
   return guard(async () => {
     await api(`/admin/rooms/${current.value.id}/schedules/${s.id}`, { method: 'DELETE' })
@@ -96,10 +106,12 @@ function deleteSchedule(s) {
   })
 }
 
+/** 加载节假日和考试周校历。 */
 async function loadCalendar() {
   calendar.value = await api('/admin/calendar')
 }
 
+/** 新增或更新校历特殊日期。 */
 function saveDay() {
   return guard(async () => {
     await api(`/admin/calendar/${dayForm.day}`, { method: 'PUT', body: dayForm })
@@ -107,6 +119,7 @@ function saveDay() {
   }, '已保存特殊日期')
 }
 
+/** 移除指定特殊日期并刷新校历。 */
 function deleteDay(d) {
   return guard(async () => {
     await api(`/admin/calendar/${d.day}`, { method: 'DELETE' })
@@ -114,18 +127,22 @@ function deleteDay(d) {
   })
 }
 
+/** 保存系统业务参数并更新页面显示。 */
 function saveSettings() {
   return guard(async () => {
     settings.value = await api('/admin/settings', { method: 'PUT', body: settings.value })
   }, '业务参数已保存')
 }
 
-onMounted(() =>
-  guard(async () => {
+/** 并行加载系统配置页面所需的初始数据。 */
+async function loadInitialConfig() {
+  await guard(async () => {
     await Promise.all([loadRooms(), loadCalendar()])
     settings.value = await api('/admin/settings')
-  }),
-)
+  })
+}
+
+onMounted(loadInitialConfig)
 </script>
 
 <template>
@@ -202,7 +219,13 @@ onMounted(() =>
       <label v-for="(label, key) in SETTING_LABELS" :key="key">
         {{ label }}
         <input v-if="key.startsWith('opening_')" v-model="settings[key]" type="time" step="60" />
-        <input v-else v-model.number="settings[key]" type="number" min="0" />
+        <input
+          v-else
+          v-model.number="settings[key]"
+          type="number"
+          min="0"
+          :disabled="key === 'temp_leave_minutes'"
+        />
       </label>
       <button>保存参数</button>
     </form>

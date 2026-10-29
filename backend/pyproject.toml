@@ -11,6 +11,7 @@ dependencies = [
   "pydantic-settings>=2.4",
   "pwdlib[bcrypt]>=0.2",
   "tzdata>=2024.1; sys_platform == 'win32'",
+  "openpyxl>=3.1",
 ]
 
 [project.optional-dependencies]

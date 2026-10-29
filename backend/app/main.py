@@ -5,7 +5,19 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api import admin_config, admin_users, auth, health, ops_logs, ops_system, reservations
+from app.api import (
+    admin_config,
+    admin_seats,
+    admin_users,
+    admin_violations,
+    auth,
+    gate,
+    health,
+    ops_logs,
+    ops_system,
+    reports,
+    reservations,
+)
 from app.config import get_settings
 from app.metrics import MetricsMiddleware
 from app.services import reservation_worker
@@ -13,7 +25,7 @@ from app.services.availability import BookingError
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_: FastAPI):
     stop = asyncio.Event()
     task = None
     if get_settings().reservation_sweep_interval_seconds > 0:
@@ -50,6 +62,10 @@ def create_app() -> FastAPI:
     app.include_router(ops_logs.router, prefix="/api")
     app.include_router(ops_system.router, prefix="/api")
     app.include_router(reservations.router, prefix="/api")
+    app.include_router(gate.router, prefix="/api")
+    app.include_router(admin_seats.router, prefix="/api")
+    app.include_router(admin_violations.router, prefix="/api")
+    app.include_router(reports.router, prefix="/api")
     return app
 
 

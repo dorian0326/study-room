@@ -2,8 +2,10 @@
 
 from functools import lru_cache
 
-from pydantic import Field
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+INSECURE_GATE_SECRET = "local-development-only-change-this-secret"
 
 
 class Settings(BaseSettings):
@@ -31,6 +33,21 @@ class Settings(BaseSettings):
     # 管理员签发的密码重置码有效期（分钟）
     password_reset_ttl_minutes: int = 30
 
+    # 门禁同步采用脱敏 keyed hash；部署时必须通过 STUDYROOM_GATE_HMAC_SECRET 覆盖开发值。
+    gate_hmac_secret: str = INSECURE_GATE_SECRET
+    # 运行环境：dev / test 允许使用开发默认密钥，其他环境（如 prod）必须覆盖。
+    env: str = "dev"
+
+    @model_validator(mode="after")
+    def _require_gate_secret(self) -> "Settings":
+        """非开发/测试环境仍使用默认门禁密钥时拒绝启动。"""
+        if self.env not in ("dev", "test") and self.gate_hmac_secret == INSECURE_GATE_SECRET:
+            raise ValueError(
+                "STUDYROOM_GATE_HMAC_SECRET 仍为不安全的开发默认值；"
+                f"STUDYROOM_ENV={self.env} 时必须设置独立密钥。"
+            )
+        return self
+
     # ---- 日志（#8）----
     # 操作日志、登录日志保留天数（BR-105：保留一个学期，按 180 天计）
     log_retention_days: int = 180
@@ -40,4 +57,5 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
+    """读取并缓存由环境变量及后端 .env 文件覆盖的运行配置。"""
     return Settings()
