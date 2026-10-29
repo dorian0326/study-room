@@ -31,6 +31,8 @@ class Settings(BaseSettings):
     # ---- 日志（#8）----
     # 操作日志、登录日志保留天数（BR-105：保留一个学期，按 180 天计）
     log_retention_days: int = 180
+    backup_dir: str = "./data/backups"
+    backup_keep: int = 14
 
 
 @lru_cache
