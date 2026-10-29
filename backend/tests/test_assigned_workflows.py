@@ -410,3 +410,153 @@ def test_report_endpoint_returns_supply_hours_and_excel(client, admin_headers):
     assert exported.headers["content-type"].startswith(
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
+
+def _gate_event(session, reservation, *, external_id, record_type, recorded_at):
+    """构造指向指定预约的门禁事件并交给门禁服务处理。"""
+    user = session.get(User, reservation.user_id)
+    body = GateEventIn(
+        external_id=external_id,
+        source_system="mock-gate-test",
+        masked_user_key=gate_service.user_key_for_gate(user.student_no),
+        record_type=record_type,
+        recorded_at=recorded_at,
+        reservation_id=reservation.id,
+    )
+    return gate_service.process_gate_event(session, body)
+
+
+def test_gate_exit_while_active_without_leave_times_out_with_violation(
+    client, admin_headers, make_user, login, api_db, monkeypatch
+):
+    """使用中未声明临时离开即出馆：超时结束并记录未声明离开违规。"""
+    make_user("20261101")
+    headers = login("20261101", "secret123")
+    _, _, start, data = _create_reservation(client, admin_headers, headers)
+    moment = start + timedelta(minutes=10)
+    monkeypatch.setattr("app.services.gate.now", lambda: moment)
+    with api_db() as session:
+        reservation = session.get(Reservation, data["id"])
+        reservation.status = E.ReservationStatus.ACTIVE
+        session.commit()
+        result = _gate_event(
+            session,
+            reservation,
+            external_id="g-exit-1",
+            record_type=E.EntryExitType.EXIT,
+            recorded_at=moment,
+        )
+        session.refresh(reservation)
+        violations = list(
+            session.scalars(
+                select(ViolationRecord).where(ViolationRecord.reservation_id == data["id"])
+            )
+        )
+    assert result["sync_status"] == "synced"
+    assert reservation.status == E.ReservationStatus.TIMED_OUT
+    assert [v.violation_type for v in violations] == [E.ViolationType.LEFT_UNDECLARED]
+
+
+def test_gate_exit_during_temp_leave_keeps_seat_and_entry_resumes(
+    client, admin_headers, make_user, login, api_db, monkeypatch
+):
+    """临时离开期间出馆保留座位；30 分钟内入馆恢复使用中，且不产生违规。"""
+    make_user("20261102")
+    headers = login("20261102", "secret123")
+    _, _, start, data = _create_reservation(client, admin_headers, headers)
+    monkeypatch.setattr("app.services.reservations.now", lambda: start)
+    assert (
+        client.post(f"/api/reservations/{data['id']}/check-in", headers=headers).status_code == 200
+    )
+    assert (
+        client.post(f"/api/reservations/{data['id']}/temporary-leave", headers=headers).status_code
+        == 200
+    )
+    exit_at = start + timedelta(minutes=2)
+    back_at = start + timedelta(minutes=20)
+    with api_db() as session:
+        reservation = session.get(Reservation, data["id"])
+        monkeypatch.setattr("app.services.gate.now", lambda: exit_at)
+        out = _gate_event(
+            session,
+            reservation,
+            external_id="g-tl-exit",
+            record_type=E.EntryExitType.EXIT,
+            recorded_at=exit_at,
+        )
+        session.refresh(reservation)
+        assert out["sync_status"] == "synced"
+        assert reservation.status == E.ReservationStatus.TEMP_LEAVE
+        assert reservation.temp_leave_state == E.TempLeaveState.WAITING
+        monkeypatch.setattr("app.services.gate.now", lambda: back_at)
+        back = _gate_event(
+            session,
+            reservation,
+            external_id="g-tl-entry",
+            record_type=E.EntryExitType.ENTRY,
+            recorded_at=back_at,
+        )
+        session.refresh(reservation)
+        violations = list(
+            session.scalars(
+                select(ViolationRecord).where(ViolationRecord.reservation_id == data["id"])
+            )
+        )
+    assert back["sync_status"] == "synced"
+    assert reservation.status == E.ReservationStatus.ACTIVE
+    assert reservation.temp_leave_state == E.TempLeaveState.RETURNED
+    assert violations == []
+
+
+def test_gate_entry_after_temp_leave_window_is_not_applied(
+    client, admin_headers, make_user, login, api_db, monkeypatch
+):
+    """超过 30 分钟临时离开期限后的入馆事件不恢复座位，转入人工核验。"""
+    make_user("20261103")
+    headers = login("20261103", "secret123")
+    _, _, start, data = _create_reservation(client, admin_headers, headers)
+    monkeypatch.setattr("app.services.reservations.now", lambda: start)
+    client.post(f"/api/reservations/{data['id']}/check-in", headers=headers)
+    client.post(f"/api/reservations/{data['id']}/temporary-leave", headers=headers)
+    late = start + timedelta(minutes=35)
+    monkeypatch.setattr("app.services.gate.now", lambda: late)
+    with api_db() as session:
+        reservation = session.get(Reservation, data["id"])
+        result = _gate_event(
+            session,
+            reservation,
+            external_id="g-tl-late",
+            record_type=E.EntryExitType.ENTRY,
+            recorded_at=late,
+        )
+        session.refresh(reservation)
+    assert result["sync_status"] == "unmatched"
+    assert reservation.status == E.ReservationStatus.TEMP_LEAVE
+
+
+def test_current_scope_excludes_cancelled_future_reservation(
+    client, admin_headers, make_user, login
+):
+    """已取消的未来预约只出现在历史列表，不出现在当前预约。"""
+    make_user("20261104")
+    headers = login("20261104", "secret123")
+    _, _, _, data = _create_reservation(client, admin_headers, headers)
+    cancel = client.post(f"/api/reservations/{data['id']}/cancel", headers=headers)
+    assert cancel.status_code == 200, cancel.text
+    current = client.get("/api/reservations?scope=current", headers=headers).json()
+    history = client.get("/api/reservations?scope=history", headers=headers).json()
+    assert data["id"] not in [row["id"] for row in current]
+    assert data["id"] in [row["id"] for row in history]
+
+
+def test_default_gate_secret_rejected_outside_dev(monkeypatch):
+    """生产环境沿用默认门禁密钥时配置校验失败；dev/test 或自定义密钥可通过。"""
+    from pydantic import ValidationError
+
+    from app.config import Settings
+
+    monkeypatch.delenv("STUDYROOM_GATE_HMAC_SECRET", raising=False)
+    with pytest.raises(ValidationError):
+        Settings(env="prod")
+    assert Settings(env="test").env == "test"
+    assert Settings(env="prod", gate_hmac_secret="x" * 32).env == "prod"

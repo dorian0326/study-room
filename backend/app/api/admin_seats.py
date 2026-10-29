@@ -166,11 +166,13 @@ def set_seat_status(
     request: Request,
 ):
     """变更座位状态；维护中会取消待生效预约并发送站内通知。"""
-    seat = session.get(Seat, seat_id)
-    if seat is None or seat.room_id != room_id:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "座位不存在")
-    before = _dump_seat(seat)
-    with transaction(session):
+    # 结束鉴权查询留下的只读事务，再拿写锁读取座位和待取消预约，避免与并发预约之间的检查-写入竞态。
+    session.commit()
+    with transaction(session, immediate=True):
+        seat = session.get(Seat, seat_id)
+        if seat is None or seat.room_id != room_id:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "座位不存在")
+        before = _dump_seat(seat)
         seat.status = body.status
         seat.status_changed_at = now()
         cancelled = 0
@@ -234,7 +236,6 @@ def import_seats(
     request: Request,
 ):
     """原子导入 CSV 座位清单；按编号新增或更新座位属性。"""
-    _room(session, room_id)
     # 先完整解析和验证全部行，任何错误都在事务开始前返回，避免半份导入。
     try:
         reader = csv.DictReader(io.StringIO(body.content.lstrip("\ufeff")))
@@ -251,7 +252,9 @@ def import_seats(
 
     created = 0
     updated = 0
-    with transaction(session):
+    session.commit()
+    with transaction(session, immediate=True):
+        _room(session, room_id)
         # 编号冲突时更新已有座位；不会覆盖座位所属房间或既有预约记录。
         current = {
             seat.code: seat for seat in session.scalars(select(Seat).where(Seat.room_id == room_id))

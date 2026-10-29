@@ -14,6 +14,7 @@ from app.models import enums as E
 from app.schemas.workflows import GateEventIn
 from app.services.notifications import create_notification
 from app.services.settings import get_business_settings
+from app.services.violations import record_violation
 from app.timeutil import now
 
 
@@ -138,18 +139,35 @@ def process_gate_event(session: Session, body: GateEventIn) -> dict:
             )
             session.add(arrival)
         if body.record_type == E.EntryExitType.ENTRY:
-            arrival.arrival_status = E.ArrivalStatus.ON_TIME
-            arrival.arrived_at = recorded_at
-            arrival.arrival_method = E.ArrivalMethod.MANUAL
-            reservation.status = E.ReservationStatus.ACTIVE
-            notice = "门禁入馆记录已同步到你的预约。"
-        else:
-            arrival.ended_at = recorded_at
-            arrival.end_method = E.EndMethod.BUTTON
-            reservation.status = E.ReservationStatus.COMPLETED
-            if reservation.temp_leave_state == E.TempLeaveState.WAITING:
+            if reservation.status == E.ReservationStatus.TEMP_LEAVE:
+                # 临时离开 30 分钟内经门禁返回，恢复为使用中（HD-15/HD-31）。
+                reservation.status = E.ReservationStatus.ACTIVE
                 reservation.temp_leave_state = E.TempLeaveState.RETURNED
-            notice = "门禁出馆记录已同步到你的预约。"
+                notice = "门禁入馆记录已同步：临时离开已结束，座位恢复使用中。"
+            else:
+                arrival.arrival_status = E.ArrivalStatus.ON_TIME
+                arrival.arrived_at = recorded_at
+                arrival.arrival_method = E.ArrivalMethod.MANUAL
+                reservation.status = E.ReservationStatus.ACTIVE
+                notice = "门禁入馆记录已同步到你的预约。"
+        elif reservation.status == E.ReservationStatus.TEMP_LEAVE:
+            # 已声明临时离开后出馆：保留座位，沿用临时离开计时，超时由定时任务释放。
+            notice = "门禁出馆记录已同步：座位将为你保留至临时离开期限结束。"
+        else:
+            # 使用中未声明临时离开即出馆：按状态文档记为超时结束并登记未声明离开违规。
+            arrival.ended_at = recorded_at
+            arrival.end_method = E.EndMethod.AUTO_TIMEOUT
+            reservation.status = E.ReservationStatus.TIMED_OUT
+            reservation.expire_reason = "left_undeclared"
+            record_violation(
+                session,
+                user_id=user.id,
+                violation_type=E.ViolationType.LEFT_UNDECLARED,
+                reservation_id=reservation.id,
+                description="使用中未声明临时离开即通过门禁出馆，座位已释放，可提交申诉。",
+                occurred_at=recorded_at,
+            )
+            notice = "你未声明临时离开即出馆，预约已超时结束并记录违规，可提交申诉。"
         record.reservation_id = reservation.id
         record.sync_status = "synced"
         create_notification(
@@ -183,6 +201,11 @@ def _matching_reservation(
     # 进馆时间须落在签到窗口附近，出馆时间允许在预约结束后短暂补录。
     def matches_time(row: Reservation) -> bool:
         """判断门禁时间是否落在该预约允许核验的签到或签退窗口。"""
+        if (
+            body.record_type == E.EntryExitType.ENTRY
+            and row.status == E.ReservationStatus.TEMP_LEAVE
+        ):
+            return _within_temp_leave(row, recorded_at, settings.temp_leave_minutes)
         if body.record_type == E.EntryExitType.ENTRY:
             return (
                 row.start_time - timedelta(minutes=settings.checkin_open_before_minutes)
@@ -210,9 +233,19 @@ def _matching_reservation(
     return candidates[0] if len(candidates) == 1 else None
 
 
+def _within_temp_leave(row: Reservation, recorded_at: datetime, minutes: int) -> bool:
+    """判断入馆时间是否落在临时离开的保留期内且未超过预约结束时间。"""
+    if row.temp_leave_at is None or row.temp_leave_state != E.TempLeaveState.WAITING:
+        return False
+    deadline = min(row.temp_leave_at + timedelta(minutes=minutes), row.end_time)
+    return row.temp_leave_at <= recorded_at <= deadline
+
+
 def _state_matches(body: GateEventIn, reservation: Reservation) -> bool:
     """确认门禁进出事件与预约状态相符，防止旧事件复活或结束预约。"""
     if body.record_type == E.EntryExitType.ENTRY:
+        if reservation.status == E.ReservationStatus.TEMP_LEAVE:
+            return reservation.temp_leave_state == E.TempLeaveState.WAITING
         return reservation.status == E.ReservationStatus.RESERVED
     return reservation.status in (E.ReservationStatus.ACTIVE, E.ReservationStatus.TEMP_LEAVE)
 

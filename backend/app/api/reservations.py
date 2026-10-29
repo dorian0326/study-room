@@ -121,17 +121,19 @@ def list_my_reservations(user: CurrentUser, session: SessionDep, scope: HistoryS
     rows = session.execute(statement).all()
     visible = []
     for reservation, room_name, seat_code in rows:
+        # 仅未结束的有效状态算"当前"；取消、失效、完成等终态一律归入历史。
         is_current = (
-            reservation.status in E.ACTIVE_RESERVATION_STATUSES
-            and reservation.start_time <= moment <= reservation.end_time
-        ) or reservation.start_time > moment
+            reservation.status in E.ACTIVE_RESERVATION_STATUSES and reservation.end_time >= moment
+        )
         if scope == "current" and not is_current:
             continue
         if scope == "history" and is_current:
             continue
         visible.append(
-            ReservationHistoryOut.model_validate(reservation).model_copy(
-                update={"room_name": room_name, "seat_code": seat_code}
+            ReservationHistoryOut(
+                **ReservationOut.model_validate(reservation).model_dump(),
+                room_name=room_name,
+                seat_code=seat_code,
             )
         )
     return visible
