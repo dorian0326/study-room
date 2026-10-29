@@ -23,7 +23,13 @@ def upgrade() -> None:
         batch.alter_column(
             "violation_type",
             existing_type=sa.Enum(*_OLD, name="violation_type", native_enum=False, length=32),
-            type_=sa.Enum(*_NEW, name="violation_type", native_enum=False, create_constraint=True, length=32),
+            type_=sa.Enum(
+                *_NEW,
+                name="violation_type",
+                native_enum=False,
+                create_constraint=True,
+                length=32,
+            ),
             existing_nullable=False,
         )
 
@@ -37,6 +43,12 @@ def downgrade() -> None:
         batch.alter_column(
             "violation_type",
             existing_type=sa.Enum(*_NEW, name="violation_type", native_enum=False, length=32),
-            type_=sa.Enum(*_OLD, name="violation_type", native_enum=False, create_constraint=True, length=32),
+            type_=sa.Enum(
+                *_OLD,
+                name="violation_type",
+                native_enum=False,
+                create_constraint=True,
+                length=32,
+            ),
             existing_nullable=False,
         )
