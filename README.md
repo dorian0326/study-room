@@ -27,10 +27,47 @@
 
 | 层级 | 技术 |
 |------|------|
-| 后端 | Python（后端 API） |
-| 数据库 | PostgreSQL |
-| 前端 | Vue.js（Vue 3） |
+| 后端 | Python 3.11+ / FastAPI / SQLAlchemy 2 / Alembic |
+| 数据库 | SQLite（WAL 模式） |
+| 前端 | Vue 3 + Vite |
 | 工程实践 | 敏捷（Scrum）双迭代，DevOps / CodeArts 流水线 |
+
+## 本地开发
+
+> 时间基准统一为 Asia/Shanghai（UTC+8，HD-39），后端通过 `app.timeutil.now()` 取当前时间。
+
+### 后端（`backend/`）
+
+需要 Python 3.11 及以上。
+
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install -e ".[dev]"
+alembic upgrade head               # 初始化 / 升级 SQLite 数据库（默认 backend/data/study_room.db）
+uvicorn app.main:app --reload      # http://127.0.0.1:8000/api/health
+pytest                             # 运行测试
+ruff check . && ruff format --check .   # 代码检查
+```
+
+配置通过环境变量覆盖（前缀 `STUDYROOM_`），参考 `backend/.env.example`。
+
+### 前端（`frontend/`）
+
+需要 Node.js 20 及以上。
+
+```bash
+cd frontend
+npm ci
+npm run dev       # http://localhost:5173，/api 自动代理到 8000 端口
+npm run lint      # ESLint
+npm run build     # 生产构建
+```
+
+### CI
+
+推送和 PR 会触发 GitHub Actions（`.github/workflows/ci.yml`），运行后端 ruff + pytest 与前端 lint + build。
 
 ## 参与贡献
 
