@@ -6,6 +6,7 @@ from pathlib import Path
 _tmp = tempfile.mkdtemp()
 os.environ["STUDYROOM_DATABASE_URL"] = f"sqlite:///{_tmp}/test.db"
 os.environ["STUDYROOM_BCRYPT_ROUNDS"] = "4"
+os.environ["STUDYROOM_RESERVATION_SWEEP_INTERVAL_SECONDS"] = "0"
 
 import pytest  # noqa: E402
 from alembic import command  # noqa: E402

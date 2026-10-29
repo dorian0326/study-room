@@ -87,6 +87,7 @@ class StudyRoom(TimestampMixin, Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(64), unique=True)
     location: Mapped[str | None] = mapped_column(String(128))
+    floor: Mapped[str | None] = mapped_column(String(32))
     capacity: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     facilities: Mapped[str | None] = mapped_column(Text)
     status: Mapped[E.RoomStatus] = mapped_column(
@@ -171,6 +172,7 @@ class Reservation(TimestampMixin, Base):
     )
     # 幂等键：重复提交去重（#13 使用）
     idempotency_key: Mapped[str | None] = mapped_column(String(64), unique=True)
+    request_fingerprint: Mapped[str | None] = mapped_column(String(64))
 
     user: Mapped[User] = relationship()
     seat: Mapped[Seat] = relationship()

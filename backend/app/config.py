@@ -2,6 +2,7 @@
 
 from functools import lru_cache
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -15,6 +16,8 @@ class Settings(BaseSettings):
     timezone: str = "Asia/Shanghai"
     # SQLite 写锁等待时间（毫秒）
     sqlite_busy_timeout_ms: int = 5000
+    # 未签到预约的后台检查间隔；0 关闭后台检查（例如测试），请求仍会补做检查。
+    reservation_sweep_interval_seconds: float = Field(10, ge=0)
 
     # ---- 认证（#6）----
     # 登录会话有效期（分钟），默认 12 小时

@@ -60,8 +60,8 @@ ACTIVE_RESERVATION_STATUSES = (
 
 
 class CancelType(StrEnum):
-    NORMAL = "normal"  # 正常取消（≥15min）
-    LATE = "late"  # 违规取消（<15min）
+    NORMAL = "normal"  # 正常取消（>15min）
+    LATE = "late"  # 违规取消（≤15min）
     SYSTEM = "system"  # 系统取消
 
 
