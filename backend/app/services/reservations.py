@@ -1,244 +1,489 @@
-"""预约历史、临时离开、结束使用和后台超时处理。"""
+"""预约事务、幂等与签到（#12–#16）。
 
+认证依赖已开启只读事务，因此业务使用同一引擎的独立会话，先 BEGIN IMMEDIATE 再查写；
+不升级认证会话的读锁，也不提交认证会话中的任何状态。
+"""
+
+import hashlib
+import json
+from collections.abc import Iterator
+from contextlib import contextmanager
 from datetime import datetime, timedelta
-from hashlib import sha256
 from uuid import uuid4
 
-from fastapi import HTTPException, status
-from sqlalchemy import func, select
+from fastapi import HTTPException
+from fastapi import status as http_status
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError, OperationalError
 from sqlalchemy.orm import Session
 
+from app import timeutil
 from app.db import transaction
-from app.models import (
-    ArrivalRecord,
-    CalendarDay,
-    OpeningSchedule,
-    Reservation,
-    Restriction,
-    Seat,
-    StudyRoom,
-    User,
-)
+from app.models import ArrivalRecord, Reservation, Restriction, Seat, User, ViolationRecord
 from app.models import enums as E
-from app.schemas.admin import BusinessSettings
-from app.schemas.workflows import ReservationCreate
+from app.schemas.reservations import CheckInIn, ReservationIn, ReservationOut
+from app.services import audit
+from app.services.availability import BLOCKED_SEAT_STATUSES, BookingError, covers, overlapping
 from app.services.notifications import create_notification
 from app.services.settings import get_business_settings
 from app.services.violations import record_violation
-from app.timeutil import now, tz
 
 
-def _day_type(session: Session, day) -> E.DayType:
-    """根据校历或星期推算开放类型，节假日校历优先覆盖默认日历。"""
-    special = session.get(CalendarDay, day)
-    if special is not None:
-        return special.day_type
-    return E.DayType.WEEKEND if day.weekday() >= 5 else E.DayType.WEEKDAY
+def now():
+    """可被测试替换；默认转发到 timeutil.now（clock 夹具会 patch 后者）。"""
+    return timeutil.now()
 
 
-def _is_open(session: Session, room_id: int, start: datetime, end: datetime) -> bool:
-    """要求预约完整落在同一天的一条有效开放时段内。"""
-    local_start = start.astimezone(tz())
-    local_end = end.astimezone(tz())
-    if local_start.date() != local_end.date():
-        return False
-    schedules = session.scalars(
-        select(OpeningSchedule).where(
-            OpeningSchedule.room_id == room_id,
-            OpeningSchedule.day_type == _day_type(session, local_start.date()),
-            OpeningSchedule.enabled.is_(True),
-            (OpeningSchedule.effective_from.is_(None))
-            | (OpeningSchedule.effective_from <= local_start.date()),
-            (OpeningSchedule.effective_to.is_(None))
-            | (OpeningSchedule.effective_to >= local_start.date()),
-        )
+@contextmanager
+def write_transaction(source: Session) -> Iterator[Session]:
+    try:
+        with Session(source.get_bind(), expire_on_commit=False, autoflush=False) as session:
+            with transaction(session, immediate=True):
+                yield session
+    except OperationalError as exc:
+        if "locked" in str(exc.orig).lower() or "busy" in str(exc.orig).lower():
+            raise BookingError(503, "预约服务繁忙，请稍后使用相同请求重试") from exc
+        raise
+    except IntegrityError as exc:
+        raise BookingError(409, "预约发生冲突，请刷新座位后重试") from exc
+
+
+def _owned(session: Session, user_id: int, rid: int) -> Reservation:
+    reservation = session.scalar(
+        select(Reservation).where(Reservation.id == rid, Reservation.user_id == user_id)
     )
-    start_time = local_start.time().replace(tzinfo=None)
-    end_time = local_end.time().replace(tzinfo=None)
-    return any(slot.open_time <= start_time and end_time <= slot.close_time for slot in schedules)
+    if reservation is None:
+        raise BookingError(404, "预约不存在")
+    return reservation
 
 
-def _validate_window(
+def _user(session: Session, user_id: int) -> User:
+    user = session.get(User, user_id)
+    if user is None or user.status != E.AccountStatus.NORMAL:
+        raise BookingError(403, "账户不可用")
+    if not any(r.name in (E.RoleName.USER, E.RoleName.ADMIN) for r in user.roles):
+        raise BookingError(403, "无权限执行此操作")
+    return user
+
+
+def _restriction(session: Session, user_id: int, at: datetime) -> None:
+    ban = session.scalar(
+        select(Restriction)
+        .where(
+            Restriction.user_id == user_id,
+            Restriction.status == E.RestrictionStatus.ACTIVE,
+            Restriction.start_at <= at,
+            Restriction.end_at > at,
+        )
+        .order_by(Restriction.end_at.desc())
+    )
+    if ban is not None:
+        raise BookingError(403, f"当前处于禁约期，解除时间：{ban.end_at.isoformat()}")
+
+
+def _seat(session: Session, sid: int) -> Seat:
+    seat = session.get(Seat, sid)
+    if seat is None:
+        raise BookingError(404, "座位不存在")
+    if seat.status in BLOCKED_SEAT_STATUSES or seat.room.status != E.RoomStatus.OPEN:
+        raise BookingError(409, "座位维护中或已关闭，请选择其他座位")
+    return seat
+
+
+def _check_slot(
     session: Session,
-    body: ReservationCreate,
-    settings: BusinessSettings,
-    moment: datetime,
-) -> tuple[datetime, datetime]:
-    """校验预约粒度、时间方向、提前范围与房间开放时段。"""
-    start = body.start_time.astimezone(tz())
-    end = body.end_time.astimezone(tz())
-    if start >= end:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "预约开始时间必须早于结束时间")
-    if start.date() != end.date():
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "预约暂不支持跨日")
-    if any(value.minute % 30 or value.second or value.microsecond for value in (start, end)):
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "预约时间须按 30 分钟粒度设置")
-    if start < moment:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "不能预约已经开始的时段")
-    if (start.date() - moment.astimezone(tz()).date()).days > settings.advance_booking_days:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "预约日期超出可提前预约范围")
-    return start, end
-
-
-def create_reservation(session: Session, user: User, body: ReservationCreate) -> Reservation:
-    """原子创建预约、阻止座位冲突并写入确认通知。"""
-    settings = get_business_settings(session)
-    moment = now()
-    start, end = _validate_window(session, body, settings, moment)
-    # 登录鉴权已读取用户并打开只读事务；先结束该事务，再用 SQLite 写锁执行检查与插入。
-    session.commit()
-    with transaction(session, immediate=True):
-        seat = session.get(Seat, body.seat_id)
-        if seat is None or seat.status != E.SeatStatus.AVAILABLE:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, "座位不存在或暂不可预约")
-        room = session.get(StudyRoom, seat.room_id)
-        if room is None or room.status != E.RoomStatus.OPEN:
-            raise HTTPException(status.HTTP_409_CONFLICT, "自习室当前未开放")
-        if not _is_open(session, room.id, start, end):
-            raise HTTPException(status.HTTP_409_CONFLICT, "预约时段不在自习室开放时间内")
-
-        # 违规阶梯产生的禁约在新预约写入前检查，过期措施不会继续阻止预约。
-        restriction = session.scalar(
-            select(Restriction.id)
-            .where(
-                Restriction.user_id == user.id,
-                Restriction.status == E.RestrictionStatus.ACTIVE,
-                Restriction.start_at <= moment,
-                Restriction.end_at > moment,
-            )
-            .limit(1)
-        )
-        if restriction is not None:
-            raise HTTPException(status.HTTP_403_FORBIDDEN, "你当前处于禁约期，暂不能创建预约")
-
-        # 客户端重试使用同一请求键时返回原预约，不重复占用座位。
-        if body.request_key:
-            key = sha256(f"{user.id}:{body.request_key}".encode()).hexdigest()
-            existing = session.scalar(select(Reservation).where(Reservation.idempotency_key == key))
-            if existing is not None:
-                return existing
-        else:
-            key = None
-
-        # 按配置限制用户尚未结束的预约数量，避免通过不同座位绕过资源上限。
-        active_count = session.scalar(
-            select(func.count(Reservation.id)).where(
-                Reservation.user_id == user.id,
-                Reservation.status.in_(E.ACTIVE_RESERVATION_STATUSES),
-                Reservation.end_time > moment,
-            )
-        )
-        if active_count >= settings.max_active_reservations:
-            raise HTTPException(status.HTTP_409_CONFLICT, "当前有效预约数量已达到上限")
-
-        # 半开区间冲突判断：相接边界允许连续预约，重叠区间只能有一个成功。
-        conflict = session.scalar(
+    seat: Seat,
+    start: datetime,
+    end: datetime,
+    user_id: int,
+    excluding: int | None = None,
+) -> None:
+    if not covers(session, seat.room_id, start, end):
+        raise BookingError(422, "时段须完整落在自习室开放时间内（06:00–23:30，不跨零点）")
+    if any(r.id != excluding for r in overlapping(session, seat.id, start, end)):
+        raise BookingError(409, "该座位在所选时段已被预约，请重新选择")
+    # HD-35：同一用户同一时段只可占用一个座位；相邻、不重叠时段可以预约。
+    if (
+        session.scalar(
             select(Reservation.id)
             .where(
-                Reservation.seat_id == seat.id,
+                Reservation.user_id == user_id,
                 Reservation.status.in_(E.ACTIVE_RESERVATION_STATUSES),
                 Reservation.start_time < end,
                 Reservation.end_time > start,
+                Reservation.id != excluding if excluding is not None else True,
             )
             .limit(1)
         )
-        if conflict is not None:
-            raise HTTPException(status.HTTP_409_CONFLICT, "该座位在所选时段已被预约")
+        is not None
+    ):
+        raise BookingError(409, "你在该时段已有有效预约")
 
-        # 创建预约和签到占位记录处于同一事务，避免出现无记录的预约。
+
+def _arrival(session: Session, rid: int) -> ArrivalRecord | None:
+    return session.scalar(
+        select(ArrivalRecord).where(ArrivalRecord.reservation_id == rid).order_by(ArrivalRecord.id)
+    )
+
+
+def reservation_out(session: Session, reservation: Reservation) -> ReservationOut:
+    settings = get_business_settings(session)
+    arrival = _arrival(session, reservation.id)
+    return ReservationOut(
+        id=reservation.id,
+        reservation_no=reservation.reservation_no,
+        user_id=reservation.user_id,
+        room_id=reservation.room_id,
+        room_name=reservation.seat.room.name,
+        seat_id=reservation.seat_id,
+        seat_code=reservation.seat.code,
+        start_time=reservation.start_time,
+        end_time=reservation.end_time,
+        status=reservation.status,
+        cancel_type=reservation.cancel_type,
+        cancelled_at=reservation.cancelled_at,
+        expire_reason=reservation.expire_reason,
+        arrived_at=arrival.arrived_at if arrival else None,
+        checkin_opens_at=reservation.start_time
+        - timedelta(minutes=settings.checkin_open_before_minutes),
+        checkin_closes_at=min(
+            reservation.end_time,
+            reservation.start_time + timedelta(minutes=settings.no_show_after_minutes),
+        ),
+    )
+
+
+def _sync_seat(session: Session, seat: Seat, at: datetime) -> None:
+    if seat.status in BLOCKED_SEAT_STATUSES:
+        return
+    session.flush()
+    bookings = list(
+        session.scalars(
+            select(Reservation).where(
+                Reservation.seat_id == seat.id,
+                Reservation.status.in_(E.ACTIVE_RESERVATION_STATUSES),
+            )
+        )
+    )
+    if any(r.status != E.ReservationStatus.RESERVED for r in bookings):
+        new = E.SeatStatus.IN_USE
+    elif any(r.start_time <= at < r.end_time for r in bookings):
+        new = E.SeatStatus.RESERVED
+    else:
+        new = E.SeatStatus.AVAILABLE
+    if seat.status != new:
+        seat.status, seat.status_changed_at = new, at
+
+
+def _record_violation(
+    session: Session, reservation: Reservation, kind: E.ViolationType, at: datetime
+) -> None:
+    # 唯一行为去重在同一个写事务内完成；#19 可消费这些记录执行处罚与申诉。
+    if (
+        session.scalar(
+            select(ViolationRecord.id)
+            .where(
+                ViolationRecord.reservation_id == reservation.id,
+                ViolationRecord.violation_type == kind,
+            )
+            .limit(1)
+        )
+        is not None
+    ):
+        return
+    days = get_business_settings(session).violation_window_days
+    previous = session.scalar(
+        select(ViolationRecord)
+        .where(
+            ViolationRecord.user_id == reservation.user_id,
+            ViolationRecord.state == E.ViolationState.ACTIVE,
+            ViolationRecord.period_start <= at,
+            ViolationRecord.period_start > at - timedelta(days=days),
+        )
+        .order_by(ViolationRecord.period_start.desc(), ViolationRecord.period_seq.desc())
+    )
+    violation = ViolationRecord(
+        user_id=reservation.user_id,
+        reservation_id=reservation.id,
+        violation_type=kind,
+        occurred_at=at,
+        period_start=previous.period_start if previous else at,
+        period_seq=previous.period_seq + 1 if previous else 1,
+        description="开始前15分钟内取消" if kind == E.ViolationType.LATE_CANCEL else "超窗未签到",
+    )
+    session.add(violation)
+    session.flush()
+    audit.record(
+        session,
+        operator=None,
+        op_type=E.AuditOpType.VIOLATION,
+        target_type="violation_record",
+        target_id=violation.id,
+        after={"type": kind, "reservation_id": reservation.id, "warnings": 1},
+    )
+
+
+def _overdue(reservation: Reservation, at: datetime, grace: int) -> bool:
+    return at >= reservation.end_time or at > reservation.start_time + timedelta(minutes=grace)
+
+
+def _expire_one(session: Session, reservation: Reservation, at: datetime) -> None:
+    reservation.status = E.ReservationStatus.EXPIRED
+    reservation.expire_reason = "no_show"
+    _record_violation(session, reservation, E.ViolationType.NO_SHOW, at)
+    _sync_seat(session, reservation.seat, at)
+
+
+def _expire_due(session: Session, at: datetime) -> int:
+    grace = get_business_settings(session).no_show_after_minutes
+    candidates = list(
+        session.scalars(
+            select(Reservation).where(
+                Reservation.status == E.ReservationStatus.RESERVED,
+                (Reservation.start_time < at - timedelta(minutes=grace))
+                | (Reservation.end_time <= at),
+            )
+        )
+    )
+    for reservation in candidates:
+        _expire_one(session, reservation, at)
+    return len(candidates)
+
+
+def expire_due(source: Session) -> int:
+    """后台与请求补偿共用；只有确实存在到期预约时才申请写锁。"""
+    with Session(source.get_bind()) as check:
+        at = now()
+        grace = get_business_settings(check).no_show_after_minutes
+        candidate = check.scalar(
+            select(Reservation.id)
+            .where(
+                Reservation.status == E.ReservationStatus.RESERVED,
+                (Reservation.start_time < at - timedelta(minutes=grace))
+                | (Reservation.end_time <= at),
+            )
+            .limit(1)
+        )
+    if candidate is None:
+        return 0
+    with write_transaction(source) as session:
+        return _expire_due(session, now())
+
+
+def create(
+    source: Session, user_id: int, body: ReservationIn, key: str | None
+) -> tuple[ReservationOut, bool]:
+    fingerprint = hashlib.sha256(
+        json.dumps(
+            [user_id, body.seat_id, body.start_time.isoformat(), body.end_time.isoformat()]
+        ).encode()
+    ).hexdigest()
+    with write_transaction(source) as session:
+        _user(session, user_id)
+        at = now()
+        _expire_due(session, at)
+        if key:
+            previous = session.scalar(select(Reservation).where(Reservation.idempotency_key == key))
+            if previous is not None:
+                if previous.user_id != user_id or previous.request_fingerprint != fingerprint:
+                    raise BookingError(409, "幂等键已被不同请求使用，请重新提交")
+                return reservation_out(session, previous), True
+        if body.start_time < at:
+            raise BookingError(422, "预约开始时间不能早于当前时间")
+        settings = get_business_settings(session)
+        advance = min(settings.advance_booking_days, 1)  # HD-34 的本期上限
+        if body.start_time.date() > at.date() + timedelta(days=advance):
+            raise BookingError(422, "最多提前1天预约，请调整日期")
+        _restriction(session, user_id, at)
+        seat = _seat(session, body.seat_id)
+        _check_slot(session, seat, body.start_time, body.end_time, user_id)
+        # 与 #33 一致：预约号带时间前缀，便于人工排查。
         reservation = Reservation(
-            reservation_no=f"SR{moment:%Y%m%d%H%M%S}{uuid4().hex[:6].upper()}",
-            user_id=user.id,
-            room_id=room.id,
-            seat_id=seat.id,
-            start_time=start,
-            end_time=end,
-            status=E.ReservationStatus.RESERVED,
+            reservation_no=f"SR{at:%Y%m%d%H%M%S}{uuid4().hex[:6].upper()}",
+            user_id=user_id,
+            room_id=seat.room_id,
+            seat=seat,
+            start_time=body.start_time,
+            end_time=body.end_time,
             idempotency_key=key,
+            request_fingerprint=fingerprint,
         )
         session.add(reservation)
         session.flush()
+        # 预先占位到达记录，供签到与门禁更新。
         session.add(
             ArrivalRecord(
                 reservation_id=reservation.id,
-                user_id=user.id,
+                user_id=user_id,
                 seat_id=seat.id,
                 arrival_status=E.ArrivalStatus.ABSENT,
             )
         )
         create_notification(
             session,
-            user_id=user.id,
+            user_id=user_id,
             notification_type=E.NotificationType.RESERVATION_CONFIRMED,
-            content=f"预约成功：{room.name} {seat.code}，{start:%Y-%m-%d %H:%M}–{end:%H:%M}。",
+            content=(
+                f"预约成功：{seat.room.name} {seat.code}，"
+                f"{body.start_time:%Y-%m-%d %H:%M}–{body.end_time:%H:%M}。"
+            ),
             idempotency_key=f"reservation:{reservation.id}:confirmed",
         )
-        return reservation
+        _sync_seat(session, seat, at)
+        return reservation_out(session, reservation), False
 
 
-def _owned_reservation(session: Session, user: User, reservation_id: int) -> Reservation:
-    """只读取当前用户自己的预约，避免以对象编号越权访问。"""
-    reservation = session.get(Reservation, reservation_id)
-    if reservation is None or reservation.user_id != user.id:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "预约不存在")
-    return reservation
-
-
-def check_in(session: Session, user: User, reservation_id: int) -> Reservation:
-    """在签到窗口内将本人预约转为使用中并记录到达时间。"""
-    settings = get_business_settings(session)
-    reservation = _owned_reservation(session, user, reservation_id)
-    # 状态检查与到达记录更新在同一写事务中，重复签到会保持原状态并返回冲突。
-    session.commit()
-    with transaction(session, immediate=True):
-        moment = now()
-        reservation = _owned_reservation(session, user, reservation_id)
+def change_seat(source: Session, user_id: int, rid: int, sid: int) -> ReservationOut:
+    with write_transaction(source) as session:
+        _user(session, user_id)
+        at = now()
+        reservation = _owned(session, user_id, rid)
         if reservation.status != E.ReservationStatus.RESERVED:
-            raise HTTPException(status.HTTP_409_CONFLICT, "该预约当前不能签到")
-        if not (
-            reservation.start_time - timedelta(minutes=settings.checkin_open_before_minutes)
-            <= moment
-            <= reservation.start_time + timedelta(minutes=settings.no_show_after_minutes)
-        ):
-            raise HTTPException(status.HTTP_409_CONFLICT, "当前时间不在允许签到窗口内")
-        arrival = session.scalar(
-            select(ArrivalRecord).where(ArrivalRecord.reservation_id == reservation.id)
+            raise BookingError(409, "仅未签到的有效预约可换座")
+        if _overdue(reservation, at, get_business_settings(session).no_show_after_minutes):
+            raise BookingError(409, "预约已超过签到窗口，无法换座")
+        _restriction(session, user_id, at)
+        seat = _seat(session, sid)
+        _check_slot(session, seat, reservation.start_time, reservation.end_time, user_id, rid)
+        original = reservation.seat
+        reservation.seat = seat
+        reservation.seat_id, reservation.room_id = seat.id, seat.room_id
+        _sync_seat(session, original, at)
+        _sync_seat(session, seat, at)
+        return reservation_out(session, reservation)
+
+
+def cancel(source: Session, user_id: int, rid: int) -> ReservationOut:
+    with write_transaction(source) as session:
+        _user(session, user_id)  # 禁约不影响取消权限（HD-40）
+        at = now()
+        reservation = _owned(session, user_id, rid)
+        if reservation.status == E.ReservationStatus.CANCELLED:
+            return reservation_out(session, reservation)
+        if reservation.status != E.ReservationStatus.RESERVED:
+            raise BookingError(409, "仅未签到的有效预约可取消")
+        if at >= reservation.start_time:
+            raise BookingError(409, "预约已开始，未签到将按超窗规则处理")
+        late = reservation.start_time - at <= timedelta(
+            minutes=get_business_settings(session).late_cancel_minutes
         )
-        if arrival is None:
-            arrival = ArrivalRecord(
-                reservation_id=reservation.id,
-                user_id=user.id,
-                seat_id=reservation.seat_id,
-                arrival_status=E.ArrivalStatus.ON_TIME,
-            )
-            session.add(arrival)
-        arrival.arrival_status = (
-            E.ArrivalStatus.LATE if moment > reservation.start_time else E.ArrivalStatus.ON_TIME
-        )
-        arrival.arrived_at = moment
-        arrival.arrival_method = E.ArrivalMethod.MANUAL
-        reservation.status = E.ReservationStatus.ACTIVE
+        reservation.status = E.ReservationStatus.CANCELLED
+        reservation.cancel_type = E.CancelType.LATE if late else E.CancelType.NORMAL
+        reservation.cancelled_at = at
+        reservation.cancel_reason = "本人取消预约"
         create_notification(
             session,
-            user_id=user.id,
+            user_id=user_id,
             notification_type=E.NotificationType.SYSTEM,
-            content=f"预约 {reservation.reservation_no} 已签到。",
-            idempotency_key=f"reservation:{reservation.id}:checked-in",
+            content=f"预约 {reservation.reservation_no} 已取消。",
+            idempotency_key=f"reservation:{reservation.id}:cancelled",
         )
-        return reservation
+        if late:
+            _record_violation(session, reservation, E.ViolationType.LATE_CANCEL, at)
+        _sync_seat(session, reservation.seat, at)
+        return reservation_out(session, reservation)
+
+
+def check_in(
+    source: Session, user_id: int, rid: int, body: CheckInIn | None = None
+) -> ReservationOut:
+    expired = False
+    with write_transaction(source) as session:
+        _user(session, user_id)
+        at = now()
+        reservation = _owned(session, user_id, rid)
+        seat = reservation.seat
+        if body is not None:
+            matched = (
+                body.seat_id == seat.id
+                if body.seat_id is not None
+                else body.room_id == seat.room_id and body.seat_code == seat.code
+            )
+            if not matched:
+                raise BookingError(409, "扫码座位与本人预约不一致")
+        if reservation.status == E.ReservationStatus.ACTIVE:
+            return reservation_out(session, reservation)  # 重复扫码幂等
+        if reservation.status != E.ReservationStatus.RESERVED:
+            raise BookingError(409, "预约已失效、取消或已结束，无法签到")
+        settings = get_business_settings(session)
+        if _overdue(reservation, at, settings.no_show_after_minutes):
+            _expire_one(session, reservation, at)
+            expired = True
+        else:
+            _seat(session, seat.id)
+            if at < reservation.start_time - timedelta(
+                minutes=settings.checkin_open_before_minutes
+            ):
+                raise BookingError(409, "签到窗口尚未开放")
+            occupied = session.scalar(
+                select(Reservation.id)
+                .where(
+                    Reservation.seat_id == seat.id,
+                    Reservation.id != rid,
+                    Reservation.status.in_(
+                        (E.ReservationStatus.ACTIVE, E.ReservationStatus.TEMP_LEAVE)
+                    ),
+                )
+                .limit(1)
+            )
+            if occupied is not None:
+                raise BookingError(409, "座位仍有人使用，请等待释放或联系管理员")
+            reservation.status = E.ReservationStatus.ACTIVE
+            arrival = _arrival(session, rid)
+            if arrival is None:
+                arrival = ArrivalRecord(reservation_id=rid, user_id=user_id, seat_id=seat.id)
+                session.add(arrival)
+            arrival.arrived_at = at
+            arrival.arrival_method = (
+                E.ArrivalMethod.QR if body is not None else E.ArrivalMethod.MANUAL
+            )
+            # 窗内均不违规；到达分类仅用于记录，不触发处罚。
+            arrival.arrival_status = (
+                E.ArrivalStatus.EARLY
+                if at < reservation.start_time
+                else (
+                    E.ArrivalStatus.ON_TIME
+                    if at == reservation.start_time
+                    else E.ArrivalStatus.LATE
+                )
+            )
+            _sync_seat(session, seat, at)
+        result = reservation_out(session, reservation)
+    if expired:
+        # 必须在提交失效/违规后再返回错误，不能被异常回滚。
+        raise BookingError(409, "签到窗口已关闭，预约已失效并记录1次违规")
+    return result
+
+
+# ---- #33 暂离 / 结束使用 / 全量扫描（与 #34 预约核心并存）----
+
+
+def create_reservation(session: Session, user: User, body) -> Reservation:
+    """#33 API 兼容：把 request_key 映射为幂等键后复用 create。"""
+    key = None
+    if getattr(body, "request_key", None):
+        key = hashlib.sha256(f"{user.id}:{body.request_key}".encode()).hexdigest()
+    result, _replay = create(session, user.id, body, key)
+    with Session(session.get_bind()) as read:
+        return read.get(Reservation, result.id)
 
 
 def start_temporary_leave(session: Session, user: User, reservation_id: int) -> Reservation:
     """声明临时离开并保存 30 分钟返回期限起点。"""
-    # 离开状态、时间戳及站内提醒一起提交，超时扫描据此执行一次性释放。
     session.commit()
     with transaction(session, immediate=True):
         moment = now()
-        reservation = _owned_reservation(session, user, reservation_id)
+        reservation = session.scalar(
+            select(Reservation).where(
+                Reservation.id == reservation_id, Reservation.user_id == user.id
+            )
+        )
+        if reservation is None:
+            raise HTTPException(http_status.HTTP_404_NOT_FOUND, "预约不存在")
         if reservation.status != E.ReservationStatus.ACTIVE:
-            raise HTTPException(status.HTTP_409_CONFLICT, "只有正在使用的预约可以临时离开")
+            raise HTTPException(http_status.HTTP_409_CONFLICT, "只有正在使用的预约可以临时离开")
         if reservation.end_time <= moment:
-            raise HTTPException(status.HTTP_409_CONFLICT, "预约时段已结束，不能再登记临时离开")
+            raise HTTPException(http_status.HTTP_409_CONFLICT, "预约时段已结束，不能再登记临时离开")
         reservation.status = E.ReservationStatus.TEMP_LEAVE
         reservation.temp_leave_at = moment
         reservation.temp_leave_state = E.TempLeaveState.WAITING
@@ -255,23 +500,29 @@ def start_temporary_leave(session: Session, user: User, reservation_id: int) -> 
 def return_from_temporary_leave(session: Session, user: User, reservation_id: int) -> Reservation:
     """在登记后的 30 分钟内返回并恢复预约使用状态。"""
     settings = get_business_settings(session)
-    # 返回操作和后台超时任务竞争同一写锁，最终只会有一个状态转换成功。
     session.commit()
     with transaction(session, immediate=True):
         moment = now()
-        reservation = _owned_reservation(session, user, reservation_id)
+        reservation = session.scalar(
+            select(Reservation).where(
+                Reservation.id == reservation_id, Reservation.user_id == user.id
+            )
+        )
+        if reservation is None:
+            raise HTTPException(http_status.HTTP_404_NOT_FOUND, "预约不存在")
         if (
             reservation.status != E.ReservationStatus.TEMP_LEAVE
             or reservation.temp_leave_at is None
             or reservation.temp_leave_state != E.TempLeaveState.WAITING
         ):
-            raise HTTPException(status.HTTP_409_CONFLICT, "该预约没有待返回的临时离开记录")
-        # 超时后不复活已释放的时段；后台扫描负责记录违规和发出通知。
+            raise HTTPException(http_status.HTTP_409_CONFLICT, "该预约没有待返回的临时离开记录")
         deadline = reservation.temp_leave_at + timedelta(minutes=settings.temp_leave_minutes)
         if moment > deadline:
-            raise HTTPException(status.HTTP_409_CONFLICT, "临时离开已超时，预约正在等待系统释放")
+            raise HTTPException(
+                http_status.HTTP_409_CONFLICT, "临时离开已超时，预约正在等待系统释放"
+            )
         if reservation.end_time <= moment:
-            raise HTTPException(status.HTTP_409_CONFLICT, "预约时段已结束，不能再恢复使用")
+            raise HTTPException(http_status.HTTP_409_CONFLICT, "预约时段已结束，不能再恢复使用")
         reservation.status = E.ReservationStatus.ACTIVE
         reservation.temp_leave_state = E.TempLeaveState.RETURNED
         create_notification(
@@ -289,26 +540,27 @@ def end_use(
 ) -> tuple[list[Reservation], int]:
     """经显式确认结束连续预约，并把连续时段合并为一次操作。"""
     if not confirmed:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "结束使用前必须明确确认")
-    initial = _owned_reservation(session, user, reservation_id)
-    if initial.status not in (E.ReservationStatus.ACTIVE, E.ReservationStatus.TEMP_LEAVE):
-        raise HTTPException(status.HTTP_409_CONFLICT, "只有已签到的预约可以结束使用")
+        raise HTTPException(http_status.HTTP_422_UNPROCESSABLE_CONTENT, "结束使用前必须明确确认")
     settings = get_business_settings(session)
-    # 查找同一用户、同一座位且首尾相接的时段；一次确认覆盖当前段并释放后续待用段。
     session.commit()
     with transaction(session, immediate=True):
         moment = now()
-        first = _owned_reservation(session, user, reservation_id)
-        # 获取写锁后重新核对状态，避免与自动超时扫描并发时复活已释放的预约。
+        first = session.scalar(
+            select(Reservation).where(
+                Reservation.id == reservation_id, Reservation.user_id == user.id
+            )
+        )
+        if first is None:
+            raise HTTPException(http_status.HTTP_404_NOT_FOUND, "预约不存在")
         if first.status not in (E.ReservationStatus.ACTIVE, E.ReservationStatus.TEMP_LEAVE):
-            raise HTTPException(status.HTTP_409_CONFLICT, "该预约当前不能结束使用")
+            raise HTTPException(http_status.HTTP_409_CONFLICT, "该预约当前不能结束使用")
         if (
             first.status == E.ReservationStatus.TEMP_LEAVE
             and first.temp_leave_at is not None
             and moment > first.temp_leave_at + timedelta(minutes=settings.temp_leave_minutes)
         ):
             raise HTTPException(
-                status.HTTP_409_CONFLICT,
+                http_status.HTTP_409_CONFLICT,
                 "临时离开已超时，不能通过结束操作绕过处理",
             )
         chain = [first]
@@ -335,10 +587,12 @@ def end_use(
             chain.append(next_reservation)
             cursor = next_reservation.end_time
 
-        # 当前已签到时段记为完成，紧接的未来预约取消释放；操作由单一事务提交。
         total_seconds = 0
         for reservation in chain:
-            if reservation.status == E.ReservationStatus.RESERVED:
+            if (
+                reservation.status == E.ReservationStatus.RESERVED
+                or reservation.start_time > moment
+            ):
                 reservation.status = E.ReservationStatus.CANCELLED
                 reservation.cancel_type = E.CancelType.NORMAL
                 reservation.cancelled_at = moment
@@ -350,20 +604,7 @@ def end_use(
                     content=f"连续使用已结束，后续预约 {reservation.reservation_no} 已释放。",
                     idempotency_key=f"reservation:{reservation.id}:released-after-end",
                 )
-                continue
-            # 连续预约下一段尚未到开始时间时，不允许提前结束它或扩大学习时长。
-            if reservation.start_time > moment:
-                reservation.status = E.ReservationStatus.CANCELLED
-                reservation.cancel_type = E.CancelType.NORMAL
-                reservation.cancelled_at = moment
-                reservation.cancel_reason = "结束连续使用并释放后续预约"
-                create_notification(
-                    session,
-                    user_id=user.id,
-                    notification_type=E.NotificationType.SYSTEM,
-                    content=f"连续使用已结束，后续预约 {reservation.reservation_no} 已释放。",
-                    idempotency_key=f"reservation:{reservation.id}:released-after-end",
-                )
+                _sync_seat(session, reservation.seat, moment)
                 continue
             arrival = session.scalar(
                 select(ArrivalRecord).where(ArrivalRecord.reservation_id == reservation.id)
@@ -384,6 +625,7 @@ def end_use(
                 if reservation.temp_leave_state == E.TempLeaveState.WAITING
                 else reservation.temp_leave_state
             )
+            _sync_seat(session, reservation.seat, moment)
         create_notification(
             session,
             user_id=user.id,
@@ -399,10 +641,8 @@ def sweep_reservations(session: Session, moment: datetime | None = None) -> dict
     moment = moment or now()
     settings = get_business_settings(session)
     counts = {"no_show": 0, "no_checkout": 0, "temp_leave": 0, "reminders": 0}
-    # 以一个写事务包住状态转换、违规和通知，重复运行不会重复处罚或提醒。
     session.commit()
     with transaction(session, immediate=True):
-        # 已过结束时刻的限制自动转为过期，用户历史记录仍保留供审计。
         expired_restrictions = list(
             session.scalars(
                 select(Restriction).where(
@@ -446,9 +686,9 @@ def sweep_reservations(session: Session, moment: datetime | None = None) -> dict
                 content=f"预约 {reservation.reservation_no} 因未签到已自动释放。",
                 idempotency_key=f"reservation:{reservation.id}:no-show-released",
             )
+            _sync_seat(session, reservation.seat, moment)
             counts["no_show"] += 1
 
-        # 已签到预约在预约时段结束时释放；离开超时按离开期限释放。
         active = list(
             session.scalars(
                 select(Reservation).where(
@@ -503,8 +743,8 @@ def sweep_reservations(session: Session, moment: datetime | None = None) -> dict
                 content=f"预约 {reservation.reservation_no} 已由系统超时释放。",
                 idempotency_key=f"reservation:{reservation.id}:timeout-released",
             )
+            _sync_seat(session, reservation.seat, moment)
 
-        # 进入签到提醒窗口时每条预约只写入一条站内提醒。
         reminder_end = moment + timedelta(minutes=settings.checkin_open_before_minutes)
         reminders = list(
             session.scalars(
@@ -525,7 +765,6 @@ def sweep_reservations(session: Session, moment: datetime | None = None) -> dict
             )
             counts["reminders"] += 1
 
-        # 临时离开进入最后五分钟时发送一次到期提示，超时任务仍负责最终释放。
         leave_reminders = list(
             session.scalars(
                 select(Reservation).where(

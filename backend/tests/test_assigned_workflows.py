@@ -176,6 +176,7 @@ def test_late_cancellation_records_violation_and_notice(
     _, _, start, reservation = _create_reservation(client, admin_headers, headers)
     cancellation_time = start - timedelta(minutes=10)
     monkeypatch.setattr("app.api.reservations.now", lambda: cancellation_time)
+    monkeypatch.setattr("app.services.reservations.now", lambda: cancellation_time)
 
     response = client.post(f"/api/reservations/{reservation['id']}/cancel", headers=headers)
     assert response.status_code == 200, response.text

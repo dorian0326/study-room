@@ -1,9 +1,12 @@
+"""FastAPI 应用入口：路由、中间件、预约扫尾与业务异常处理。"""
+
 import asyncio
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.api import (
     admin_config,
@@ -19,51 +22,40 @@ from app.api import (
     reservations,
 )
 from app.config import get_settings
-from app.db import SessionLocal
 from app.metrics import MetricsMiddleware
-from app.services.reservations import sweep_reservations
+from app.services import reservation_worker
+from app.services.availability import BookingError
 
 logger = logging.getLogger(__name__)
 
 
-def _run_reservation_sweep() -> None:
-    """在独立数据库会话中执行一次预约超时、提醒和违规扫描。"""
-    # 后台作业独立管理会话，异常回滚并关闭连接，不影响 API 请求事务。
-    with SessionLocal() as session:
-        sweep_reservations(session)
-
-
-async def _reservation_worker() -> None:
-    """每分钟处理预约生命周期事件，应用关闭时由 lifespan 取消任务。"""
-    await asyncio.sleep(60)
-    while True:
-        try:
-            # SQLAlchemy 同步会话放入线程池，避免阻塞 FastAPI 事件循环。
-            await asyncio.to_thread(_run_reservation_sweep)
-        except Exception:
-            logger.exception("预约自动处理任务失败")
-        await asyncio.sleep(60)
-
-
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    """管理预约后台任务的创建和关闭。"""
-    # 首次扫描延后一分钟，避免测试或刚启动的迁移过程出现并发读写。
-    task = asyncio.create_task(_reservation_worker())
+    """管理预约后台任务：interval>0 时启动；测试可设为 0 关闭。"""
+    settings = get_settings()
+    stop = asyncio.Event()
+    task = None
+    if settings.reservation_sweep_interval_seconds > 0:
+        task = asyncio.create_task(reservation_worker.run(stop))
     try:
         yield
     finally:
-        task.cancel()
-        try:
+        stop.set()
+        if task is not None:
             await task
-        except asyncio.CancelledError:
-            pass
 
 
 def create_app() -> FastAPI:
-    """组装 API 路由、中间件和预约自动任务。"""
-    # Router 路径统一由 /api 前缀暴露，后台 worker 随应用生命周期启动。
+    """组装 API 路由、中间件、BookingError 映射与预约自动任务。"""
     app = FastAPI(title=get_settings().app_name, lifespan=lifespan)
+
+    @app.exception_handler(BookingError)
+    async def booking_error(_: Request, exc: BookingError):
+        headers = {"Retry-After": "1"} if exc.status_code == 503 else None
+        return JSONResponse(
+            status_code=exc.status_code, content={"detail": exc.message}, headers=headers
+        )
+
     app.add_middleware(MetricsMiddleware)
     app.add_middleware(
         CORSMiddleware,

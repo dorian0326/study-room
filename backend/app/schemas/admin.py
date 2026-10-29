@@ -45,6 +45,7 @@ class BusinessSettings(BaseModel):
 class RoomIn(BaseModel):
     name: str = Field(min_length=1, max_length=64)
     location: str | None = Field(None, max_length=128)
+    floor: str | None = Field(None, max_length=32)
     capacity: int = Field(0, ge=0)
     facilities: str | None = None
     remark: str | None = None
