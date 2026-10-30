@@ -3,11 +3,11 @@ import { reactive } from 'vue'
 const KEY = 'studyroom_theme'
 const THEMES = ['dark', 'light']
 
-/** 当前主题（默认深色），持久化到 localStorage，并写入 <html data-theme>。 */
-export const theme = reactive({ name: 'dark' })
+/** 当前主题（默认浅色），持久化到 localStorage，并写入 <html data-theme>。 */
+export const theme = reactive({ name: 'light' })
 
 function apply(name) {
-  theme.name = THEMES.includes(name) ? name : 'dark'
+  theme.name = THEMES.includes(name) ? name : 'light'
   document.documentElement.dataset.theme = theme.name
   document.documentElement.style.colorScheme = theme.name
 }
@@ -20,7 +20,7 @@ export function initTheme() {
   } catch {
     saved = null
   }
-  apply(saved || 'dark')
+  apply(saved || 'light')
 }
 
 /** 在深色与浅色之间切换并保存。 */
