@@ -2,6 +2,7 @@
 import StatusBadge from '../components/StatusBadge.vue'
 import { onMounted, reactive, ref } from 'vue'
 import { api } from '../api/client.js'
+import { confirmDialog } from '../confirm.js'
 
 const DAY_TYPES = { weekday: '工作日', weekend: '周末', holiday: '节假日', exam_week: '考试周' }
 const SETTING_LABELS = {
@@ -88,8 +89,14 @@ function toggleRoom(r) {
 }
 
 /** 删除尚未关联座位或预约历史的自习室。 */
-function deleteRoom(r) {
-  if (!confirm(`删除自习室「${r.name}」？`)) return
+async function deleteRoom(r) {
+  const ok = await confirmDialog({
+    title: `删除自习室「${r.name}」？`,
+    message: '仅能删除尚未关联座位或预约历史的自习室，删除后无法恢复。',
+    confirmText: '删除',
+    danger: true,
+  })
+  if (!ok) return
   return guard(async () => {
     await api(`/admin/rooms/${r.id}`, { method: 'DELETE' })
     if (current.value?.id === r.id) current.value = null

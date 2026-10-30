@@ -252,6 +252,7 @@ study-room/
 `frontend/src/assets/nailong/` 中的奶龙图片均来自 Pinterest，版权归原作者所有：
 
 - `cover.jpg`：登录页封面，来源 Pinterest pin <https://www.pinterest.com/pin/801218590006354546/>（缩放压缩）。
-- `nailong-hello.webp`、`nailong-happy.webp`、`nailong-jump.webp`、`nailong-silly.webp`、`nailong-logo.png`：来自 Pinterest「奶龙 / nailong」搜索结果（i.pinimg.com），经抠图、统一尺寸、描边与阴影处理后压缩。
+- `nailong-hello.webp`：首页问候插画，来自 Pinterest「奶龙 打招呼」搜索结果的高清原图（<https://i.pinimg.com/736x/b5/b2/27/b5b227288549d689bc37c70ab5638ed2.jpg>），经 rembg 抠图、白色描边与柔和阴影处理后导出为 480px WebP。
+- `nailong-happy.webp`、`nailong-jump.webp`、`nailong-silly.webp`、`nailong-logo.png`：来自 Pinterest「奶龙 / nailong」搜索结果（i.pinimg.com），经抠图、统一尺寸、描边与阴影处理后压缩。
 
 **以上素材仅用于本软件工程课程设计作业的非商业演示，不得用于任何商业用途；如权利人有异议请联系删除。**

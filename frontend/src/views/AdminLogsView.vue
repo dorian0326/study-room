@@ -146,8 +146,12 @@ onMounted(refresh)
 </script>
 
 <template>
-  <h2>系统日志</h2>
-  <p class="hint">查看操作审计与登录日志（#8）。</p>
+  <header class="page-header">
+    <div>
+      <h2>系统日志</h2>
+      <p>查看操作审计与登录日志（#8）。</p>
+    </div>
+  </header>
   <p v-if="error" class="error">{{ error }}</p>
   <p v-if="notice" class="ok">{{ notice }}</p>
 

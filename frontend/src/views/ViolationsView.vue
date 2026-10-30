@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { api } from '../api/client.js'
+import { promptDialog } from '../confirm.js'
 
 const violations = ref([])
 const appeals = ref([])
@@ -23,7 +24,11 @@ async function loadCases() {
 
 /** 为选定的违规记录提交申诉，并要求填写理由。 */
 async function appealViolation(violation) {
-  const reason = window.prompt('请说明申诉理由（至少 5 个字符）')
+  const reason = await promptDialog({
+    title: '提交申诉',
+    message: '请说明申诉理由（至少 5 个字符）。',
+    placeholder: '例如：当时已在座位上，签到设备故障',
+  })
   if (!reason) return
   error.value = ''
   notice.value = ''

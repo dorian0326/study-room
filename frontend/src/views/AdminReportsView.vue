@@ -69,7 +69,11 @@ onMounted(loadReport)
 </script>
 
 <template>
-  <h2>统计报表</h2>
+  <header class="page-header">
+    <div>
+      <h2>统计报表</h2>
+    </div>
+  </header>
   <form class="filters" @submit.prevent="loadReport">
     <label>开始日期 <input v-model="start" type="date" required /></label>
     <label>结束日期 <input v-model="end" type="date" required /></label>
