@@ -1,4 +1,4 @@
-# 智慧自习室管理系统（study-room）
+# 奶龙自习室 · 智慧自习室管理系统（study-room）
 
 面向高校多间自习室的统一管理平台：把座位查看、预约、签到签退和违规治理放到线上，提升座位利用率与管理效率。本仓库是软件工程课程设计项目《智慧自习室管理系统》的代码。
 
@@ -243,3 +243,15 @@ study-room/
 ## 许可证
 
 [MIT](./LICENSE) © 2026 Dorian Zhang
+
+
+## 界面与图片素材说明
+
+前端界面名称为「奶龙自习室」，整体采用类 X（Twitter）的深色 / 浅色双主题设计（账户菜单中切换，默认深色），未使用任何 X 标志或商标。
+
+`frontend/src/assets/nailong/` 中的奶龙图片均来自 Pinterest，版权归原作者所有：
+
+- `cover.jpg`：登录页封面，来源 Pinterest pin <https://www.pinterest.com/pin/801218590006354546/>（缩放压缩）。
+- `nailong-hello.webp`、`nailong-happy.webp`、`nailong-jump.webp`、`nailong-silly.webp`、`nailong-logo.png`：来自 Pinterest「奶龙 / nailong」搜索结果（i.pinimg.com），经抠图、统一尺寸、描边与阴影处理后压缩。
+
+**以上素材仅用于本软件工程课程设计作业的非商业演示，不得用于任何商业用途；如权利人有异议请联系删除。**

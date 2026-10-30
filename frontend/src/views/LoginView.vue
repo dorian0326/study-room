@@ -29,7 +29,7 @@ async function submit() {
     <section class="auth-card">
       <header>
         <h2>欢迎回来</h2>
-        <p class="hint">登录智慧自习室，预约你的专属座位</p>
+        <p class="hint">登录奶龙自习室，预约你的专属座位</p>
       </header>
       <form @submit.prevent="submit">
         <label class="field">

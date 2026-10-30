@@ -1,0 +1,71 @@
+/* X 风格补充层 + 奶龙点缀色（奶龙黄与 X 蓝并用）。 */
+:root,
+[data-theme='dark'] {
+  --nl-yellow: #ffcb2f;
+  --nl-yellow-soft: rgba(255, 203, 47, 0.14);
+  --nl-yellow-text: #ffd65c;
+}
+[data-theme='light'] {
+  --nl-yellow: #f5b400;
+  --nl-yellow-soft: rgba(245, 180, 0, 0.14);
+  --nl-yellow-text: #9a6b00;
+}
+
+/* 奶龙插画：空状态 / 加载 / 404 */
+.nl-art {
+  display: block;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.empty::before {
+  content: '';
+  width: 88px;
+  height: 96px;
+  background: url('./nailong/nailong-happy.webp') center / contain no-repeat;
+  margin-bottom: 4px;
+}
+.nl-loading {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 40px 0;
+  color: var(--muted);
+}
+.nl-loading img {
+  width: 72px;
+  animation: nl-bounce 0.9s ease-in-out infinite alternate;
+}
+@keyframes nl-bounce {
+  to {
+    transform: translateY(-10px) rotate(-4deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nl-loading img {
+    animation: none;
+  }
+}
+
+/* 奶龙黄点缀：未读、强调数字等 */
+.metrics strong {
+  font-variant-numeric: tabular-nums;
+}
+.tone-yellow {
+  background: var(--nl-yellow-soft);
+  color: var(--nl-yellow-text);
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 999px;
+  border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}

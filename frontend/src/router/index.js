@@ -17,6 +17,7 @@ import CheckInView from '../views/CheckInView.vue'
 import AdminLogsView from '../views/AdminLogsView.vue'
 import AdminOpsView from '../views/AdminOpsView.vue'
 import AdminGateView from '../views/AdminGateView.vue'
+import NotFoundView from '../views/NotFoundView.vue'
 
 export const routes = [
   { path: '/', component: HomeView, meta: { auth: true } },
@@ -52,6 +53,7 @@ export const routes = [
   { path: '/change-password', component: ChangePasswordView, meta: { auth: true } },
   { path: '/admin/config', component: AdminConfigView, meta: { auth: true, perm: 'room:manage' } },
   { path: '/admin/users', component: AdminUsersView, meta: { auth: true, perm: 'user:manage' } },
+  { path: '/:pathMatch(.*)*', component: NotFoundView, meta: { auth: true } },
 ]
 
 const router = createRouter({ history: createWebHistory(), routes })

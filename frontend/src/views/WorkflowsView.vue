@@ -659,13 +659,14 @@ onMounted(async () => {
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: linear-gradient(180deg, #fbfcff 0%, #fff 60%);
+  background: var(--bg);
   transition:
     border-color 0.15s,
     box-shadow 0.15s;
 }
 .card:hover {
-  border-color: #c5d6f5;
+  border-color: var(--line-strong);
+  background: var(--bg-hover);
   box-shadow: var(--shadow);
 }
 .card header {
@@ -714,7 +715,7 @@ onMounted(async () => {
   border: 1px solid var(--line);
   border-left: 4px solid var(--brand);
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--bg);
 }
 .res-card.st-ACTIVE {
   border-left-color: var(--ok);

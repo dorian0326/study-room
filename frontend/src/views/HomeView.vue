@@ -3,6 +3,8 @@ import { computed, onMounted, ref } from 'vue'
 import { api } from '../api/client.js'
 import { auth, can } from '../auth.js'
 import StatusBadge from '../components/StatusBadge.vue'
+import XIcon from '../components/XIcon.vue'
+import helloUrl from '../assets/nailong/nailong-hello.webp'
 
 const health = ref(null)
 const error = ref('')
@@ -70,235 +72,257 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
 </script>
 
 <template>
-  <section class="hero">
-    <div>
-      <p class="eyebrow">{{ greeting }}</p>
-      <h2>{{ auth.user?.name }}，今天也来专注学习吧</h2>
-      <p class="hero-sub">
-        角色：{{ roleText }} · 可浏览自习室与座位、创建/改约/取消预约，并用桌上二维码签到。
-      </p>
-      <div class="row hero-actions">
-        <RouterLink to="/workflows" class="btn-link primary">预约座位</RouterLink>
-        <RouterLink to="/check-in" class="btn-link">扫码签到</RouterLink>
-      </div>
-    </div>
-    <div class="status-card">
-      <span class="hint">系统状态</span>
-      <template v-if="health">
-        <strong class="ok">● 运行正常</strong>
-        <small class="hint"
-          >{{ health.status }} · {{ health.database }} · {{ health.timezone }}</small
-        >
-      </template>
-      <template v-else-if="error">
-        <strong class="error">● 后端不可用</strong>
-        <small class="hint">{{ error }}</small>
-      </template>
-      <strong v-else class="hint">检测中…</strong>
-    </div>
-  </section>
+  <div class="home">
+    <div class="feed">
+      <section class="hero">
+        <img :src="helloUrl" alt="奶龙挥手打招呼" class="nl-art hero-art" />
+        <div class="hero-body">
+          <p class="eyebrow">{{ greeting }}</p>
+          <h2>{{ auth.user?.name }}，今天也来专注学习吧</h2>
+          <p class="hero-sub">
+            角色：{{ roleText }} · 浏览自习室与座位、创建 / 改约 / 取消预约，用桌上二维码签到。
+          </p>
+          <div class="row hero-actions">
+            <RouterLink to="/workflows" class="btn-link primary">预约座位</RouterLink>
+            <RouterLink to="/check-in" class="btn-link">扫码签到</RouterLink>
+          </div>
+        </div>
+      </section>
 
-  <section class="metrics">
-    <article>
-      <span>进行中的预约</span>
-      <strong>{{ mine.length }}</strong>
-    </article>
-    <article>
-      <span>今日开放自习室</span>
-      <strong
-        >{{ openRooms }}<small> / {{ rooms.length }}</small></strong
-      >
-    </article>
-    <article>
-      <span>当前角色</span>
-      <strong class="role">{{ roleText }}</strong>
-    </article>
-  </section>
-
-  <div class="home-grid">
-    <section class="panel">
-      <div class="row between">
+      <div class="feed-head">
         <h3>我的预约</h3>
-        <RouterLink to="/workflows">查看全部 →</RouterLink>
+        <RouterLink to="/workflows">查看全部</RouterLink>
       </div>
       <ul v-if="mine.length" class="res-list">
-        <li v-for="row in mine.slice(0, 4)" :key="row.id">
-          <div>
+        <li v-for="row in mine.slice(0, 5)" :key="row.id">
+          <span class="res-icon"><XIcon name="seat" :size="20" /></span>
+          <div class="res-main">
             <strong>{{ row.room_name }} · {{ row.seat_code }}</strong>
             <small class="hint">{{ fmt(row.start_time) }} – {{ fmt(row.end_time) }}</small>
           </div>
           <StatusBadge :status="row.status" />
         </li>
       </ul>
-      <div v-else class="empty">
+      <div v-else class="empty feed-empty">
         <span>暂无进行中的预约</span>
         <RouterLink to="/workflows">去预约一个座位</RouterLink>
       </div>
-    </section>
 
-    <section class="panel">
-      <h3>快捷入口</h3>
-      <div class="quick">
-        <RouterLink to="/workflows"><b>📚</b>预约自习室</RouterLink>
-        <RouterLink to="/check-in"><b>📷</b>扫码签到</RouterLink>
-        <RouterLink to="/violations"><b>⚠️</b>违规记录</RouterLink>
-        <RouterLink to="/notifications"><b>🔔</b>消息通知</RouterLink>
-        <RouterLink v-if="isAdmin" to="/admin/config"><b>🏫</b>自习室配置</RouterLink>
-        <RouterLink v-if="can('user:manage')" to="/admin/users"><b>👥</b>用户管理</RouterLink>
+      <div class="feed-head">
+        <h3>快捷入口</h3>
       </div>
-    </section>
+      <nav class="quick">
+        <RouterLink to="/workflows"><XIcon name="calendar" :size="22" />预约自习室</RouterLink>
+        <RouterLink to="/check-in"><XIcon name="qr" :size="22" />扫码签到</RouterLink>
+        <RouterLink to="/violations"><XIcon name="alert" :size="22" />违规记录</RouterLink>
+        <RouterLink to="/notifications"><XIcon name="bell" :size="22" />消息通知</RouterLink>
+        <RouterLink v-if="isAdmin" to="/admin/config"
+          ><XIcon name="building" :size="22" />自习室配置</RouterLink
+        >
+        <RouterLink v-if="can('user:manage')" to="/admin/users"
+          ><XIcon name="users" :size="22" />用户管理</RouterLink
+        >
+      </nav>
+    </div>
+
+    <aside class="side">
+      <section class="side-card">
+        <h3>系统状态</h3>
+        <div class="side-row">
+          <template v-if="health">
+            <strong class="ok">● 运行正常</strong>
+            <small class="hint"
+              >{{ health.status }} · {{ health.database }} · {{ health.timezone }}</small
+            >
+          </template>
+          <template v-else-if="error">
+            <strong class="error">● 后端不可用</strong>
+            <small class="hint">{{ error }}</small>
+          </template>
+          <strong v-else class="hint">检测中…</strong>
+        </div>
+      </section>
+      <section class="side-card">
+        <h3>今日概览</h3>
+        <div class="side-row">
+          <small class="hint">进行中的预约</small>
+          <strong class="big">{{ mine.length }}</strong>
+        </div>
+        <div class="side-row">
+          <small class="hint">今日开放自习室</small>
+          <strong class="big"
+            >{{ openRooms }}<small class="hint"> / {{ rooms.length }}</small></strong
+          >
+        </div>
+        <div class="side-row">
+          <small class="hint">当前角色</small>
+          <strong>{{ roleText }}</strong>
+        </div>
+      </section>
+    </aside>
   </div>
 </template>
 
 <style scoped>
+.home {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 24px;
+  align-items: start;
+}
 .hero {
   display: flex;
-  justify-content: space-between;
+  gap: 16px;
   align-items: center;
-  gap: 24px;
-  padding: 28px 32px;
-  margin-bottom: 16px;
-  border-radius: 24px;
-  color: #fff;
+  padding: 16px 20px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
   background:
-    radial-gradient(60% 120% at 100% 0%, rgba(90, 200, 250, 0.55), transparent 60%),
-    linear-gradient(135deg, rgba(0, 122, 255, 0.92), rgba(10, 132, 255, 0.78));
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 18px 44px rgba(0, 122, 255, 0.25);
+    radial-gradient(120% 140% at 0% 0%, var(--nl-yellow-soft), transparent 60%), var(--bg);
+}
+.hero-art {
+  width: 96px;
+  flex: none;
+}
+.hero-body {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
 }
 .eyebrow {
-  color: rgba(255, 255, 255, 0.85);
-  font-weight: 600;
+  color: var(--nl-yellow-text);
+  font-weight: 700;
 }
 .hero h2 {
-  margin: 4px 0 6px;
-  font-size: 1.9rem;
-  color: #fff;
+  font-size: 1.3rem;
 }
 .hero-sub {
-  color: rgba(255, 255, 255, 0.86);
-  max-width: 620px;
+  color: var(--muted);
 }
 .hero-actions {
-  margin-top: 16px;
+  margin-top: 6px;
 }
 .btn-link {
   display: inline-flex;
   align-items: center;
-  height: 38px;
+  height: 36px;
   padding: 0 18px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.22);
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  color: #fff;
-  font-weight: 600;
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  transition: transform 0.12s ease;
-}
-.btn-link:active {
-  transform: scale(0.96);
-}
-.btn-link.primary {
-  background: #fff;
-  border-color: #fff;
-  color: #007aff;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-weight: 700;
 }
 .btn-link:hover {
   text-decoration: none;
-  filter: brightness(0.97);
+  background: var(--bg-hover-strong);
 }
-.status-card {
-  display: grid;
-  gap: 4px;
-  min-width: 220px;
-  padding: 16px 20px;
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.72);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  backdrop-filter: blur(20px) saturate(160%);
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
+.btn-link.primary {
+  background: var(--pill-bg);
+  color: var(--pill-text);
+  border-color: transparent;
 }
-.metrics {
-  margin-bottom: 16px;
+.btn-link.primary:hover {
+  background: var(--pill-hover);
 }
-.metrics small {
-  font-size: 0.9rem;
-  color: var(--muted);
-  font-weight: 400;
+.feed-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0 0;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--line);
 }
-.metrics .role {
-  font-size: 1.1rem;
-  line-height: 2.2rem;
-}
-.home-grid {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 16px;
+.feed-head h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
 }
 .res-list {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  gap: 8px;
 }
 .res-list li {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   gap: 12px;
-  padding: 12px 14px;
-  border: 1px solid rgba(60, 60, 67, 0.1);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.55);
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.15s;
 }
-.res-list li div {
+.res-list li:hover {
+  background: var(--bg-hover);
+}
+.res-icon {
   display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand);
+  flex: none;
+}
+.res-main {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.feed-empty {
+  margin-top: 12px;
 }
 .quick {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
 }
 .quick a {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
-  border: 1px solid rgba(60, 60, 67, 0.1);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.55);
+  gap: 12px;
+  padding: 14px 8px;
   color: var(--text);
-  transition:
-    background 0.18s,
-    transform 0.12s;
-  font-weight: 500;
+  font-weight: 700;
+  border-bottom: 1px solid var(--line);
 }
 .quick a:hover {
   text-decoration: none;
-  border-color: rgba(0, 122, 255, 0.4);
-  background: rgba(0, 122, 255, 0.08);
+  background: var(--bg-hover);
 }
-.quick a:active {
-  transform: scale(0.98);
-}
-.quick b {
+.side {
+  position: sticky;
+  top: 69px;
   display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
-  background: rgba(0, 122, 255, 0.12);
-  color: #007aff;
-  font-size: 1.05rem;
+  gap: 16px;
 }
-@media (max-width: 960px) {
-  .hero,
-  .home-grid {
-    display: grid;
-    grid-template-columns: 1fr;
+.side-card {
+  border-radius: 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.side-card h3 {
+  padding: 12px 16px;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+.side-row {
+  display: grid;
+  gap: 2px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+}
+.side-row:hover {
+  background: var(--bg-hover);
+}
+.big {
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+@media (max-width: 1000px) {
+  .home {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .side {
+    position: static;
   }
 }
 </style>
