@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { auth, can, logout } from './auth.js'
 import { theme, toggleTheme } from './theme.js'
 import XIcon from './components/XIcon.vue'
+import ConfirmDialog from './components/ConfirmDialog.vue'
 import logoUrl from './assets/nailong/nailong-logo.png'
 import coverUrl from './assets/nailong/cover.jpg'
 import sillyUrl from './assets/nailong/nailong-silly.webp'
@@ -229,6 +230,7 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
       </RouterLink>
     </nav>
   </div>
+  <ConfirmDialog />
 </template>
 
 <style scoped>

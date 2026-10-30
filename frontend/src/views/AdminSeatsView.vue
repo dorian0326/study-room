@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { api } from '../api/client.js'
+import { confirmDialog } from '../confirm.js'
 
 const rooms = ref([])
 const seats = ref([])
@@ -80,7 +81,12 @@ async function saveSeat() {
 async function changeStatus(seat, status) {
   if (
     status === 'maintenance' &&
-    !window.confirm('进入维护后，所有未开始预约将被取消且不补偿。继续？')
+    !(await confirmDialog({
+      title: `将座位 ${seat.code} 设为维护？`,
+      message: '进入维护后，所有未开始预约将被取消且不补偿。',
+      confirmText: '设为维护',
+      danger: true,
+    }))
   )
     return
   error.value = ''
@@ -105,7 +111,13 @@ async function changeStatus(seat, status) {
 
 /** 删除从未产生预约历史的座位。 */
 async function deleteSeat(seat) {
-  if (!window.confirm(`确认删除座位 ${seat.code}？`)) return
+  const ok = await confirmDialog({
+    title: `删除座位 ${seat.code}？`,
+    message: '仅能删除从未产生预约历史的座位，删除后无法恢复。',
+    confirmText: '删除',
+    danger: true,
+  })
+  if (!ok) return
   error.value = ''
   try {
     await api(`/admin/rooms/${roomId.value}/seats/${seat.id}`, { method: 'DELETE' })
@@ -156,46 +168,60 @@ onMounted(refresh)
 </script>
 
 <template>
-  <h2>座位布局与维护</h2>
+  <header class="page-header">
+    <div>
+      <h2>座位布局与维护</h2>
+    </div>
+  </header>
   <p v-if="error" class="error">{{ error }}</p>
   <p v-if="notice" class="ok">{{ notice }}</p>
-  <label
-    >自习室
-    <select v-model="roomId" @change="loadSeats">
-      <option v-for="room in rooms" :key="room.id" :value="String(room.id)">{{ room.name }}</option>
-    </select>
-  </label>
-  <div class="table-scroll">
-    <table>
-      <thead>
-        <tr>
-          <th>座位</th>
-          <th>区域</th>
-          <th>靠窗</th>
-          <th>电源</th>
-          <th>状态</th>
-          <th>维护操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="seat in seats" :key="seat.id">
-          <td>{{ seat.code }}</td>
-          <td>{{ seat.zone_type }}</td>
-          <td>{{ seat.by_window ? '是' : '否' }}</td>
-          <td>{{ seat.has_power ? '是' : '否' }}</td>
-          <td>{{ statusLabel(seat.status) }}</td>
-          <td class="actions">
-            <button @click="editSeat(seat)">编辑</button>
-            <button v-if="seat.status !== 'maintenance'" @click="changeStatus(seat, 'maintenance')">
-              维护并取消待开始预约
-            </button>
-            <button v-else @click="changeStatus(seat, 'available')">恢复可用</button>
-            <button @click="deleteSeat(seat)">删除</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <section class="panel">
+    <div class="row between">
+      <h3>座位列表</h3>
+      <label class="room-pick"
+        >自习室
+        <select v-model="roomId" @change="loadSeats">
+          <option v-for="room in rooms" :key="room.id" :value="String(room.id)">
+            {{ room.name }}
+          </option>
+        </select>
+      </label>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>座位</th>
+            <th>区域</th>
+            <th>靠窗</th>
+            <th>电源</th>
+            <th>状态</th>
+            <th>维护操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="seat in seats" :key="seat.id">
+            <td>{{ seat.code }}</td>
+            <td>{{ seat.zone_type }}</td>
+            <td>{{ seat.by_window ? '是' : '否' }}</td>
+            <td>{{ seat.has_power ? '是' : '否' }}</td>
+            <td>{{ statusLabel(seat.status) }}</td>
+            <td class="actions">
+              <button @click="editSeat(seat)">编辑</button>
+              <button
+                v-if="seat.status !== 'maintenance'"
+                @click="changeStatus(seat, 'maintenance')"
+              >
+                维护并取消待开始预约
+              </button>
+              <button v-else @click="changeStatus(seat, 'available')">恢复可用</button>
+              <button class="danger" @click="deleteSeat(seat)">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
   <section class="panel">
     <h3>{{ seatForm.id ? '修改座位' : '新增座位' }}</h3>
@@ -229,6 +255,11 @@ onMounted(refresh)
 </template>
 
 <style scoped>
+.room-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
 .actions {
   display: flex;
   flex-wrap: wrap;

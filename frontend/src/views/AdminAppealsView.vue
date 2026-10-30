@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { api } from '../api/client.js'
+import { promptDialog } from '../confirm.js'
 
 const appeals = ref([])
 const error = ref('')
@@ -19,7 +20,12 @@ async function loadAppeals() {
 
 /** 保存申诉通过或驳回结论，并记录对申请人可见的审核说明。 */
 async function reviewAppeal(appeal, result) {
-  const reviewComment = window.prompt(result === 'approved' ? '填写通过原因' : '填写驳回原因')
+  const reviewComment = await promptDialog({
+    title: result === 'approved' ? '通过申诉' : '驳回申诉',
+    message: result === 'approved' ? '填写通过原因' : '填写驳回原因',
+    confirmText: result === 'approved' ? '通过' : '驳回',
+    danger: result !== 'approved',
+  })
   if (!reviewComment || reviewComment.trim().length < 2) return
   error.value = ''
   notice.value = ''
@@ -45,7 +51,11 @@ onMounted(loadAppeals)
 </script>
 
 <template>
-  <h2>违规申诉审核</h2>
+  <header class="page-header">
+    <div>
+      <h2>违规申诉审核</h2>
+    </div>
+  </header>
   <p v-if="error" class="error">{{ error }}</p>
   <p v-if="notice" class="ok">{{ notice }}</p>
   <p v-if="!appeals.length">当前没有待审核申诉。</p>

@@ -68,10 +68,12 @@ const SYNC = {
 </script>
 
 <template>
-  <h2>入馆 / 出馆记录</h2>
-  <p class="hint">
-    查看脱敏后的门禁同步记录（US-014）。当前为模拟接入，无真实闸机轮询；详见文档限制说明。
-  </p>
+  <header class="page-header">
+    <div>
+      <h2>入馆 / 出馆记录</h2>
+      <p>查看脱敏后的门禁同步记录（US-014）。当前为模拟接入，无真实闸机轮询；详见文档限制说明。</p>
+    </div>
+  </header>
   <p v-if="error" class="error">{{ error }}</p>
   <p v-if="notice" class="ok">{{ notice }}</p>
 

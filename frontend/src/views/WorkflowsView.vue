@@ -297,6 +297,20 @@ onMounted(async () => {
     await loadHistory()
   })
 })
+/** 页内分区标签：仅滚动定位，不改变任何业务流程。 */
+const SECTION_TABS = [
+  { id: 'sec-rooms', label: '自习室' },
+  { id: 'sec-search', label: '找座位' },
+  { id: 'sec-create', label: '预约' },
+  { id: 'sec-mine', label: '我的预约' },
+  { id: 'sec-history', label: '历史' },
+]
+const activeTab = ref('sec-rooms')
+
+function jumpTo(id) {
+  activeTab.value = id
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
 </script>
 
 <template>
@@ -307,10 +321,21 @@ onMounted(async () => {
     </div>
     <button type="button" @click="refreshAll">刷新数据</button>
   </header>
+  <nav class="tabs page-tabs" aria-label="页面分区">
+    <button
+      v-for="tab in SECTION_TABS"
+      :key="tab.id"
+      type="button"
+      :class="{ primary: activeTab === tab.id }"
+      @click="jumpTo(tab.id)"
+    >
+      {{ tab.label }}
+    </button>
+  </nav>
   <p v-if="error" class="error">{{ error }}</p>
   <p v-if="notice" class="ok">{{ notice }}</p>
 
-  <section class="panel">
+  <section id="sec-rooms" class="panel">
     <div class="row between">
       <h3>自习室目录</h3>
       <label class="inline-field">
@@ -319,28 +344,36 @@ onMounted(async () => {
       </label>
     </div>
     <div class="cards">
-      <article v-for="room in roomOptions" :key="room.id" class="card">
-        <header>
-          <strong>{{ room.name }}</strong>
-          <StatusBadge :status="room.status === 'open' ? 'OPEN' : 'CLOSED'" />
-        </header>
-        <ul class="meta">
-          <li><span>位置</span>{{ room.location || '—' }} · {{ room.floor || '—' }}</li>
-          <li><span>容量</span>{{ room.capacity }} 座</li>
-          <li><span>开放</span>{{ hoursText(room) }}</li>
-        </ul>
-        <div v-if="room.facilities" class="chips">
-          <span
-            v-for="item in String(room.facilities).split(/[,，、]\s*/)"
-            :key="item"
-            class="chip"
-          >
-            {{ item }}
-          </span>
+      <article
+        v-for="room in roomOptions"
+        :key="room.id"
+        class="card"
+        :class="{ picked: search.room_id === String(room.id) }"
+      >
+        <div class="avatar" aria-hidden="true">{{ String(room.name).slice(0, 1) }}</div>
+        <div class="card-body">
+          <header>
+            <strong>{{ room.name }}</strong>
+            <StatusBadge :status="room.status === 'open' ? 'OPEN' : 'CLOSED'" />
+          </header>
+          <ul class="meta">
+            <li>{{ room.location || '—' }} · {{ room.floor || '—' }}</li>
+            <li>{{ room.capacity }} 座</li>
+            <li>开放 {{ hoursText(room) }}</li>
+          </ul>
+          <div v-if="room.facilities" class="chips">
+            <span
+              v-for="item in String(room.facilities).split(/[,，、]\s*/)"
+              :key="item"
+              class="chip"
+            >
+              {{ item }}
+            </span>
+          </div>
         </div>
         <button
           type="button"
-          :class="{ primary: search.room_id === String(room.id) }"
+          :class="search.room_id === String(room.id) ? 'brand' : 'primary'"
           @click="pickRoomSeats(room.id)"
         >
           查看座位
@@ -350,7 +383,7 @@ onMounted(async () => {
     </div>
   </section>
 
-  <section class="panel">
+  <section id="sec-search" class="panel">
     <h3>座位搜索</h3>
     <div class="filters">
       <label>
@@ -480,7 +513,7 @@ onMounted(async () => {
     </div>
   </section>
 
-  <section class="panel">
+  <section id="sec-create" class="panel">
     <h3>创建预约</h3>
     <div class="row">
       <label class="check">
@@ -534,7 +567,7 @@ onMounted(async () => {
     <p class="hint">同一时段只能约一个座位；冲突会返回 409。默认时段落在开放窗口内且不跨午夜。</p>
   </section>
 
-  <section class="panel">
+  <section id="sec-mine" class="panel">
     <h3>我的当前预约</h3>
     <div class="res-cards">
       <article v-for="row in mine" :key="row.id" class="res-card" :class="`st-${row.status}`">
@@ -596,7 +629,7 @@ onMounted(async () => {
     </form>
   </section>
 
-  <section class="panel">
+  <section id="sec-history" class="panel">
     <h3>历史预约</h3>
     <table>
       <thead>
@@ -647,51 +680,86 @@ onMounted(async () => {
 .checks {
   gap: 16px;
 }
+.page-tabs {
+  position: sticky;
+  top: 53px;
+  z-index: 4;
+  margin: 0 -16px;
+  width: auto;
+  background: var(--header-bg);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+.page-tabs button {
+  height: 48px;
+  font-size: 0.92rem;
+}
+.panel {
+  scroll-margin-top: 112px;
+}
+/* 自习室目录：X 风格流式行（头像 + 正文 + 胶囊按钮） */
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 14px;
+  margin: 0 -16px;
+  border-top: 1px solid var(--line);
 }
 .card {
   display: grid;
-  gap: 10px;
-  align-content: start;
-  padding: 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--bg);
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.15s;
 }
 .card:hover {
-  border-color: var(--line-strong);
   background: var(--bg-hover);
-  box-shadow: var(--shadow);
+}
+.card.picked {
+  background: var(--brand-soft);
+  box-shadow: inset 3px 0 0 var(--brand);
+}
+.avatar {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--nl-yellow-soft);
+  color: var(--nl-yellow-text);
+  font-weight: 800;
+  font-size: 1.15rem;
+  border: 1px solid var(--line);
+}
+.card-body {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
 }
 .card header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 .card header strong {
   font-size: 1rem;
 }
 .card > button {
-  justify-self: start;
+  align-self: center;
 }
 .meta {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  gap: 2px;
-}
-.meta span {
-  display: inline-block;
-  width: 3em;
+  display: flex;
+  flex-wrap: wrap;
   color: var(--muted);
+  font-size: 0.92rem;
+}
+.meta li + li::before {
+  content: '·';
+  margin: 0 6px;
 }
 .chip.off {
   opacity: 0.4;
@@ -702,26 +770,31 @@ onMounted(async () => {
   padding-top: 16px;
   border-top: 1px dashed var(--line-strong);
 }
+/* 我的预约：流式行，左侧状态色条 */
 .res-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 12px;
+  margin: 0 -16px;
+  border-top: 1px solid var(--line);
+}
+.res-cards:empty {
+  display: none;
 }
 .res-card {
-  align-content: start;
   display: grid;
   gap: 8px;
-  padding: 14px 16px;
-  border: 1px solid var(--line);
-  border-left: 4px solid var(--brand);
-  border-radius: var(--radius-sm);
-  background: var(--bg);
+  padding: 14px 16px 14px 20px;
+  border-bottom: 1px solid var(--line);
+  box-shadow: inset 4px 0 0 var(--brand);
+  transition: background 0.15s;
+}
+.res-card:hover {
+  background: var(--bg-hover);
 }
 .res-card.st-ACTIVE {
-  border-left-color: var(--ok);
+  box-shadow: inset 4px 0 0 var(--ok);
 }
 .res-card.st-TEMP_LEAVE {
-  border-left-color: var(--warn);
+  box-shadow: inset 4px 0 0 var(--nl-yellow);
 }
 .res-card header {
   display: flex;
@@ -734,9 +807,30 @@ onMounted(async () => {
 }
 .when {
   color: var(--text);
+  font-variant-numeric: tabular-nums;
 }
 .res-card .actions button {
-  height: 30px;
-  padding: 0 12px;
+  height: 32px;
+  padding: 0 14px;
+}
+@media (max-width: 700px) {
+  .card {
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+  .avatar {
+    width: 40px;
+    height: 40px;
+  }
+  .card > button {
+    grid-column: 2;
+    justify-self: start;
+  }
+  .page-tabs {
+    overflow-x: auto;
+  }
+  .page-tabs button {
+    flex: none;
+    padding: 0 14px;
+  }
 }
 </style>

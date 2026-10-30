@@ -83,10 +83,12 @@ onMounted(refresh)
 </script>
 
 <template>
-  <h2>备份与监控</h2>
-  <p class="hint">
-    查看运行状态、数据库体积与备份列表（#9）。定时备份可用环境变量开启，CLI 仍可用。
-  </p>
+  <header class="page-header">
+    <div>
+      <h2>备份与监控</h2>
+      <p>查看运行状态、数据库体积与备份列表（#9）。定时备份可用环境变量开启，CLI 仍可用。</p>
+    </div>
+  </header>
   <p v-if="error" class="error">{{ error }}</p>
   <p v-if="notice" class="ok">{{ notice }}</p>
 
