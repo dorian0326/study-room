@@ -17,6 +17,49 @@ const audit = reactive({
 const login = reactive({ total: 0, items: [], page_no: 1, student_no: '', event: '', success: '' })
 const size = 50
 
+const OP_TYPES = {
+  admin_action: ['管理操作', 'brand'],
+  violation: ['违规认定', 'warn'],
+  permission_change: ['权限变更', 'info'],
+  login: ['登录', 'ok'],
+  logout: ['登出', 'neutral'],
+}
+const RESULTS = {
+  success: ['成功', 'ok'],
+  failure: ['失败', 'danger'],
+  failed: ['失败', 'danger'],
+  denied: ['拒绝', 'danger'],
+  error: ['错误', 'danger'],
+}
+const EVENTS = { login: ['登录', 'brand'], logout: ['登出', 'neutral'] }
+const REASONS = {
+  invalid_credentials: '学号或密码错误',
+  invalid_student_no: '学号不存在',
+  disabled: '账号已停用',
+  locked: '失败次数过多已锁定',
+}
+const TARGETS = {
+  user: '用户',
+  room: '自习室',
+  seat: '座位',
+  reservation: '预约',
+  violation: '违规',
+  violation_record: '违规记录',
+  user_role: '用户角色',
+  room_hours: '开放时段',
+  system_setting: '系统参数',
+  appeal: '申诉',
+  setting: '参数',
+  settings: '参数',
+  system: '系统',
+  backup: '备份',
+}
+
+/** 枚举值 → [中文, 徽标色]；未知值原样显示。 */
+function label(map, value) {
+  return map[value] || [value || '—', 'neutral']
+}
+
 function fmt(value) {
   if (!value) return '—'
   return new Date(value).toLocaleString('zh-CN', { hour12: false })
@@ -135,8 +178,7 @@ onMounted(refresh)
         <select v-model="audit.op_type">
           <option value="">全部</option>
           <option value="admin_action">管理操作</option>
-          <option value="login">登录</option>
-          <option value="logout">登出</option>
+          <option value="violation">违规认定</option>
           <option value="permission_change">权限变更</option>
         </select>
       </label>
@@ -144,28 +186,41 @@ onMounted(refresh)
       <button class="primary">查询</button>
     </form>
     <p class="muted">共 {{ audit.total }} 条</p>
-    <table>
-      <thead>
-        <tr>
-          <th>时间</th>
-          <th>操作人</th>
-          <th>类型</th>
-          <th>目标</th>
-          <th>结果</th>
-          <th>IP</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="row in audit.items" :key="row.id">
-          <td>{{ fmt(row.occurred_at) }}</td>
-          <td>{{ row.operator_student_no || row.operator_id || '—' }}</td>
-          <td>{{ row.op_type }}</td>
-          <td>{{ row.target_type }} {{ row.target_id || '' }}</td>
-          <td>{{ row.result }}</td>
-          <td>{{ row.ip_address || '—' }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>时间</th>
+            <th>操作人</th>
+            <th>类型</th>
+            <th>目标</th>
+            <th>结果</th>
+            <th>IP</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row in audit.items" :key="row.id">
+            <td>{{ fmt(row.occurred_at) }}</td>
+            <td>{{ row.operator_student_no || row.operator_id || '—' }}</td>
+            <td>
+              <span class="badge" :class="`tone-${label(OP_TYPES, row.op_type)[1]}`">
+                {{ label(OP_TYPES, row.op_type)[0] }}
+              </span>
+            </td>
+            <td>
+              {{ TARGETS[row.target_type] || row.target_type || '—' }}
+              <span v-if="row.target_id" class="muted">#{{ row.target_id }}</span>
+            </td>
+            <td>
+              <span class="badge" :class="`tone-${label(RESULTS, row.result)[1]}`">
+                {{ label(RESULTS, row.result)[0] }}
+              </span>
+            </td>
+            <td>{{ row.ip_address || '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <div class="pager">
       <button type="button" :disabled="audit.page_no <= 1" @click="prevAudit">上一页</button>
       <span>第 {{ audit.page_no }} 页</span>
@@ -197,28 +252,38 @@ onMounted(refresh)
       <button class="primary">查询</button>
     </form>
     <p class="muted">共 {{ login.total }} 条</p>
-    <table>
-      <thead>
-        <tr>
-          <th>时间</th>
-          <th>学号</th>
-          <th>事件</th>
-          <th>成功</th>
-          <th>原因</th>
-          <th>IP</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="row in login.items" :key="row.id">
-          <td>{{ fmt(row.occurred_at) }}</td>
-          <td>{{ row.student_no }}</td>
-          <td>{{ row.event }}</td>
-          <td>{{ row.success ? '是' : '否' }}</td>
-          <td>{{ row.reason || '—' }}</td>
-          <td>{{ row.ip_address || '—' }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>时间</th>
+            <th>学号</th>
+            <th>事件</th>
+            <th>结果</th>
+            <th>原因</th>
+            <th>IP</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row in login.items" :key="row.id">
+            <td>{{ fmt(row.occurred_at) }}</td>
+            <td>{{ row.student_no }}</td>
+            <td>
+              <span class="badge" :class="`tone-${label(EVENTS, row.event)[1]}`">
+                {{ label(EVENTS, row.event)[0] }}
+              </span>
+            </td>
+            <td>
+              <span class="badge" :class="row.success ? 'tone-ok' : 'tone-danger'">
+                {{ row.success ? '成功' : '失败' }}
+              </span>
+            </td>
+            <td>{{ REASONS[row.reason] || row.reason || '—' }}</td>
+            <td>{{ row.ip_address || '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <div class="pager">
       <button type="button" :disabled="login.page_no <= 1" @click="prevLogin">上一页</button>
       <span>第 {{ login.page_no }} 页</span>

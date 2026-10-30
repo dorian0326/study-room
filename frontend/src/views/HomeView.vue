@@ -64,6 +64,9 @@ onMounted(() => {
   loadHealth()
   loadOverview()
 })
+
+const ROLE_LABELS = { user: '学生', admin: '管理员', ops: '运维' }
+const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[r] || r).join('、'))
 </script>
 
 <template>
@@ -72,8 +75,7 @@ onMounted(() => {
       <p class="eyebrow">{{ greeting }}</p>
       <h2>{{ auth.user?.name }}，今天也来专注学习吧</h2>
       <p class="hero-sub">
-        角色：{{ auth.user?.roles.join('、') }} ·
-        可浏览自习室与座位、创建/改约/取消预约，并用桌上二维码签到。
+        角色：{{ roleText }} · 可浏览自习室与座位、创建/改约/取消预约，并用桌上二维码签到。
       </p>
       <div class="row hero-actions">
         <RouterLink to="/workflows" class="btn-link primary">预约座位</RouterLink>
@@ -109,7 +111,7 @@ onMounted(() => {
     </article>
     <article>
       <span>当前角色</span>
-      <strong class="role">{{ auth.user?.roles.join('、') }}</strong>
+      <strong class="role">{{ roleText }}</strong>
     </article>
   </section>
 
@@ -156,20 +158,25 @@ onMounted(() => {
   gap: 24px;
   padding: 28px 32px;
   margin-bottom: 16px;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(120deg, #eaf1fd 0%, #e6f7f3 100%);
-  border: 1px solid #dbe6f8;
+  border-radius: 24px;
+  color: #fff;
+  background:
+    radial-gradient(60% 120% at 100% 0%, rgba(90, 200, 250, 0.55), transparent 60%),
+    linear-gradient(135deg, rgba(0, 122, 255, 0.92), rgba(10, 132, 255, 0.78));
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 18px 44px rgba(0, 122, 255, 0.25);
 }
 .eyebrow {
-  color: var(--brand);
+  color: rgba(255, 255, 255, 0.85);
   font-weight: 600;
 }
 .hero h2 {
   margin: 4px 0 6px;
-  font-size: 1.6rem;
+  font-size: 1.9rem;
+  color: #fff;
 }
 .hero-sub {
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.86);
   max-width: 620px;
 }
 .hero-actions {
@@ -180,16 +187,22 @@ onMounted(() => {
   align-items: center;
   height: 38px;
   padding: 0 18px;
-  border-radius: var(--radius-sm);
-  background: #fff;
-  border: 1px solid var(--line-strong);
-  color: var(--text);
-  font-weight: 500;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  color: #fff;
+  font-weight: 600;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  transition: transform 0.12s ease;
+}
+.btn-link:active {
+  transform: scale(0.96);
 }
 .btn-link.primary {
-  background: var(--brand);
-  border-color: var(--brand);
-  color: #fff;
+  background: #fff;
+  border-color: #fff;
+  color: #007aff;
 }
 .btn-link:hover {
   text-decoration: none;
@@ -200,9 +213,12 @@ onMounted(() => {
   gap: 4px;
   min-width: 220px;
   padding: 16px 20px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: var(--radius);
-  border: 1px solid #dbe6f8;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
 }
 .metrics {
   margin-bottom: 16px;
@@ -233,9 +249,10 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  padding: 10px 14px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  border: 1px solid rgba(60, 60, 67, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.55);
 }
 .res-list li div {
   display: grid;
@@ -249,19 +266,33 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid rgba(60, 60, 67, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.55);
   color: var(--text);
+  transition:
+    background 0.18s,
+    transform 0.12s;
   font-weight: 500;
 }
 .quick a:hover {
   text-decoration: none;
-  border-color: var(--brand);
-  background: var(--brand-soft);
+  border-color: rgba(0, 122, 255, 0.4);
+  background: rgba(0, 122, 255, 0.08);
+}
+.quick a:active {
+  transform: scale(0.98);
 }
 .quick b {
-  font-size: 1.1rem;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: rgba(0, 122, 255, 0.12);
+  color: #007aff;
+  font-size: 1.05rem;
 }
 @media (max-width: 960px) {
   .hero,

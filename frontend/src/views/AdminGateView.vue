@@ -56,6 +56,15 @@ function submitMock() {
 }
 
 onMounted(refresh)
+const SYNC = {
+  matched: ['已匹配', 'ok'],
+  synced: ['已同步', 'ok'],
+  pending: ['待处理', 'warn'],
+  late: ['延迟到达', 'info'],
+  unmatched: ['未匹配', 'warn'],
+  manual_review: ['人工核验', 'danger'],
+  delayed: ['延迟', 'info'],
+}
 </script>
 
 <template>
@@ -78,41 +87,53 @@ onMounted(refresh)
           <option value="delayed">延迟</option>
         </select>
       </label>
-      <button class="primary">查询</button>
-      <button type="button" @click="refresh">刷新</button>
+      <div class="btns">
+        <button class="primary">查询</button>
+        <button type="button" @click="refresh">刷新</button>
+      </div>
     </form>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>来源</th>
-          <th>类型</th>
-          <th>脱敏键</th>
-          <th>记录时间</th>
-          <th>接收时间</th>
-          <th>状态</th>
-          <th>延迟(s)</th>
-          <th>预约</th>
-          <th>备注</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="row in rows" :key="row.id">
-          <td>{{ row.id }}</td>
-          <td>{{ row.source_system }}</td>
-          <td>{{ row.record_type === 'entry' ? '入馆' : '出馆' }}</td>
-          <td>
-            <code>{{ row.masked_user_key }}</code>
-          </td>
-          <td>{{ fmt(row.recorded_at) }}</td>
-          <td>{{ fmt(row.received_at) }}</td>
-          <td>{{ row.sync_status }}</td>
-          <td>{{ row.sync_delay_seconds ?? '—' }}</td>
-          <td>{{ row.reservation_id ?? '—' }}</td>
-          <td>{{ row.manual_note || '—' }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>来源</th>
+            <th>类型</th>
+            <th>脱敏键</th>
+            <th>记录时间</th>
+            <th>接收时间</th>
+            <th>状态</th>
+            <th>延迟(s)</th>
+            <th>预约</th>
+            <th>备注</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row in rows" :key="row.id">
+            <td>{{ row.id }}</td>
+            <td>{{ row.source_system }}</td>
+            <td>
+              <span class="badge" :class="row.record_type === 'entry' ? 'tone-brand' : 'tone-info'">
+                {{ row.record_type === 'entry' ? '入馆' : '出馆' }}
+              </span>
+            </td>
+            <td>
+              <code :title="row.masked_user_key">{{ row.masked_user_key }}</code>
+            </td>
+            <td>{{ fmt(row.recorded_at) }}</td>
+            <td>{{ fmt(row.received_at) }}</td>
+            <td>
+              <span class="badge" :class="`tone-${(SYNC[row.sync_status] || [0, 'neutral'])[1]}`">
+                {{ (SYNC[row.sync_status] || [row.sync_status])[0] }}
+              </span>
+            </td>
+            <td>{{ row.sync_delay_seconds ?? '—' }}</td>
+            <td>{{ row.reservation_id ?? '—' }}</td>
+            <td>{{ row.manual_note || '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <p v-if="!rows.length" class="hint">暂无记录。</p>
   </section>
 
@@ -129,14 +150,27 @@ onMounted(refresh)
         </select>
       </label>
       <label>记录时间 <input v-model="mock.recorded_at" type="datetime-local" /></label>
-      <button class="primary">提交</button>
+      <div class="btns"><button class="primary">提交</button></div>
     </form>
   </section>
 </template>
 
 <style scoped>
+.btns {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
 code {
-  font-size: 0.85rem;
-  word-break: break-all;
+  display: inline-block;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+  font-size: 0.82rem;
+}
+td {
+  white-space: nowrap;
 }
 </style>
