@@ -30,6 +30,14 @@ function fmtUptime(sec) {
   return `${h} 小时 ${m} 分钟`
 }
 
+function codeTone(code) {
+  const c = Number(String(code).charAt(0)) * 100
+  if (c >= 500) return 'danger'
+  if (c >= 400) return 'warn'
+  if (c >= 300) return 'info'
+  return 'ok'
+}
+
 async function guard(fn, ok) {
   error.value = ''
   notice.value = ''
@@ -82,7 +90,7 @@ onMounted(refresh)
   <p v-if="error" class="error">{{ error }}</p>
   <p v-if="notice" class="ok">{{ notice }}</p>
 
-  <div class="row">
+  <div class="row toolbar">
     <button type="button" @click="refresh">刷新</button>
     <button
       v-if="can('system:backup')"
@@ -128,13 +136,40 @@ onMounted(refresh)
           <template v-else>暂无</template>
         </dd>
       </div>
-      <div v-if="status.requests">
-        <dt>请求计数</dt>
-        <dd>
-          <code>{{ JSON.stringify(status.requests) }}</code>
-        </dd>
-      </div>
     </dl>
+    <template v-if="status.requests">
+      <h4>请求统计 <small class="muted">（本进程启动以来）</small></h4>
+      <div class="req-grid">
+        <div class="req-tile">
+          <span>总请求数</span>
+          <strong>{{ status.requests.requests ?? 0 }}</strong>
+        </div>
+        <div class="req-tile">
+          <span>平均耗时</span>
+          <strong>{{ status.requests.avg_ms ?? 0 }}<small> ms</small></strong>
+        </div>
+        <div class="req-tile">
+          <span>最大耗时</span>
+          <strong>{{ status.requests.max_ms ?? 0 }}<small> ms</small></strong>
+        </div>
+        <div class="req-tile">
+          <span>按状态码</span>
+          <div class="chips">
+            <span
+              v-for="(n, code) in status.requests.by_status || {}"
+              :key="code"
+              class="badge"
+              :class="`tone-${codeTone(code)}`"
+            >
+              {{ code }} · {{ n }}
+            </span>
+            <span v-if="!Object.keys(status.requests.by_status || {}).length" class="muted"
+              >暂无</span
+            >
+          </div>
+        </div>
+      </div>
+    </template>
   </section>
 
   <section v-if="can('system:backup')" class="panel">
@@ -158,3 +193,41 @@ onMounted(refresh)
     <p v-if="!backups.length" class="hint">还没有备份文件。</p>
   </section>
 </template>
+
+<style scoped>
+.toolbar {
+  margin-bottom: 16px;
+}
+.req-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(140px, 1fr)) minmax(240px, 2fr);
+  gap: 12px;
+}
+.req-tile {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(60, 60, 67, 0.12);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.req-tile strong {
+  color: var(--brand);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.req-tile strong small {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+@media (max-width: 900px) {
+  .req-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+</style>
