@@ -1,6 +1,6 @@
 /*
  * 全局设计令牌与基础样式（X / Twitter 风格）。
- * 深色主题为默认；浅色通过 [data-theme="light"] 覆盖。
+ * :root 变量为深色基线；默认由 <html data-theme="light"> 启用浅色。
  * 组件内只写局部布局，颜色一律走 CSS 变量。
  */
 :root,

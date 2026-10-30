@@ -1,9 +1,18 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light" style="color-scheme: light">
   <head>
-    <meta name="color-scheme" content="dark light" />
+    <meta name="color-scheme" content="light dark" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // 首帧前应用主题：默认浅色，仅当 localStorage 存有 dark 时用深色，避免闪烁
+      try {
+        if (localStorage.getItem('studyroom_theme') === 'dark') {
+          document.documentElement.dataset.theme = 'dark'
+          document.documentElement.style.colorScheme = 'dark'
+        }
+      } catch (e) {}
+    </script>
     <title>奶龙自习室</title>
     <link rel="icon" type="image/png" href="/favicon.png" />
   </head>
