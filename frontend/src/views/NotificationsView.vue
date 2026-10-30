@@ -90,8 +90,8 @@ onMounted(loadNotifications)
   list-style: none;
 }
 .inbox li.unread {
-  border-left: 4px solid #28785d;
-  background: #f4faf6;
+  border-left: 4px solid var(--brand);
+  background: var(--brand-soft);
 }
 .notice-heading {
   display: flex;
@@ -100,7 +100,7 @@ onMounted(loadNotifications)
 }
 .notice-heading time,
 .read-status {
-  color: #66736d;
+  color: var(--muted);
   font-size: 0.9rem;
 }
 </style>

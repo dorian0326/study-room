@@ -209,8 +209,8 @@ onMounted(refresh)
   gap: 6px;
   padding: 14px 16px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(60, 60, 67, 0.12);
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
   color: var(--muted);
   font-size: 0.82rem;
 }
