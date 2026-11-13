@@ -236,8 +236,15 @@ study-room/
 
 ## 相关文档
 
-- [docs/limitations.md](./docs/limitations.md)：实现和需求文档的有意差异（门禁是模拟的、并发控制方式、未做压测等）
-- [docs/reservation-progress.md](./docs/reservation-progress.md)：Issue #10–#16 预约模块后端阶段交付记录（历史文档）
+- [文档基线索引](./docs/基线索引.md)：文档入口、当前基线和待确认范围
+- [软件架构设计方案（基线候选版）](./docs/软件架构设计方案_基线版.md)：当前代码结构和运行机制
+- [架构确认与决策记录](./docs/架构确认与决策记录.md)：Q 问题、ADR 及其状态
+- [接口与关键设计说明书](./docs/接口与关键设计说明书.md)：当前 API 契约和数据/事务约束
+- [分阶段实现与测试计划](./docs/分阶段实现与测试计划.md)：阶段准入、测试案例和验收条件
+- [任务卡模板](./docs/tasks/任务卡模板.md)：新任务的输入基线、范围和完成标准
+- [测试证据目录说明](./docs/evidence/README.md)：如何保存可复核的测试与审查证据
+- [预约模块历史进度](./docs/reservation-progress.md)：Issue #10–#16 的实现、测试和遗留事项
+- [已知限制](./docs/limitations.md)：已记录的模拟边界、未验证指标和当前范围
 - [CONTRIBUTING.md](./CONTRIBUTING.md)：协作和提交规范
 
 ## 许可证
