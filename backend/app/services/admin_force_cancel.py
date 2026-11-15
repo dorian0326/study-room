@@ -5,13 +5,18 @@ from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app import timeutil
 from app.models import Reservation, StudyRoom, User
 from app.models import enums as E
 from app.models.enums import AuditOpType, NotificationType
 from app.services import audit
 from app.services.availability import covers
 from app.services.notifications import create_notification
-from app.timeutil import now
+
+
+def now():
+    """可被测试替换；默认转发到 timeutil.now（clock 夹具会 patch 后者）。"""
+    return timeutil.now()
 
 
 def cancel_future_reserved(
