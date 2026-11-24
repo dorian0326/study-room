@@ -1,0 +1,154 @@
+/* 奶龙插画、加载态，以及应用壳层的补充样式。 */
+
+/* 奶龙插画：空状态 / 加载 / 404 */
+.nl-art {
+  display: block;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.empty::before {
+  content: '';
+  width: 88px;
+  height: 96px;
+  background: url('./nailong/nailong-happy.webp') center / contain no-repeat;
+  margin-bottom: 4px;
+}
+.nl-loading {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 40px 0;
+  color: var(--muted);
+}
+.nl-loading img {
+  width: 72px;
+  animation: nl-bounce 0.9s ease-in-out infinite alternate;
+}
+@keyframes nl-bounce {
+  to {
+    transform: translateY(-10px) rotate(-4deg);
+  }
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 999px;
+  border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 表单区略抬升 */
+.app-main .panel form.grid,
+.app-main .panel .seat-form,
+.app-main .panel .form-grid {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-muted);
+}
+.app-main .panel form button:not(.ghost):not(.danger):last-child {
+  background: var(--brand);
+  border-color: transparent;
+  color: var(--brand-ink);
+}
+.app-main .panel form button:not(.ghost):not(.danger):last-child:hover:not(:disabled) {
+  background: var(--brand-hover);
+}
+
+/* 危险实心按钮（确认框） */
+button.danger.solid {
+  background: var(--danger);
+  border-color: transparent;
+  color: #fff;
+}
+button.danger.solid:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+/* 对话框进出动画 */
+.dlg-enter-active,
+.dlg-leave-active {
+  transition: opacity 0.15s;
+}
+.dlg-enter-active .dialog,
+.dlg-leave-active .dialog {
+  transition: transform 0.15s;
+}
+.dlg-enter-from,
+.dlg-leave-to {
+  opacity: 0;
+}
+.dlg-enter-from .dialog,
+.dlg-leave-to .dialog {
+  transform: scale(0.96);
+}
+.dialog h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.dialog textarea {
+  width: 100%;
+}
+.dialog-actions button {
+  min-width: 88px;
+}
+
+@media (max-width: 700px) {
+  .app-main .panel form.grid,
+  .app-main .panel .seat-form,
+  .app-main .panel .form-grid {
+    padding: 12px;
+  }
+  .dialog-mask {
+    place-items: end center;
+    padding: 0;
+  }
+  .dialog-mask .dialog {
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    padding-bottom: calc(var(--space-5) + env(safe-area-inset-bottom));
+  }
+  .dialog-actions {
+    flex-direction: column-reverse;
+  }
+  .dialog-actions button {
+    width: 100%;
+    height: 44px;
+  }
+}
+
+.nav-icon {
+  position: relative;
+  display: inline-flex;
+}
+.nav-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
+  box-shadow: 0 0 0 2px var(--bg);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nl-loading img {
+    animation: none;
+  }
+  .dlg-enter-active,
+  .dlg-leave-active,
+  .dlg-enter-active .dialog,
+  .dlg-leave-active .dialog {
+    transition: none;
+  }
+}

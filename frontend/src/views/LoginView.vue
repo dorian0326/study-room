@@ -57,7 +57,7 @@ async function submit() {
       </form>
       <footer>
         没有账号？<RouterLink to="/register">立即注册</RouterLink>
-        <span class="sep">·</span>
+        <span class="sep">/</span>
         <RouterLink to="/reset-password">忘记密码</RouterLink>
       </footer>
     </section>

@@ -398,7 +398,7 @@ function jumpTo(id) {
               <StatusBadge :status="room.status === 'open' ? 'OPEN' : 'CLOSED'" />
             </header>
             <ul class="meta">
-              <li>{{ room.location || '—' }} · {{ room.floor || '—' }}</li>
+              <li>{{ room.location || '—' }} / {{ room.floor || '—' }}</li>
               <li>{{ room.capacity }} 座</li>
               <li>开放 {{ hoursText(room) }}</li>
             </ul>
@@ -519,7 +519,7 @@ function jumpTo(id) {
           <header>
             <div>
               <strong>{{ zoneLabel(seat.zone_type) }} / {{ seat.code }}</strong>
-              <small class="muted">{{ seat.room_name }} · {{ seat.floor || '—' }}</small>
+              <small class="muted">{{ seat.room_name }} / {{ seat.floor || '—' }}</small>
             </div>
             <StatusBadge :status="seat.status" />
           </header>
@@ -548,7 +548,7 @@ function jumpTo(id) {
         </div>
         <div>
           <dt>楼层 / 位置</dt>
-          <dd>{{ selectedSeat.floor || '—' }} · {{ selectedSeat.location || '—' }}</dd>
+          <dd>{{ selectedSeat.floor || '—' }} / {{ selectedSeat.location || '—' }}</dd>
         </div>
         <div>
           <dt>区域</dt>
@@ -596,7 +596,7 @@ function jumpTo(id) {
         <div v-if="form.mode === 'seat'" class="picked-seat">
           <template v-if="selectedSeat && String(selectedSeat.id) === form.seat_id">
             <strong>{{ zoneLabel(selectedSeat.zone_type) }} / {{ selectedSeat.code }}</strong>
-            <small>{{ selectedSeat.room_name }} · {{ facilityText(selectedSeat) }}</small>
+            <small>{{ selectedSeat.room_name }}，{{ facilityText(selectedSeat) }}</small>
           </template>
           <p v-else class="hint">请先在「找座位」里选一个座位</p>
           <input v-model="form.seat_id" type="hidden" required />
@@ -646,7 +646,7 @@ function jumpTo(id) {
         <article v-for="row in mine" :key="row.id" class="res-card" :class="`st-${row.status}`">
           <header>
             <div>
-              <strong>{{ row.room_name }} · {{ row.seat_code }}</strong>
+              <strong>{{ row.room_name }} {{ row.seat_code }}</strong>
               <small class="muted">{{ row.reservation_no }}</small>
             </div>
             <StatusBadge :status="row.status" />
@@ -696,7 +696,7 @@ function jumpTo(id) {
         <div class="picked-seat">
           <template v-if="changeSeatInfo && String(changeSeatInfo.id) === changeForm.seat_id">
             <strong>{{ zoneLabel(changeSeatInfo.zone_type) }} / {{ changeSeatInfo.code }}</strong>
-            <small>{{ changeSeatInfo.room_name }} · {{ facilityText(changeSeatInfo) }}</small>
+            <small>{{ changeSeatInfo.room_name }}，{{ facilityText(changeSeatInfo) }}</small>
           </template>
           <p v-else class="hint">尚未选择新座位</p>
           <input v-model="changeForm.seat_id" type="hidden" required />
@@ -737,7 +737,7 @@ function jumpTo(id) {
         >
           <header>
             <div>
-              <strong>{{ row.room_name }} · {{ row.seat_code }}</strong>
+              <strong>{{ row.room_name }} {{ row.seat_code }}</strong>
               <small class="muted">{{ row.reservation_no }}</small>
             </div>
             <StatusBadge :status="row.status" />
@@ -778,26 +778,24 @@ function jumpTo(id) {
 }
 .page-tabs {
   position: sticky;
-  top: 53px;
+  top: 56px;
   z-index: 4;
-  margin: 0 -16px;
+  margin: 0 0 16px;
   width: auto;
-  background: var(--header-bg);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
 }
 .page-tabs button {
-  height: 48px;
+  height: 40px;
   font-size: 0.92rem;
 }
 .panel {
   scroll-margin-top: 112px;
 }
-/* 自习室目录：X 风格流式行（头像 + 正文 + 胶囊按钮） */
+/* 自习室目录：独立纸面卡片，选中用灯金描边 */
 .cards {
   display: grid;
-  margin: 0 -16px;
-  border-top: 1px solid var(--line);
+  gap: 10px;
+  margin: 0;
+  border-top: none;
 }
 .card {
   display: grid;
@@ -805,27 +803,32 @@ function jumpTo(id) {
   gap: 12px;
   align-items: start;
   padding: 14px 16px;
-  border-bottom: 1px solid var(--line);
-  transition: background 0.15s;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--bg-muted);
+  transition:
+    background 0.15s,
+    border-color 0.15s;
 }
 .card:hover {
-  background: var(--bg-hover);
+  background: var(--bg-hover-strong);
 }
 .card.picked {
   background: var(--brand-soft);
-  box-shadow: inset 3px 0 0 var(--brand);
+  border-color: var(--brand);
+  box-shadow: none;
 }
 .avatar {
   width: 48px;
   height: 48px;
   display: grid;
   place-items: center;
-  border-radius: 50%;
+  border-radius: 14px;
   background: var(--nl-yellow-soft);
   color: var(--nl-yellow-text);
-  font-weight: 800;
+  font-weight: 700;
   font-size: 1.15rem;
-  border: 1px solid var(--line);
+  border: 1px solid transparent;
 }
 .card-body {
   display: grid;
@@ -850,12 +853,9 @@ function jumpTo(id) {
   padding: 0;
   display: flex;
   flex-wrap: wrap;
+  gap: 0 12px;
   color: var(--muted);
   font-size: 0.92rem;
-}
-.meta li + li::before {
-  content: '·';
-  margin: 0 6px;
 }
 .chip.off {
   opacity: 0.4;
@@ -866,11 +866,12 @@ function jumpTo(id) {
   padding-top: 16px;
   border-top: 1px dashed var(--line-strong);
 }
-/* 我的预约：流式行，左侧状态色条 */
+/* 我的预约：状态色条保留，卡片彼此留缝 */
 .res-cards {
   display: grid;
-  margin: 0 -16px;
-  border-top: 1px solid var(--line);
+  gap: 10px;
+  margin: 0;
+  border-top: none;
 }
 .res-cards:empty {
   display: none;
@@ -879,12 +880,10 @@ function jumpTo(id) {
   display: grid;
   gap: 8px;
   padding: 14px 16px 14px 20px;
-  border-bottom: 1px solid var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--bg-muted);
   box-shadow: inset 4px 0 0 var(--brand);
-  transition: background 0.15s;
-}
-.res-card:hover {
-  background: var(--bg-hover);
 }
 .res-card.st-ACTIVE {
   box-shadow: inset 4px 0 0 var(--ok);
@@ -916,7 +915,7 @@ function jumpTo(id) {
   padding: 12px 14px;
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
-  background: var(--bg);
+  background: var(--card);
 }
 .picked-seat strong {
   font-size: 1rem;
@@ -942,7 +941,7 @@ function jumpTo(id) {
   }
   .page-tabs {
     overflow-x: auto;
-    top: 53px;
+    top: 56px;
   }
   .page-tabs button {
     flex: none;
@@ -955,8 +954,9 @@ function jumpTo(id) {
   .seat-cards,
   .history-cards {
     display: grid;
-    margin: 0 -16px;
-    border-top: 1px solid var(--line);
+    gap: 10px;
+    margin: 0;
+    border-top: none;
   }
 }
 </style>

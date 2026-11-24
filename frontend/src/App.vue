@@ -147,7 +147,7 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
       <div class="auth-cover-text">
         <img :src="logoUrl" alt="" class="auth-cover-logo" />
         <strong>{{ BRAND }}</strong>
-        <span>约座 · 签到 · 专注，每一天</span>
+        <span>约座、签到，安心自习</span>
       </div>
     </aside>
     <main class="auth-side">
@@ -216,7 +216,7 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
         <div v-if="menuOpen" class="account-menu" role="menu">
           <div class="menu-head">
             <strong>{{ auth.user.name }}</strong>
-            <small>{{ auth.user.student_no }} · {{ roleText }}</small>
+            <small>{{ auth.user.student_no }}（{{ roleText }}）</small>
           </div>
           <button type="button" role="menuitem" class="menu-item" @click="toggleTheme">
             <XIcon :name="theme.name === 'dark' ? 'sun' : 'moon'" :size="20" />
@@ -254,7 +254,7 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
           <div v-if="menuOpen" class="account-menu" role="menu">
             <div class="menu-head">
               <strong>{{ auth.user.name }}</strong>
-              <small>{{ auth.user.student_no }} · {{ roleText }}</small>
+              <small>{{ auth.user.student_no }}（{{ roleText }}）</small>
             </div>
             <button type="button" role="menuitem" class="menu-item" @click="toggleTheme">
               <XIcon :name="theme.name === 'dark' ? 'sun' : 'moon'" :size="20" />
@@ -280,7 +280,7 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
         </div>
       </div>
       <main class="app-main"><RouterView /></main>
-      <footer class="app-footer">{{ BRAND }} · 软件工程课程设计</footer>
+      <footer class="app-footer">{{ BRAND }}，软件工程课程设计</footer>
     </div>
 
     <!-- 移动端底部标签栏 -->
@@ -354,7 +354,7 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
 .auth-cover {
   position: relative;
   overflow: hidden;
-  background: #1a1408;
+  background: #1c1710;
 }
 .auth-cover > img {
   position: absolute;
@@ -367,7 +367,7 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, 0.72));
+  background: linear-gradient(180deg, transparent 50%, rgba(28, 23, 16, 0.78));
 }
 .auth-cover-text {
   position: absolute;
@@ -376,38 +376,44 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
   z-index: 1;
   display: grid;
   gap: 2px;
-  color: #fff;
+  color: #fff8f1;
 }
 .auth-cover-logo {
   width: 44px;
   margin-bottom: 6px;
 }
 .auth-cover-text strong {
+  font-family: var(--font-display);
   font-size: 1.9rem;
-  font-weight: 800;
+  font-weight: 700;
 }
 .auth-cover-text span {
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(255, 248, 241, 0.86);
 }
 .auth-side {
   position: relative;
   display: grid;
   align-content: center;
-  padding: 32px;
+  padding: 32px 40px;
+  background: var(--bg);
 }
 .auth-brand {
   display: flex;
   align-items: center;
   gap: 10px;
-  justify-self: center;
-  font-weight: 800;
-  font-size: 1.1rem;
+  justify-self: start;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin-bottom: 8px;
 }
 .auth-brand img {
   width: 40px;
 }
 .auth-side :deep(.auth-wrap) {
   min-height: 0;
+  place-items: stretch;
+  padding: 0;
 }
 .theme-btn {
   position: absolute;
@@ -415,33 +421,38 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
   right: 16px;
 }
 
-/* ---------- 应用外壳 ---------- */
+/* ---------- 应用外壳：左侧圆角服务台，右侧书桌工作区 ---------- */
 .shell {
   display: grid;
   grid-template-columns: var(--rail-w) minmax(0, 1fr);
-  max-width: calc(var(--rail-w) + 1000px);
+  max-width: calc(var(--rail-w) + 1120px);
   margin: 0 auto;
   min-height: 100vh;
+  padding: 16px 20px 16px 12px;
+  gap: 12px;
 }
 .rail {
   position: sticky;
-  top: 0;
-  height: 100vh;
+  top: 16px;
+  height: calc(100vh - 32px);
   display: flex;
   flex-direction: column;
-  padding: 4px 12px 12px;
+  padding: 12px;
   overflow-y: auto;
   scrollbar-width: none;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: 24px;
 }
 .rail-logo {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 8px 10px;
-  margin: 4px 0;
-  border-radius: 9999px;
+  margin: 0 0 8px;
+  border-radius: 16px;
   color: var(--text);
-  width: fit-content;
+  width: 100%;
 }
 .rail-logo:hover {
   text-decoration: none;
@@ -453,18 +464,20 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
   object-fit: contain;
 }
 .brand-name {
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-weight: 700;
   font-size: 1.15rem;
   color: var(--nl-yellow-text);
 }
 .rail-nav {
   display: grid;
-  gap: 0;
+  gap: 2px;
 }
 .rail-item {
   display: flex;
   color: var(--text);
-  padding: 2px 0;
+  padding: 0;
+  border-radius: 14px;
 }
 .rail-item:hover {
   text-decoration: none;
@@ -472,10 +485,11 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
 .rail-pill {
   display: inline-flex;
   align-items: center;
-  gap: 18px;
-  padding: 10px 22px 10px 12px;
-  border-radius: 9999px;
-  font-size: 1.15rem;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 0.98rem;
   transition: background 0.15s;
 }
 .rail-item:hover .rail-pill {
@@ -488,13 +502,15 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
   box-shadow: 0 0 0 2px var(--brand);
 }
 .rail-item.active .rail-pill {
-  font-weight: 800;
-}
-.rail-item.active .x-icon {
+  font-weight: 700;
+  background: var(--brand-soft);
   color: var(--text);
 }
+.rail-item.active .x-icon {
+  color: var(--nl-yellow-text);
+}
 .rail-sep {
-  margin: 10px 12px 4px;
+  margin: 10px 8px 4px;
   padding-top: 10px;
   border-top: 1px solid var(--line);
   color: var(--muted);
@@ -502,7 +518,7 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
   font-weight: 700;
 }
 .rail-nav .rail-sep ~ .rail-item .rail-pill {
-  font-size: 1rem;
+  font-size: 0.92rem;
   padding-top: 8px;
   padding-bottom: 8px;
 }
@@ -510,14 +526,14 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 52px;
+  height: 44px;
   margin: 14px 0;
-  width: 90%;
-  border-radius: 9999px;
+  width: 100%;
+  border-radius: 14px;
   background: var(--brand);
-  color: #fff;
-  font-weight: 800;
-  font-size: 1.05rem;
+  color: var(--brand-ink);
+  font-weight: 700;
+  font-size: 1rem;
 }
 .rail-cta:hover {
   text-decoration: none;
@@ -535,11 +551,15 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
   height: auto;
   justify-content: flex-start;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 8px 10px;
   border: none;
+  border-radius: 14px;
   background: transparent;
   font-weight: 400;
   text-align: left;
+}
+.account-chip:hover:not(:disabled) {
+  background: var(--bg-hover-strong);
 }
 .avatar {
   flex: none;
@@ -549,8 +569,8 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
   height: 40px;
   border-radius: 50%;
   background: var(--nl-yellow);
-  color: #2b1d00;
-  font-weight: 800;
+  color: var(--brand-ink);
+  font-weight: 700;
 }
 .who {
   display: grid;
@@ -565,7 +585,7 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
 }
 .who small {
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.86rem;
 }
 .more {
   margin-left: auto;
@@ -577,18 +597,12 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
   left: 0;
   width: 290px;
   padding: 12px 0;
-  background: var(--bg);
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
   border-radius: 16px;
-  box-shadow:
-    0 0 15px rgba(255, 255, 255, 0.12),
-    0 0 3px 1px rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-lg);
   z-index: 60;
   display: grid;
-}
-[data-theme='light'] .account-menu {
-  box-shadow:
-    rgba(101, 119, 134, 0.2) 0 0 15px,
-    rgba(101, 119, 134, 0.15) 0 0 3px 1px;
 }
 .menu-head {
   display: grid;
@@ -624,34 +638,32 @@ button.menu-item:hover:not(:disabled) {
 
 .column {
   min-width: 0;
-  max-width: var(--main-max);
-  border-left: 1px solid var(--line);
-  border-right: 1px solid var(--line);
-  min-height: 100vh;
+  max-width: none;
+  border: none;
+  min-height: calc(100vh - 32px);
   display: flex;
   flex-direction: column;
 }
 .shell.wide .column {
-  max-width: 1000px;
+  max-width: none;
 }
 .topbar {
   position: sticky;
   top: 0;
   z-index: 20;
   display: flex;
-  align-items: baseline;
-  gap: 10px;
-  height: 53px;
-  padding: 0 16px;
   align-items: center;
+  gap: 10px;
+  height: 56px;
+  padding: 0 8px 0 4px;
   background: var(--header-bg);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--line);
+  border-bottom: none;
 }
 .topbar h1 {
-  font-size: 1.25rem;
-  font-weight: 800;
+  font-size: 1.4rem;
+  font-weight: 700;
 }
 .topbar-sub {
   color: var(--muted);
@@ -682,15 +694,15 @@ button.menu-item:hover:not(:disabled) {
 }
 .app-main {
   flex: 1;
-  padding: 16px;
+  padding: 8px 8px 24px;
   min-width: 0;
 }
 .app-footer {
-  text-align: center;
+  text-align: left;
   color: var(--muted);
   font-size: 0.8rem;
-  padding: 16px 0 24px;
-  border-top: 1px solid var(--line);
+  padding: 8px 8px 16px;
+  border-top: none;
 }
 .tabbar {
   display: none;
@@ -700,21 +712,27 @@ button.menu-item:hover:not(:disabled) {
 @media (max-width: 1260px) {
   .shell {
     grid-template-columns: var(--rail-w-sm) minmax(0, 1fr);
+    padding: 12px;
   }
   .rail {
     align-items: center;
-    padding: 4px 4px 12px;
+    padding: 10px 8px;
   }
   .rail-label,
   .rail-sep {
     display: none;
+  }
+  .rail-logo {
+    width: auto;
+    padding: 8px;
   }
   .rail-pill {
     padding: 12px;
     gap: 0;
   }
   .rail-cta {
-    width: 52px;
+    width: 48px;
+    height: 48px;
   }
   .rail-cta-icon {
     display: block;
@@ -722,7 +740,7 @@ button.menu-item:hover:not(:disabled) {
   .account-chip {
     width: auto;
     padding: 8px;
-    border-radius: 9999px;
+    border-radius: 14px;
   }
   .account-menu {
     left: 0;
@@ -732,19 +750,29 @@ button.menu-item:hover:not(:disabled) {
 @media (max-width: 700px) {
   .shell {
     grid-template-columns: minmax(0, 1fr);
+    padding: 0;
+    gap: 0;
   }
   .rail {
     display: none;
   }
   .column {
     border: none;
+    min-height: 100vh;
     padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  }
+  .topbar {
+    padding: 0 16px;
+    height: 56px;
   }
   .topbar-sub {
     display: none;
   }
   .topbar-account {
     display: block;
+  }
+  .app-main {
+    padding: 12px 16px 24px;
   }
   .tabbar {
     display: flex;
@@ -784,8 +812,8 @@ button.menu-item:hover:not(:disabled) {
     color: var(--text);
   }
   .tabbar-item.active {
-    color: var(--text);
-    font-weight: 800;
+    color: var(--nl-yellow-text);
+    font-weight: 700;
   }
   .tab-label {
     font-size: 0.68rem;
@@ -802,8 +830,8 @@ button.menu-item:hover:not(:disabled) {
   }
   .admin-sheet {
     width: 100%;
-    background: var(--bg);
-    border-radius: 16px 16px 0 0;
+    background: var(--bg-elevated);
+    border-radius: 20px 20px 0 0;
     padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
     display: grid;
     gap: 4px;
@@ -836,6 +864,9 @@ button.menu-item:hover:not(:disabled) {
   }
   .auth-cover {
     height: 220px;
+  }
+  .auth-side {
+    padding: 24px 20px 40px;
   }
 }
 </style>

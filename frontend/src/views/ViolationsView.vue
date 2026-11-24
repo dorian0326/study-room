@@ -117,7 +117,7 @@ onMounted(loadCases)
               <td>{{ violationTypeLabel(violation.violation_type) }}</td>
               <td>{{ violation.period_seq }}</td>
               <td>
-                {{ stateLabel(violation.result) }} · {{ stateLabel(violation.appeal_status) }}
+                {{ stateLabel(violation.result) }} / {{ stateLabel(violation.appeal_status) }}
               </td>
               <td>
                 <button
@@ -138,7 +138,7 @@ onMounted(loadCases)
             <span class="muted">第 {{ violation.period_seq }} 次</span>
           </header>
           <p class="when">{{ formatTime(violation.occurred_at) }}</p>
-          <p>{{ stateLabel(violation.result) }} · {{ stateLabel(violation.appeal_status) }}</p>
+          <p>{{ stateLabel(violation.result) }} / {{ stateLabel(violation.appeal_status) }}</p>
           <div class="actions">
             <button
               v-if="violation.appeal_status !== 'pending'"
@@ -205,7 +205,9 @@ textarea {
   display: grid;
   gap: 6px;
   padding: 14px 16px 14px 20px;
-  border-bottom: 1px solid var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--bg-muted);
   box-shadow: inset 4px 0 0 var(--danger);
 }
 .rec-card header {
@@ -222,8 +224,9 @@ textarea {
   }
   .rec-cards {
     display: grid;
-    margin: 0 -16px;
-    border-top: 1px solid var(--line);
+    gap: 10px;
+    margin: 0;
+    border-top: none;
   }
 }
 </style>

@@ -155,7 +155,7 @@ onBeforeUnmount(stopScan)
           <select v-model="reservationId">
             <option disabled value="">请选择</option>
             <option v-for="row in reserved" :key="row.id" :value="String(row.id)">
-              {{ row.reservation_no }} · {{ row.room_name }} / {{ row.seat_code }} ·
+              {{ row.reservation_no }} / {{ row.room_name }} / {{ row.seat_code }} /
               {{ new Date(row.start_time).toLocaleString('zh-CN') }}
             </option>
           </select>

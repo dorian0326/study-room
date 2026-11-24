@@ -66,7 +66,7 @@ onMounted(loadAppeals)
   <NlLoading v-if="loading" />
   <EmptyState v-else-if="!appeals.length" title="当前没有待审核申诉。" />
   <section v-for="appeal in appeals" :key="appeal.id" class="panel">
-    <h3>申诉 #{{ appeal.id }} · 用户 {{ appeal.user_id }} · 违规 #{{ appeal.violation_id }}</h3>
+    <h3>申诉 #{{ appeal.id }}，用户 {{ appeal.user_id }}，违规 #{{ appeal.violation_id }}</h3>
     <p><strong>理由：</strong>{{ appeal.reason }}</p>
     <p v-if="appeal.evidence"><strong>证据说明：</strong>{{ appeal.evidence }}</p>
     <p>审核期限：{{ formatDeadline(appeal.deadline) }}</p>

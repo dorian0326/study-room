@@ -78,14 +78,16 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
 
 <template>
   <div class="home">
-    <div class="feed">
+    <div class="home-main">
       <section class="hero">
         <img :src="helloUrl" alt="奶龙挥手打招呼" class="nl-art hero-art" />
         <div class="hero-body">
-          <p class="eyebrow">{{ greeting }}</p>
+          <p class="greet">{{ greeting }}</p>
           <h2>{{ auth.user?.name }}，今天也来专注学习吧</h2>
           <p class="hero-sub">
-            角色：{{ roleText }} · 浏览自习室与座位、创建 / 改约 / 取消预约，用桌上二维码签到。
+            你的角色是{{
+              roleText
+            }}。可以浏览自习室与座位，创建、改约或取消预约，再用桌上二维码签到。
           </p>
           <div class="row hero-actions">
             <RouterLink to="/workflows" class="btn-link primary">预约座位</RouterLink>
@@ -94,7 +96,7 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
         </div>
       </section>
 
-      <div class="feed-head">
+      <div class="section-head">
         <h3>我的预约</h3>
         <RouterLink to="/workflows">查看全部</RouterLink>
       </div>
@@ -103,7 +105,7 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
         <li v-for="row in mine.slice(0, 5)" :key="row.id">
           <span class="res-icon"><XIcon name="seat" :size="20" /></span>
           <div class="res-main">
-            <strong>{{ row.room_name }} · {{ row.seat_code }}</strong>
+            <strong>{{ row.room_name }} {{ row.seat_code }}</strong>
             <small class="hint">{{ fmt(row.start_time) }} – {{ fmt(row.end_time) }}</small>
           </div>
           <StatusBadge :status="row.status" />
@@ -111,13 +113,13 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
       </ul>
       <EmptyState
         v-else
-        class="feed-empty"
+        class="section-empty"
         title="暂无进行中的预约"
         action-to="/workflows"
         action-text="去预约一个座位"
       />
 
-      <div class="feed-head">
+      <div class="section-head">
         <h3>快捷入口</h3>
       </div>
       <nav class="quick">
@@ -141,7 +143,7 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
           <template v-if="health">
             <strong class="ok">● 运行正常</strong>
             <small class="hint"
-              >{{ health.status }} · {{ health.database }} · {{ health.timezone }}</small
+              >{{ health.status }} / {{ health.database }} / {{ health.timezone }}</small
             >
           </template>
           <template v-else-if="error">
@@ -184,11 +186,11 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
   display: flex;
   gap: 16px;
   align-items: center;
-  padding: 16px 20px;
+  padding: 20px 22px;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 20px;
   background:
-    radial-gradient(120% 140% at 0% 0%, var(--nl-yellow-soft), transparent 60%), var(--bg);
+    radial-gradient(120% 140% at 0% 0%, var(--nl-yellow-soft), transparent 60%), var(--card);
 }
 .hero-art {
   width: 96px;
@@ -199,12 +201,14 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
   gap: 6px;
   min-width: 0;
 }
-.eyebrow {
+.greet {
   color: var(--nl-yellow-text);
   font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
 }
 .hero h2 {
-  font-size: 1.3rem;
+  font-size: 1.45rem;
 }
 .hero-sub {
   color: var(--muted);
@@ -216,8 +220,8 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
   display: inline-flex;
   align-items: center;
   height: 36px;
-  padding: 0 18px;
-  border-radius: 9999px;
+  padding: 0 16px;
+  border-radius: var(--radius);
   border: 1px solid var(--line);
   color: var(--text);
   font-weight: 700;
@@ -227,49 +231,51 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
   background: var(--bg-hover-strong);
 }
 .btn-link.primary {
-  background: var(--pill-bg);
-  color: var(--pill-text);
+  background: var(--brand);
+  color: var(--brand-ink);
   border-color: transparent;
 }
 .btn-link.primary:hover {
-  background: var(--pill-hover);
+  background: var(--brand-hover);
 }
-.feed-head {
+.section-head {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin: 20px 0 0;
-  padding: 12px 4px;
-  border-bottom: 1px solid var(--line);
+  align-items: baseline;
+  margin: 24px 0 12px;
+  padding: 0;
+  border-bottom: none;
 }
-.feed-head h3 {
+.section-head h3 {
   font-size: 1.2rem;
-  font-weight: 800;
+  font-weight: 700;
 }
 .res-list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 8px 0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
 }
 .res-list li {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 4px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--line);
-  transition: background 0.15s;
 }
-.res-list li:hover {
-  background: var(--bg-hover);
+.res-list li:last-child {
+  border-bottom: none;
 }
 .res-icon {
   display: grid;
   place-items: center;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
-  background: var(--brand-soft);
-  color: var(--brand);
+  border-radius: 12px;
+  background: var(--nl-yellow-soft);
+  color: var(--nl-yellow-text);
   flex: none;
 }
 .res-main {
@@ -277,55 +283,57 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
   flex: 1;
   min-width: 0;
 }
-.feed-empty {
-  margin-top: 12px;
+.section-empty {
+  margin-top: 0;
 }
 .quick {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 10px;
 }
 .quick a {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 8px;
+  padding: 14px 16px;
   color: var(--text);
   font-weight: 700;
-  border-bottom: 1px solid var(--line);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
 }
 .quick a:hover {
   text-decoration: none;
-  background: var(--bg-hover);
+  background: var(--bg-muted);
 }
 .side {
   position: sticky;
-  top: 69px;
+  top: 72px;
   display: grid;
   gap: 16px;
 }
 .side-card {
-  border-radius: 16px;
-  background: var(--bg-elevated);
+  border-radius: 20px;
+  background: var(--card);
   border: 1px solid var(--line);
   overflow: hidden;
 }
 .side-card h3 {
-  padding: 12px 16px;
-  font-size: 1.2rem;
-  font-weight: 800;
+  padding: 14px 16px 4px;
+  font-size: 1.1rem;
+  font-weight: 700;
 }
 .side-row {
   display: grid;
   gap: 2px;
-  padding: 10px 16px;
-  border-top: 1px solid var(--line);
+  padding: 12px 16px;
 }
-.side-row:hover {
-  background: var(--bg-hover);
+.side-row + .side-row {
+  border-top: 1px solid var(--line);
 }
 .big {
   font-size: 1.4rem;
-  font-weight: 800;
+  font-weight: 700;
 }
 @media (max-width: 1000px) {
   .home {

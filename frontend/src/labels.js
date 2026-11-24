@@ -26,12 +26,12 @@ export function violationTypeLabel(value) {
   return VIOLATION_TYPE_LABELS[key] || value
 }
 
-/** 座位设施摘要，例如「电源·靠窗」。 */
+/** 座位设施摘要，例如「电源、靠窗」。 */
 export function facilityText(seat) {
   if (!seat) return '—'
   const bits = []
   if (seat.has_power) bits.push('电源')
   if (seat.by_window) bits.push('靠窗')
   if (seat.accessible) bits.push('无障碍')
-  return bits.length ? bits.join('·') : '—'
+  return bits.length ? bits.join('、') : '—'
 }
