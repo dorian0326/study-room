@@ -13,7 +13,8 @@
   --line: #2f3336;
   --line-strong: #3e4144;
   --text: #e7e9ea;
-  --muted: #71767b;
+  --muted: #8b9198;
+  --link: #4cb3f5;
   --brand: #1d9bf0;
   --brand-hover: #1a8cd8;
   --brand-soft: rgba(29, 155, 240, 0.1);
@@ -67,6 +68,7 @@
   --line-strong: #b0bcc5;
   --text: #0f1419;
   --muted: #536471;
+  --link: #0a6ebd;
   --brand: #1d9bf0;
   --brand-hover: #1a8cd8;
   --brand-soft: rgba(29, 155, 240, 0.1);
@@ -130,7 +132,7 @@ p {
 }
 
 a {
-  color: var(--brand);
+  color: var(--link);
   text-decoration: none;
 }
 a:hover {
@@ -295,6 +297,20 @@ input[type='radio'] {
 input::placeholder,
 textarea::placeholder {
   color: var(--muted);
+}
+
+.password-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px;
+}
+.password-wrap input {
+  width: 100%;
+}
+.password-wrap button {
+  height: 40px;
+  padding: 0 10px;
 }
 
 label {

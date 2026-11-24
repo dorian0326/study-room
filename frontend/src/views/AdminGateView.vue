@@ -1,10 +1,13 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { api } from '../api/client.js'
+import NlLoading from '../components/NlLoading.vue'
+import EmptyState from '../components/EmptyState.vue'
 
 const error = ref('')
 const notice = ref('')
 const rows = ref([])
+const loading = ref(true)
 const syncStatus = ref('')
 const mock = ref({
   external_id: '',
@@ -32,7 +35,11 @@ async function guard(fn, ok) {
 async function load() {
   const params = new URLSearchParams({ limit: '200' })
   if (syncStatus.value) params.set('sync_status', syncStatus.value)
-  rows.value = await api(`/ops/entry-exit/records?${params}`)
+  try {
+    rows.value = await api(`/ops/entry-exit/records?${params}`)
+  } finally {
+    loading.value = false
+  }
 }
 
 function refresh() {
@@ -94,7 +101,7 @@ const SYNC = {
         <button type="button" @click="refresh">刷新</button>
       </div>
     </form>
-    <div class="table-scroll">
+    <div v-if="!loading && rows.length" class="table-scroll">
       <table>
         <thead>
           <tr>
@@ -136,7 +143,8 @@ const SYNC = {
         </tbody>
       </table>
     </div>
-    <p v-if="!rows.length" class="hint">暂无记录。</p>
+    <NlLoading v-if="loading" />
+    <EmptyState v-else-if="!rows.length" title="暂无出入馆记录。" />
   </section>
 
   <section class="panel">

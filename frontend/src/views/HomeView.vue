@@ -4,12 +4,15 @@ import { api } from '../api/client.js'
 import { auth, can } from '../auth.js'
 import StatusBadge from '../components/StatusBadge.vue'
 import XIcon from '../components/XIcon.vue'
+import NlLoading from '../components/NlLoading.vue'
+import EmptyState from '../components/EmptyState.vue'
 import helloUrl from '../assets/nailong/nailong-hello.webp'
 
 const health = ref(null)
 const error = ref('')
 const mine = ref([])
 const rooms = ref([])
+const overviewLoaded = ref(false)
 
 const greeting = computed(() => {
   const h = new Date().getHours()
@@ -59,6 +62,8 @@ async function loadOverview() {
     rooms.value = await api(`/rooms?date=${today()}`)
   } catch {
     rooms.value = []
+  } finally {
+    overviewLoaded.value = true
   }
 }
 
@@ -93,7 +98,8 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
         <h3>我的预约</h3>
         <RouterLink to="/workflows">查看全部</RouterLink>
       </div>
-      <ul v-if="mine.length" class="res-list">
+      <NlLoading v-if="!overviewLoaded" />
+      <ul v-else-if="mine.length" class="res-list">
         <li v-for="row in mine.slice(0, 5)" :key="row.id">
           <span class="res-icon"><XIcon name="seat" :size="20" /></span>
           <div class="res-main">
@@ -103,10 +109,13 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
           <StatusBadge :status="row.status" />
         </li>
       </ul>
-      <div v-else class="empty feed-empty">
-        <span>暂无进行中的预约</span>
-        <RouterLink to="/workflows">去预约一个座位</RouterLink>
-      </div>
+      <EmptyState
+        v-else
+        class="feed-empty"
+        title="暂无进行中的预约"
+        action-to="/workflows"
+        action-text="去预约一个座位"
+      />
 
       <div class="feed-head">
         <h3>快捷入口</h3>
@@ -146,12 +155,13 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
         <h3>今日概览</h3>
         <div class="side-row">
           <small class="hint">进行中的预约</small>
-          <strong class="big">{{ mine.length }}</strong>
+          <strong class="big">{{ overviewLoaded ? mine.length : '…' }}</strong>
         </div>
         <div class="side-row">
           <small class="hint">今日开放自习室</small>
           <strong class="big"
-            >{{ openRooms }}<small class="hint"> / {{ rooms.length }}</small></strong
+            >{{ overviewLoaded ? openRooms : '…'
+            }}<small v-if="overviewLoaded" class="hint"> / {{ rooms.length }}</small></strong
           >
         </div>
         <div class="side-row">

@@ -2,16 +2,19 @@
 import { onMounted, ref } from 'vue'
 import { api } from '../api/client.js'
 import { promptDialog } from '../confirm.js'
+import { violationTypeLabel } from '../labels.js'
+import NlLoading from '../components/NlLoading.vue'
+import EmptyState from '../components/EmptyState.vue'
 
 const violations = ref([])
 const appeals = ref([])
 const error = ref('')
 const notice = ref('')
+const loading = ref(true)
 const manual = ref({ record_type: 'entry', reason: '', reservation_id: '' })
 
 /** 加载本人违规记录和以往的申诉审核结果。 */
 async function loadCases() {
-  // 两类数据都会由后端限制为当前登录用户本人。
   error.value = ''
   try {
     const [violationRows, appealRows] = await Promise.all([api('/violations'), api('/appeals')])
@@ -19,6 +22,8 @@ async function loadCases() {
     appeals.value = appealRows
   } catch (cause) {
     error.value = cause.message
+  } finally {
+    loading.value = false
   }
 }
 
@@ -67,7 +72,6 @@ async function submitGateAppeal() {
 
 /** 将违规和申诉状态转换为学生页面使用的中文名称。 */
 function stateLabel(value) {
-  // 页面区分处理中、已归档、审核中和已完成等状态。
   const labels = {
     active: '待处理',
     archived: '已归档',
@@ -81,9 +85,7 @@ function stateLabel(value) {
   return labels[value] ?? value
 }
 
-/** 将时间戳转换为浏览器易读的格式。 */
 function formatTime(value) {
-  // 服务端时间包含 UTC+8 偏移，由 Date 处理显示转换。
   return new Date(value).toLocaleString('zh-CN')
 }
 
@@ -91,68 +93,94 @@ onMounted(loadCases)
 </script>
 
 <template>
-  <h2>违规与申诉</h2>
   <p v-if="error" class="error">{{ error }}</p>
   <p v-if="notice" class="ok">{{ notice }}</p>
-  <section class="panel">
-    <h3>我的违规记录</h3>
-    <p v-if="!violations.length">暂无违规记录。</p>
-    <table v-if="violations.length">
-      <thead>
-        <tr>
-          <th>时间</th>
-          <th>类型</th>
-          <th>窗口次数</th>
-          <th>处理</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="violation in violations" :key="violation.id">
-          <td>{{ formatTime(violation.occurred_at) }}</td>
-          <td>{{ violation.violation_type }}</td>
-          <td>{{ violation.period_seq }}</td>
-          <td>{{ stateLabel(violation.result) }} · {{ stateLabel(violation.appeal_status) }}</td>
-          <td>
+  <NlLoading v-if="loading" />
+  <template v-else>
+    <section class="panel">
+      <h3>我的违规记录</h3>
+      <EmptyState v-if="!violations.length" title="暂无违规记录，继续保持就好。" />
+      <div v-else class="table-scroll desk-table">
+        <table>
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>类型</th>
+              <th>窗口次数</th>
+              <th>处理</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="violation in violations" :key="violation.id">
+              <td>{{ formatTime(violation.occurred_at) }}</td>
+              <td>{{ violationTypeLabel(violation.violation_type) }}</td>
+              <td>{{ violation.period_seq }}</td>
+              <td>
+                {{ stateLabel(violation.result) }} · {{ stateLabel(violation.appeal_status) }}
+              </td>
+              <td>
+                <button
+                  v-if="violation.appeal_status !== 'pending'"
+                  @click="appealViolation(violation)"
+                >
+                  提交申诉
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div v-if="violations.length" class="rec-cards">
+        <article v-for="violation in violations" :key="violation.id" class="rec-card">
+          <header>
+            <strong>{{ violationTypeLabel(violation.violation_type) }}</strong>
+            <span class="muted">第 {{ violation.period_seq }} 次</span>
+          </header>
+          <p class="when">{{ formatTime(violation.occurred_at) }}</p>
+          <p>{{ stateLabel(violation.result) }} · {{ stateLabel(violation.appeal_status) }}</p>
+          <div class="actions">
             <button
               v-if="violation.appeal_status !== 'pending'"
+              type="button"
               @click="appealViolation(violation)"
             >
               提交申诉
             </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
-  <section class="panel">
-    <h3>申诉进度</h3>
-    <ul>
-      <li v-for="appeal in appeals" :key="appeal.id">
-        记录 #{{ appeal.violation_id }}：{{ stateLabel(appeal.result ?? 'pending')
-        }}<span v-if="appeal.review_comment"> — {{ appeal.review_comment }}</span>
-      </li>
-    </ul>
-  </section>
-  <section class="panel">
-    <h3>门禁不可用时的人工核验</h3>
-    <form class="manual-form" @submit.prevent="submitGateAppeal">
-      <label
-        >类型
-        <select v-model="manual.record_type">
-          <option value="entry">入馆</option>
-          <option value="exit">出馆</option>
-        </select></label
-      >
-      <label
-        >关联预约编号（可选）<input v-model="manual.reservation_id" type="number" min="1"
-      /></label>
-      <label
-        >情况说明 <textarea v-model="manual.reason" required minlength="5" maxlength="4000" />
-      </label>
-      <button>提交人工核验</button>
-    </form>
-  </section>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="panel">
+      <h3>申诉进度</h3>
+      <EmptyState v-if="!appeals.length" title="还没有提交过申诉。" />
+      <ul v-else class="appeal-list">
+        <li v-for="appeal in appeals" :key="appeal.id">
+          记录 #{{ appeal.violation_id }}：{{ stateLabel(appeal.result ?? 'pending')
+          }}<span v-if="appeal.review_comment"> — {{ appeal.review_comment }}</span>
+        </li>
+      </ul>
+    </section>
+    <section class="panel">
+      <h3>门禁不可用时的人工核验</h3>
+      <form class="manual-form" @submit.prevent="submitGateAppeal">
+        <label
+          >类型
+          <select v-model="manual.record_type">
+            <option value="entry">入馆</option>
+            <option value="exit">出馆</option>
+          </select></label
+        >
+        <label
+          >关联预约编号（可选）<input v-model="manual.reservation_id" type="number" min="1"
+        /></label>
+        <label
+          >情况说明 <textarea v-model="manual.reason" required minlength="5" maxlength="4000" />
+        </label>
+        <button>提交人工核验</button>
+      </form>
+    </section>
+  </template>
 </template>
 
 <style scoped>
@@ -163,5 +191,39 @@ onMounted(loadCases)
 }
 textarea {
   min-height: 6rem;
+}
+.appeal-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 8px;
+}
+.rec-cards {
+  display: none;
+}
+.rec-card {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px 14px 20px;
+  border-bottom: 1px solid var(--line);
+  box-shadow: inset 4px 0 0 var(--danger);
+}
+.rec-card header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.when {
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 700px) {
+  .desk-table {
+    display: none;
+  }
+  .rec-cards {
+    display: grid;
+    margin: 0 -16px;
+    border-top: 1px solid var(--line);
+  }
 }
 </style>

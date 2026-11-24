@@ -1,30 +1,34 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { api } from '../api/client.js'
+import NlLoading from '../components/NlLoading.vue'
+import EmptyState from '../components/EmptyState.vue'
 
 const notifications = ref([])
 const unreadOnly = ref(false)
 const error = ref('')
+const loading = ref(true)
 
 /** 加载当前登录用户最近收到的站内通知。 */
 async function loadNotifications() {
-  // 通知所有权由后端根据当前会话验证。
   error.value = ''
   try {
     const filter = unreadOnly.value ? '?unread_only=true' : ''
     notifications.value = await api(`/notifications${filter}`)
   } catch (cause) {
     error.value = cause.message
+  } finally {
+    loading.value = false
   }
 }
 
 /** 将通知标为已读并刷新通知列表。 */
 async function markRead(notification) {
-  // 重复标记已读不会改变结果，因此可以安全地重新请求。
   error.value = ''
   try {
     await api(`/notifications/${notification.id}/read`, { method: 'POST' })
     await loadNotifications()
+    window.dispatchEvent(new Event('studyroom:notifications-changed'))
   } catch (cause) {
     error.value = cause.message
   }
@@ -32,7 +36,6 @@ async function markRead(notification) {
 
 /** 将通知类型映射为通知列表中的中文名称。 */
 function typeLabel(type) {
-  // 分类名称覆盖预约、门禁、维护、违规和临时离开等事件。
   const labels = {
     reservation_confirmed: '预约结果',
     checkin_reminder: '签到提醒',
@@ -46,7 +49,6 @@ function typeLabel(type) {
 
 /** 按浏览器本地格式展示通知时间。 */
 function formatTime(value) {
-  // ISO 时间包含服务端 UTC+8 偏移，可由 Date 转换为本地显示时间。
   return new Date(value).toLocaleString('zh-CN')
 }
 
@@ -54,13 +56,16 @@ onMounted(loadNotifications)
 </script>
 
 <template>
-  <h2>站内通知</h2>
   <label class="filter"
     ><input v-model="unreadOnly" type="checkbox" @change="loadNotifications" /> 只看未读</label
   >
   <p v-if="error" class="error">{{ error }}</p>
-  <p v-if="!notifications.length">暂无通知。</p>
-  <ol class="inbox">
+  <NlLoading v-if="loading" />
+  <EmptyState
+    v-else-if="!notifications.length"
+    :title="unreadOnly ? '没有未读通知' : '暂时没有通知'"
+  />
+  <ol v-else class="inbox">
     <li
       v-for="notification in notifications"
       :key="notification.id"
@@ -82,6 +87,7 @@ onMounted(loadNotifications)
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  margin-bottom: 12px;
 }
 .inbox {
   display: grid;

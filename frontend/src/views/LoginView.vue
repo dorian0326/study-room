@@ -7,6 +7,7 @@ const route = useRoute()
 const router = useRouter()
 const studentNo = ref('')
 const password = ref('')
+const showPassword = ref(false)
 const error = ref('')
 const busy = ref(false)
 
@@ -38,13 +39,18 @@ async function submit() {
         </label>
         <label class="field">
           密码
-          <input
-            v-model="password"
-            type="password"
-            placeholder="请输入密码"
-            autocomplete="current-password"
-            required
-          />
+          <span class="password-wrap">
+            <input
+              v-model="password"
+              :type="showPassword ? 'text' : 'password'"
+              placeholder="请输入密码"
+              autocomplete="current-password"
+              required
+            />
+            <button type="button" class="ghost small" @click="showPassword = !showPassword">
+              {{ showPassword ? '隐藏' : '显示' }}
+            </button>
+          </span>
         </label>
         <p v-if="error" class="error">{{ error }}</p>
         <button class="primary" :class="{ loading: busy }" :disabled="busy">登录</button>

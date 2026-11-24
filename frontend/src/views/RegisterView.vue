@@ -6,10 +6,13 @@ import { login } from '../auth.js'
 
 const router = useRouter()
 const form = reactive({ student_no: '', name: '', password: '', department: '', contact: '' })
+const showPassword = ref(false)
 const error = ref('')
+const busy = ref(false)
 
 async function submit() {
   error.value = ''
+  busy.value = true
   try {
     await api('/auth/register', {
       method: 'POST',
@@ -19,6 +22,8 @@ async function submit() {
     router.push('/')
   } catch (e) {
     error.value = e.message
+  } finally {
+    busy.value = false
   }
 }
 </script>
@@ -41,13 +46,18 @@ async function submit() {
         </label>
         <label class="field">
           密码
-          <input
-            v-model="form.password"
-            type="password"
-            placeholder="至少 8 位，含字母和数字"
-            autocomplete="new-password"
-            required
-          />
+          <span class="password-wrap">
+            <input
+              v-model="form.password"
+              :type="showPassword ? 'text' : 'password'"
+              placeholder="至少 8 位，含字母和数字"
+              autocomplete="new-password"
+              required
+            />
+            <button type="button" class="ghost small" @click="showPassword = !showPassword">
+              {{ showPassword ? '隐藏' : '显示' }}
+            </button>
+          </span>
         </label>
         <label class="field">
           院系（可选）
@@ -58,7 +68,7 @@ async function submit() {
           <input v-model="form.contact" placeholder="手机或邮箱" />
         </label>
         <p v-if="error" class="error">{{ error }}</p>
-        <button class="primary">注册</button>
+        <button class="primary" :class="{ loading: busy }" :disabled="busy">注册</button>
       </form>
       <footer>已有账号？<RouterLink to="/login">去登录</RouterLink></footer>
     </section>

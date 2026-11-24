@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { api } from './api/client.js'
 import { auth, can, logout } from './auth.js'
 import { theme, toggleTheme } from './theme.js'
 import XIcon from './components/XIcon.vue'
@@ -14,6 +15,9 @@ const router = useRouter()
 const route = useRoute()
 const menuOpen = ref(false)
 const menuRef = ref(null)
+const menuTopRef = ref(null)
+const adminOpen = ref(false)
+const unreadCount = ref(0)
 
 const mainLinks = [
   { to: '/', label: '首页', icon: 'home' },
@@ -69,7 +73,9 @@ watch(
   () => [route.fullPath, pageTitle.value],
   () => {
     menuOpen.value = false
+    adminOpen.value = false
     document.title = route.path === '/' ? BRAND : `${pageTitle.value} / ${BRAND}`
+    if (auth.user) loadUnread()
   },
   { immediate: true },
 )
@@ -78,19 +84,44 @@ function isActive(to) {
   return to === '/' ? route.path === '/' : route.path.startsWith(to)
 }
 
+function inMenus(target) {
+  return Boolean(menuRef.value?.contains(target) || menuTopRef.value?.contains(target))
+}
+
 function onDocClick(e) {
-  if (menuOpen.value && menuRef.value && !menuRef.value.contains(e.target)) menuOpen.value = false
+  if (menuOpen.value && !inMenus(e.target)) menuOpen.value = false
 }
 function onKey(e) {
-  if (e.key === 'Escape') menuOpen.value = false
+  if (e.key === 'Escape') {
+    menuOpen.value = false
+    adminOpen.value = false
+  }
 }
+
+/** 用已有通知接口取未读条数，只为入口小红点，不改后端。 */
+async function loadUnread() {
+  if (!auth.user) {
+    unreadCount.value = 0
+    return
+  }
+  try {
+    const rows = await api('/notifications?unread_only=true&limit=50')
+    unreadCount.value = Array.isArray(rows) ? rows.length : 0
+  } catch {
+    /* 角标失败不影响主界面 */
+  }
+}
+
 onMounted(() => {
   document.addEventListener('click', onDocClick)
   document.addEventListener('keydown', onKey)
+  window.addEventListener('studyroom:notifications-changed', loadUnread)
+  loadUnread()
 })
 onBeforeUnmount(() => {
   document.removeEventListener('click', onDocClick)
   document.removeEventListener('keydown', onKey)
+  window.removeEventListener('studyroom:notifications-changed', loadUnread)
 })
 
 /** 注销当前账号并返回登录页。 */
@@ -148,7 +179,14 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
           :aria-current="isActive(link.to) ? 'page' : undefined"
         >
           <span class="rail-pill">
-            <XIcon :name="link.icon" :bold="isActive(link.to)" />
+            <span class="nav-icon">
+              <XIcon :name="link.icon" :bold="isActive(link.to)" />
+              <i
+                v-if="link.to === '/notifications' && unreadCount"
+                class="nav-dot"
+                aria-label="有未读通知"
+              />
+            </span>
             <span class="rail-label">{{ link.label }}</span>
           </span>
         </RouterLink>
@@ -212,6 +250,34 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
       <div class="topbar">
         <h1>{{ pageTitle }}</h1>
         <span class="topbar-sub">{{ BRAND }}</span>
+        <div ref="menuTopRef" class="account topbar-account">
+          <div v-if="menuOpen" class="account-menu" role="menu">
+            <div class="menu-head">
+              <strong>{{ auth.user.name }}</strong>
+              <small>{{ auth.user.student_no }} · {{ roleText }}</small>
+            </div>
+            <button type="button" role="menuitem" class="menu-item" @click="toggleTheme">
+              <XIcon :name="theme.name === 'dark' ? 'sun' : 'moon'" :size="20" />
+              {{ theme.name === 'dark' ? '切换到浅色模式' : '切换到深色模式' }}
+            </button>
+            <RouterLink to="/change-password" role="menuitem" class="menu-item">
+              <XIcon name="key" :size="20" /> 修改密码
+            </RouterLink>
+            <button type="button" role="menuitem" class="menu-item danger-item" @click="onLogout">
+              <XIcon name="logout" :size="20" /> 退出 @{{ auth.user.student_no }}
+            </button>
+          </div>
+          <button
+            type="button"
+            class="account-chip"
+            :aria-expanded="menuOpen"
+            aria-haspopup="menu"
+            aria-label="账号菜单"
+            @click.stop="menuOpen = !menuOpen"
+          >
+            <span class="avatar">{{ initial }}</span>
+          </button>
+        </div>
       </div>
       <main class="app-main"><RouterView /></main>
       <footer class="app-footer">{{ BRAND }} · 软件工程课程设计</footer>
@@ -223,12 +289,53 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
         v-for="link in mainLinks"
         :key="link.to"
         :to="link.to"
+        class="tabbar-item"
         :class="{ active: isActive(link.to) }"
-        :aria-label="link.label"
+        :aria-current="isActive(link.to) ? 'page' : undefined"
       >
-        <XIcon :name="link.icon" :bold="isActive(link.to)" />
+        <span class="nav-icon">
+          <XIcon :name="link.icon" :size="22" :bold="isActive(link.to)" />
+          <i
+            v-if="link.to === '/notifications' && unreadCount"
+            class="nav-dot"
+            aria-label="有未读通知"
+          />
+        </span>
+        <span class="tab-label">{{ link.label }}</span>
       </RouterLink>
+      <button
+        v-if="adminLinks.length"
+        type="button"
+        class="tabbar-item"
+        :class="{ active: adminOpen || route.path.startsWith('/admin') }"
+        aria-haspopup="dialog"
+        :aria-expanded="adminOpen"
+        @click="adminOpen = !adminOpen"
+      >
+        <XIcon name="building" :size="22" :bold="route.path.startsWith('/admin')" />
+        <span class="tab-label">管理</span>
+      </button>
     </nav>
+    <div
+      v-if="adminOpen && adminLinks.length"
+      class="admin-sheet-mask"
+      @click.self="adminOpen = false"
+    >
+      <div class="admin-sheet" role="dialog" aria-label="管理后台">
+        <h3>管理后台</h3>
+        <RouterLink
+          v-for="link in adminLinks"
+          :key="link.to"
+          :to="link.to"
+          class="admin-sheet-item"
+          :class="{ active: isActive(link.to) }"
+          @click="adminOpen = false"
+        >
+          <XIcon :name="link.icon" :size="20" :bold="isActive(link.to)" />
+          {{ link.label }}
+        </RouterLink>
+      </div>
+    </div>
   </div>
   <ConfirmDialog />
 </template>
@@ -550,6 +657,29 @@ button.menu-item:hover:not(:disabled) {
   color: var(--muted);
   font-size: 0.85rem;
 }
+.topbar-account {
+  display: none;
+  margin-left: auto;
+  position: relative;
+}
+.topbar-account .account-chip {
+  width: auto;
+  height: auto;
+  padding: 2px;
+  border: none;
+  background: transparent;
+}
+.topbar-account .avatar {
+  width: 32px;
+  height: 32px;
+  font-size: 0.9rem;
+}
+.topbar-account .account-menu {
+  bottom: auto;
+  top: calc(100% + 8px);
+  left: auto;
+  right: 0;
+}
 .app-main {
   flex: 1;
   padding: 16px;
@@ -608,7 +738,13 @@ button.menu-item:hover:not(:disabled) {
   }
   .column {
     border: none;
-    padding-bottom: 56px;
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  }
+  .topbar-sub {
+    display: none;
+  }
+  .topbar-account {
+    display: block;
   }
   .tabbar {
     display: flex;
@@ -616,18 +752,82 @@ button.menu-item:hover:not(:disabled) {
     left: 0;
     right: 0;
     bottom: 0;
-    height: 54px;
+    height: auto;
+    min-height: 56px;
+    padding: 4px 2px env(safe-area-inset-bottom, 0px);
     justify-content: space-around;
-    align-items: center;
+    align-items: stretch;
     background: var(--header-bg);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     border-top: 1px solid var(--line);
     z-index: 30;
   }
-  .tabbar a {
+  .tabbar-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 0;
+    padding: 6px 2px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: var(--muted);
+    font-weight: 500;
+    height: auto;
+  }
+  .tabbar-item:hover:not(:disabled) {
+    background: transparent;
     color: var(--text);
-    padding: 8px 14px;
+  }
+  .tabbar-item.active {
+    color: var(--text);
+    font-weight: 800;
+  }
+  .tab-label {
+    font-size: 0.68rem;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  .admin-sheet-mask {
+    position: fixed;
+    inset: 0;
+    background: var(--mask);
+    z-index: 35;
+    display: flex;
+    align-items: flex-end;
+  }
+  .admin-sheet {
+    width: 100%;
+    background: var(--bg);
+    border-radius: 16px 16px 0 0;
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    display: grid;
+    gap: 4px;
+  }
+  .admin-sheet h3 {
+    font-size: 1.1rem;
+    padding: 4px 8px 12px;
+  }
+  .admin-sheet-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 8px;
+    border-radius: 12px;
+    color: var(--text);
+    font-weight: 700;
+  }
+  .admin-sheet-item:hover {
+    text-decoration: none;
+    background: var(--bg-hover-strong);
+  }
+  .admin-sheet-item.active {
+    background: var(--brand-soft);
+    color: var(--text);
   }
 }
 @media (max-width: 900px) {

@@ -257,3 +257,24 @@ button.danger.solid:hover:not(:disabled) {
     height: 44px;
   }
 }
+
+.empty a {
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.nav-icon {
+  position: relative;
+  display: inline-flex;
+}
+.nav-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
+  box-shadow: 0 0 0 2px var(--bg);
+  pointer-events: none;
+}
