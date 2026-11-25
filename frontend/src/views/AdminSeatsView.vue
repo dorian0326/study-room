@@ -2,12 +2,17 @@
 import { onMounted, reactive, ref } from 'vue'
 import { api } from '../api/client.js'
 import { confirmDialog } from '../confirm.js'
+import { zoneLabel } from '../labels.js'
+import StatusBadge from '../components/StatusBadge.vue'
+import NlLoading from '../components/NlLoading.vue'
+import EmptyState from '../components/EmptyState.vue'
 
 const rooms = ref([])
 const seats = ref([])
 const roomId = ref('')
 const error = ref('')
 const notice = ref('')
+const loading = ref(true)
 const csvText = ref(
   'code,zone_type,has_power,by_window,accessible,status\nA01,quiet,true,false,false,available',
 )
@@ -42,6 +47,8 @@ async function refresh() {
     await loadSeats()
   } catch (cause) {
     error.value = cause.message
+  } finally {
+    loading.value = false
   }
 }
 
@@ -150,20 +157,6 @@ async function importCsv() {
   }
 }
 
-/** 将座位状态转换为管理员表格展示的中文名称。 */
-function statusLabel(value) {
-  // 维护、永久停用和普通关闭使用不同的状态名称。
-  const labels = {
-    available: '可用',
-    reserved: '已预约',
-    in_use: '使用中',
-    maintenance: '维护中',
-    closed: '已关闭',
-    disabled: '已停用',
-  }
-  return labels[value] ?? value
-}
-
 onMounted(refresh)
 </script>
 
@@ -187,7 +180,9 @@ onMounted(refresh)
         </select>
       </label>
     </div>
-    <div class="table-scroll">
+    <NlLoading v-if="loading" />
+    <EmptyState v-else-if="!seats.length" title="这间自习室还没有座位。" />
+    <div v-else class="table-scroll">
       <table>
         <thead>
           <tr>
@@ -202,17 +197,17 @@ onMounted(refresh)
         <tbody>
           <tr v-for="seat in seats" :key="seat.id">
             <td>{{ seat.code }}</td>
-            <td>{{ seat.zone_type }}</td>
+            <td>{{ zoneLabel(seat.zone_type) }}</td>
             <td>{{ seat.by_window ? '是' : '否' }}</td>
             <td>{{ seat.has_power ? '是' : '否' }}</td>
-            <td>{{ statusLabel(seat.status) }}</td>
+            <td><StatusBadge :status="seat.status" /></td>
             <td class="actions">
               <button @click="editSeat(seat)">编辑</button>
               <button
                 v-if="seat.status !== 'maintenance'"
                 @click="changeStatus(seat, 'maintenance')"
               >
-                维护并取消待开始预约
+                维护
               </button>
               <button v-else @click="changeStatus(seat, 'available')">恢复可用</button>
               <button class="danger" @click="deleteSeat(seat)">删除</button>

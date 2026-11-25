@@ -1,8 +1,8 @@
 {
-  "source_head": "9592c0b3a5b599302f5dd20c92858822e151784f",
+  "source_head": "e2929f761be4295b6124af765b07a9d0dd65ce84",
   "branch": "codex/course-delivery",
   "working_tree_uncommitted": true,
-  "local_links_checked": 46,
+  "local_links_checked": 52,
   "errors": [],
   "files": [
     {
@@ -212,8 +212,8 @@
     },
     {
       "path": "backend/app/services/admin_force_cancel.py",
-      "bytes": 3935,
-      "sha256": "a41141dc12e81fc6c1eb12e9eb0c48f9d6fcd31e273b1a5cf8d8dcb6bf789581"
+      "bytes": 4033,
+      "sha256": "cd7f5d30b6cf73220b4741863803a0bceba5ec76b5ca5cb679d0d03c33c61f51"
     },
     {
       "path": "backend/app/services/audit.py",
@@ -611,6 +611,26 @@
       "sha256": "15b278cce4663629c6454be7bb9a70aa31902667511d8be35bf45fcef17eb37f"
     },
     {
+      "path": "docs/evidence/README.md",
+      "bytes": 1185,
+      "sha256": "c6f9441f21ae080778c92a6f79206d8631b58602d975de1a02227e0a33ed98e1"
+    },
+    {
+      "path": "docs/history/20261112/分阶段实现与测试计划.md",
+      "bytes": 8303,
+      "sha256": "fa57fccb62fcb8a78d2842ee6a02c2778031d66dec0681e4b7d38d81c1c83bdc"
+    },
+    {
+      "path": "docs/history/20261112/基线索引.md",
+      "bytes": 4306,
+      "sha256": "6c8a094dd746653b9c205c023d617466ddaaa309d0396e176d978837d88c1b26"
+    },
+    {
+      "path": "docs/history/20261112/架构确认与决策记录.md",
+      "bytes": 8830,
+      "sha256": "84652816969a73df384c8542593390da7627abba5844d1b76f8cd43d0d36ebb1"
+    },
+    {
       "path": "docs/limitations.md",
       "bytes": 2147,
       "sha256": "19708fb013c5b13049b41c64568432f94f8db41c5acf28508d15422d12242c0b"
@@ -636,6 +656,11 @@
       "sha256": "4a7a0e5f8fe1feb8ef7ee1b70564835db0adea11af3c87a507c6b71ace4d4243"
     },
     {
+      "path": "docs/tasks/任务卡模板.md",
+      "bytes": 1018,
+      "sha256": "bdd58aae97db8bd5f18d37a8c837e142e4728c7ed67e9687a4ac1e5de3ec1924"
+    },
+    {
       "path": "docs/testing/本轮审查与阶段验收记录.md",
       "bytes": 3393,
       "sha256": "d747b8aef578ae00f13730b20916e638eee76a71e5e1322bf16cda3dbf939f7c"
@@ -657,13 +682,18 @@
     },
     {
       "path": "docs/分阶段实现与测试计划.md",
-      "bytes": 3143,
-      "sha256": "3974d1cec2aa4938ddf2bdfc7a6954da83cfcd953b8ac8e08b97b1e4a264b868"
+      "bytes": 3507,
+      "sha256": "9edcc554984285d63f702cefec3ca076f723857c1375233335d8d8b0b7859d8e"
     },
     {
       "path": "docs/基线索引.md",
-      "bytes": 4578,
-      "sha256": "37fc6be6f431fd3143c74c4e964e5be95d719fc0d27d06515c129d9dc51baefa"
+      "bytes": 4944,
+      "sha256": "1fed1f20cd3f2b45cb1b06f9223b8eb40a0a8dbe246cbd2e0301f65a2846ca69"
+    },
+    {
+      "path": "docs/接口与关键设计说明书.md",
+      "bytes": 22871,
+      "sha256": "a29d99254e43456ee09dab78e458c67f66112bbae3141c80b9d445598a1e1b4e"
     },
     {
       "path": "docs/最终交付清单.md",
@@ -677,8 +707,13 @@
     },
     {
       "path": "docs/架构确认与决策记录.md",
-      "bytes": 7656,
-      "sha256": "221db7445f02485d329d894fb66f1a16ff3c8ef4dfd67c150fc2ded53de71882"
+      "bytes": 7991,
+      "sha256": "ddaa90b9f447b153c86667ba637704ecaee8625fa173f56240232e985c3a32ee"
+    },
+    {
+      "path": "docs/软件架构设计方案_基线版.md",
+      "bytes": 9315,
+      "sha256": "72b7b3e14408624e220385cfc98b54cbb43e97fbe48a77476d63206d7532d871"
     },
     {
       "path": "evidence/20261125/audit-regression.txt",
@@ -812,18 +847,18 @@
     },
     {
       "path": "frontend/index.html",
-      "bytes": 852,
-      "sha256": "52a26f3db70433d7337ae4e76951d80ee87d5760a2b8d34307b260d418754a5d"
+      "bytes": 1063,
+      "sha256": "634ffa2e615a4f65dc9db63b5c1b0636fbeb0736a3479d8d1da0c713c8b00f09"
     },
     {
       "path": "frontend/package-lock.json",
-      "bytes": 94688,
-      "sha256": "5f0bf9c79c2542a91e7a8be0c84ca80eeb2b1a41bef09eb2e52401b2b5b5a9c5"
+      "bytes": 95148,
+      "sha256": "26967c0c0c2de85f83ce0a5196fddd3cb49f5ca59f2a62b419d59e3d57887289"
     },
     {
       "path": "frontend/package.json",
-      "bytes": 648,
-      "sha256": "7c4adc1f56dd7f5de4e71ef6b5033e6eeafe5c91ced8857e29f0076cc9bbb048"
+      "bytes": 691,
+      "sha256": "01141b97df085fd6e82e1bd3aa9b6242bb6f1a4b26efcaa48e07cb225059b334"
     },
     {
       "path": "frontend/public/favicon.png",
@@ -842,8 +877,23 @@
     },
     {
       "path": "frontend/src/App.vue",
-      "bytes": 16426,
-      "sha256": "bfc578feb7510319e6be76d95a7c21dfdd6ae50f7a24fe0a04164b3d29a281a8"
+      "bytes": 23159,
+      "sha256": "b0268a080dcb89592dd9539c8ae23c684d46486acc9b547d8042fbb3eebe82f7"
+    },
+    {
+      "path": "frontend/src/assets/fonts/LICENSE-LXGW-WenKai.txt",
+      "bytes": 4541,
+      "sha256": "a4654e013454eb0ea7b4b35689d235de2452a13737805e2a172761ae110b6905"
+    },
+    {
+      "path": "frontend/src/assets/fonts/lxgw-wenkai-700-sc.woff2",
+      "bytes": 1871500,
+      "sha256": "9536cf9adcf87344d8f27f313bcbefcee69475b6ec8880d6e6b127e16b0b0e1d"
+    },
+    {
+      "path": "frontend/src/assets/fonts.css",
+      "bytes": 87538,
+      "sha256": "54a71e560dd57f5c51f4207a8b9f53d10aee7c40673947c0e56e0c08289d18e6"
     },
     {
       "path": "frontend/src/assets/nailong/cover.jpg",
@@ -877,13 +927,13 @@
     },
     {
       "path": "frontend/src/assets/styles.css",
-      "bytes": 16070,
-      "sha256": "25ed484b1dd433fbe1e475ab4b98752ec73f3de305ee15c7b031fc8e61380ad7"
+      "bytes": 17456,
+      "sha256": "afc541ca5bb6a378dad5564f1def989ab8af33bb529c0fdb9969537195f10937"
     },
     {
-      "path": "frontend/src/assets/x.css",
-      "bytes": 5761,
-      "sha256": "d0d5f0a107227a783d202da593ce2441e415b54a72077a153cb37dc4a303f59b"
+      "path": "frontend/src/assets/theme.css",
+      "bytes": 3208,
+      "sha256": "b4b89ea81db1c9e476928d5ffbfbb2f0952f5cb96990fe27fb2635fecbb3a089"
     },
     {
       "path": "frontend/src/auth.js",
@@ -894,6 +944,16 @@
       "path": "frontend/src/components/ConfirmDialog.vue",
       "bytes": 1896,
       "sha256": "94579275f61615624d53747fe266540c4bbd3fbfbb6a9248c66fefb4209d4841"
+    },
+    {
+      "path": "frontend/src/components/EmptyState.vue",
+      "bytes": 362,
+      "sha256": "266aa0b816818fe82894e2e4c873c0259ef5f5cff11d87fcc82e86fc350cc37b"
+    },
+    {
+      "path": "frontend/src/components/NlLoading.vue",
+      "bytes": 316,
+      "sha256": "5ebc1dec11f5a215772daa32a1abb6fb7556e2e4dd5726598f6b7b97b75d3155"
     },
     {
       "path": "frontend/src/components/StatusBadge.vue",
@@ -911,9 +971,14 @@
       "sha256": "62ade40437287aea0b5a19bf11968f81a151e69b4797d12e2fb07711e46b3bac"
     },
     {
+      "path": "frontend/src/labels.js",
+      "bytes": 1054,
+      "sha256": "0f73c716f5b9cf0410bf69a87c70a75e3635ba0133e3b08e1a3ee2ea0fdf03b5"
+    },
+    {
       "path": "frontend/src/main.js",
-      "bytes": 254,
-      "sha256": "636a80d0d03c2c525e8d31e24e21279cfc0b75abc64504a0f9c3ab37e98162ac"
+      "bytes": 287,
+      "sha256": "2280ba3b14cff7921896b7cf9da10faa15cf5ebfa94b5dfa778d9024fb03ecce"
     },
     {
       "path": "frontend/src/router/index.js",
@@ -922,13 +987,13 @@
     },
     {
       "path": "frontend/src/theme.js",
-      "bytes": 931,
-      "sha256": "b05bd1c393e6e60389e75492b19941afaf3afaf8fa475ee9760f5d92685d2216"
+      "bytes": 1499,
+      "sha256": "8235ac9ba5ca9a17a437c8d0f4fb87558ce9d34d980c3608a1272bd89b60e7cc"
     },
     {
       "path": "frontend/src/views/AdminAppealsView.vue",
-      "bytes": 2622,
-      "sha256": "dd3737f0d37061759a944c8d205bfd6e6c437dd70270c63d7cc317b40cb43dca"
+      "bytes": 2850,
+      "sha256": "97c8296ae9bd25564edaaee8c08f28ff3740f7af539be48cfc9f4184afd395e8"
     },
     {
       "path": "frontend/src/views/AdminConfigView.vue",
@@ -937,8 +1002,8 @@
     },
     {
       "path": "frontend/src/views/AdminGateView.vue",
-      "bytes": 5294,
-      "sha256": "d4ad1d888f0c79aade669d9aeeedcd275404ce1e198d0c12fd3f943d0e2260ec"
+      "bytes": 5569,
+      "sha256": "ac7d4a5fb325af41b9950a85ebcbfdf4feb09055fa2982bfc2708dc1ce8066e0"
     },
     {
       "path": "frontend/src/views/AdminLogsView.vue",
@@ -947,23 +1012,23 @@
     },
     {
       "path": "frontend/src/views/AdminOpsView.vue",
-      "bytes": 6100,
-      "sha256": "92053df0d8f239ae5c296f044ff1e8cb971b0ed4060bc1096b3dd79c3754cc70"
+      "bytes": 6097,
+      "sha256": "eceb93da77d6191b0929a2036c9d643b73329281cda397842985af9d5ad14e31"
     },
     {
       "path": "frontend/src/views/AdminReportsView.vue",
-      "bytes": 5016,
-      "sha256": "1847ea6b564270565706c3ef434996314e0a458a32ca475ec3a536c7e7c14636"
+      "bytes": 5333,
+      "sha256": "c19b5fdf70e8e8797c6db084026d5e7cafc18624f67ec93d2d8156cc211005fd"
     },
     {
       "path": "frontend/src/views/AdminSeatsView.vue",
-      "bytes": 8461,
-      "sha256": "641e5e85d08b43148a48ea3a5089df4d8d832fcb010803f12c54a23b33e107c5"
+      "bytes": 8456,
+      "sha256": "bc9b34cb8a03652021fe36b031b22d2e211e13450d2bc2b5f19423d932687501"
     },
     {
       "path": "frontend/src/views/AdminUsersView.vue",
-      "bytes": 3724,
-      "sha256": "6296bf3b8aebe7c0899eb0dedf75b795655907a5fe6ab2828ea4047ddb297354"
+      "bytes": 4033,
+      "sha256": "2d7a57f23e2a5dd6895b52cf3dafe602b8bdb8ed3d38e3649a75ab6f36fb823f"
     },
     {
       "path": "frontend/src/views/ChangePasswordView.vue",
@@ -972,18 +1037,18 @@
     },
     {
       "path": "frontend/src/views/CheckInView.vue",
-      "bytes": 6222,
-      "sha256": "00ea4149108232548703df7173f6906b42e74907f6c31a21ee4dc39679ccbfa9"
+      "bytes": 7241,
+      "sha256": "1a450e3bac1df5df53273bf74bcb4b1a6b534974ef9f64cd8459a82e63cf6f3c"
     },
     {
       "path": "frontend/src/views/HomeView.vue",
-      "bytes": 8711,
-      "sha256": "77b33c1324bcd6671a5dd63ec2a2aacfc3467a1e002e0628ac9b4e36efeb1319"
+      "bytes": 9265,
+      "sha256": "9ef7fc3ae68797bdc18a23404fa4585c0906f4682d7e7bbd44da67051d875106"
     },
     {
       "path": "frontend/src/views/LoginView.vue",
-      "bytes": 1674,
-      "sha256": "8570fd297b057df28906d974266df57205fb3bee4a08589a89036d1f63a42c4a"
+      "bytes": 1979,
+      "sha256": "1fb83bcc4255f14e828b916c7a17adc94fb9c07364cc27487659839ea9e6ac3a"
     },
     {
       "path": "frontend/src/views/NotFoundView.vue",
@@ -992,13 +1057,13 @@
     },
     {
       "path": "frontend/src/views/NotificationsView.vue",
-      "bytes": 2965,
-      "sha256": "a326c0ece8c30684c24480f7607b5c3e1d99870463ab81106342136b85c82fe3"
+      "bytes": 3013,
+      "sha256": "103cf6fe25ec57129f846708979c468c596c6a32f184e5d0e01825ee0858033f"
     },
     {
       "path": "frontend/src/views/RegisterView.vue",
-      "bytes": 2048,
-      "sha256": "17ea68fc233d1477aaf1c66ce5c39ffed859e406f8ee3f5b66edf6cbe8437de8"
+      "bytes": 2483,
+      "sha256": "b15aa6a28d5bedbc6416e0e2708f5d1f55784f172fe3e697f5ccbbfc1db8c09b"
     },
     {
       "path": "frontend/src/views/ResetPasswordView.vue",
@@ -1007,13 +1072,13 @@
     },
     {
       "path": "frontend/src/views/ViolationsView.vue",
-      "bytes": 5102,
-      "sha256": "727c4610ab761129484f51acb3cb9caa8b4ec39a4132fabbda10d9e10659d1e5"
+      "bytes": 6985,
+      "sha256": "0c4ddc461791d85fdeaecb14754cbe7fad49a53c176d8b1ca923b5bb9f4c3d4a"
     },
     {
       "path": "frontend/src/views/WorkflowsView.vue",
-      "bytes": 25264,
-      "sha256": "676c35b48051d8a02e2d071229f0c3f7cd98056fe0648a5bf751c76ac7910ab0"
+      "bytes": 30708,
+      "sha256": "a365acf90b5ab30e26686d38e917fd13300fdacb19386325194f9088ccb0aaa4"
     },
     {
       "path": "frontend/vite.config.js",
@@ -1027,8 +1092,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 14622,
-      "sha256": "66f343a64006fd73dfcb1ddefd7e4737f9c29e121aeafb7b573e6c663d8be410"
+      "bytes": 15404,
+      "sha256": "b11fc2d3bd0a8e8d0cb6ac9fcc6bf5635bbe324ef168b5bc6b3149a978338753"
     },
     {
       "path": "scripts/course_demo.py",

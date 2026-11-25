@@ -2,10 +2,13 @@
 import { onMounted, ref } from 'vue'
 import { api } from '../api/client.js'
 import { promptDialog } from '../confirm.js'
+import NlLoading from '../components/NlLoading.vue'
+import EmptyState from '../components/EmptyState.vue'
 
 const appeals = ref([])
 const error = ref('')
 const notice = ref('')
+const loading = ref(true)
 
 /** 加载等待管理员审核的申诉记录。 */
 async function loadAppeals() {
@@ -15,6 +18,8 @@ async function loadAppeals() {
     appeals.value = await api('/admin/appeals?pending_only=true')
   } catch (cause) {
     error.value = cause.message
+  } finally {
+    loading.value = false
   }
 }
 
@@ -58,9 +63,10 @@ onMounted(loadAppeals)
   </header>
   <p v-if="error" class="error">{{ error }}</p>
   <p v-if="notice" class="ok">{{ notice }}</p>
-  <p v-if="!appeals.length">当前没有待审核申诉。</p>
+  <NlLoading v-if="loading" />
+  <EmptyState v-else-if="!appeals.length" title="当前没有待审核申诉。" />
   <section v-for="appeal in appeals" :key="appeal.id" class="panel">
-    <h3>申诉 #{{ appeal.id }} · 用户 {{ appeal.user_id }} · 违规 #{{ appeal.violation_id }}</h3>
+    <h3>申诉 #{{ appeal.id }}，用户 {{ appeal.user_id }}，违规 #{{ appeal.violation_id }}</h3>
     <p><strong>理由：</strong>{{ appeal.reason }}</p>
     <p v-if="appeal.evidence"><strong>证据说明：</strong>{{ appeal.evidence }}</p>
     <p>审核期限：{{ formatDeadline(appeal.deadline) }}</p>

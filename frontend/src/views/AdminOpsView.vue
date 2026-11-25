@@ -132,7 +132,7 @@ onMounted(refresh)
         <dt>最近备份</dt>
         <dd>
           <template v-if="status.latest_backup">
-            {{ status.latest_backup.name }} · {{ fmtBytes(status.latest_backup.size_bytes) }} ·
+            {{ status.latest_backup.name }} / {{ fmtBytes(status.latest_backup.size_bytes) }} /
             {{ fmtTs(status.latest_backup.created_at) }}
           </template>
           <template v-else>暂无</template>
@@ -163,7 +163,7 @@ onMounted(refresh)
               class="badge"
               :class="`tone-${codeTone(code)}`"
             >
-              {{ code }} · {{ n }}
+              {{ code }} / {{ n }}
             </span>
             <span v-if="!Object.keys(status.requests.by_status || {}).length" class="muted"
               >暂无</span

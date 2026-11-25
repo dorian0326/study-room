@@ -3,11 +3,17 @@
   <head>
     <meta name="color-scheme" content="light dark" />
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <script>
-      // 首帧前应用主题：默认浅色，仅当 localStorage 存有 dark 时用深色，避免闪烁
+      // 首帧前应用主题：已保存的选择优先，否则跟随系统，避免闪烁
       try {
-        if (localStorage.getItem('studyroom_theme') === 'dark') {
+        var saved = localStorage.getItem('studyroom_theme')
+        var dark =
+          saved === 'dark' ||
+          (saved !== 'light' &&
+            window.matchMedia &&
+            window.matchMedia('(prefers-color-scheme: dark)').matches)
+        if (dark) {
           document.documentElement.dataset.theme = 'dark'
           document.documentElement.style.colorScheme = 'dark'
         }
