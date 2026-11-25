@@ -1,6 +1,8 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { api } from '../api/client.js'
+import NlLoading from '../components/NlLoading.vue'
+import EmptyState from '../components/EmptyState.vue'
 
 const ROLES = { user: '用户', admin: '管理员', ops: '运维' }
 const q = ref('')
@@ -8,6 +10,7 @@ const users = ref([])
 const total = ref(0)
 const error = ref('')
 const notice = ref('')
+const loading = ref(true)
 
 async function load() {
   error.value = ''
@@ -17,6 +20,8 @@ async function load() {
     total.value = data.total
   } catch (e) {
     error.value = e.message
+  } finally {
+    loading.value = false
   }
 }
 
@@ -67,7 +72,9 @@ onMounted(load)
       <button class="primary">搜索</button>
       <span class="muted">共 {{ total }} 人</span>
     </form>
-    <div class="table-scroll">
+    <NlLoading v-if="loading" />
+    <EmptyState v-else-if="!users.length" title="没有找到符合条件的用户。" />
+    <div v-else class="table-scroll">
       <table>
         <thead>
           <tr>

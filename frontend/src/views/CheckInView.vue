@@ -2,6 +2,8 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../api/client.js'
+import NlLoading from '../components/NlLoading.vue'
+import EmptyState from '../components/EmptyState.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -11,6 +13,7 @@ const reservationId = ref('')
 const token = ref('')
 const error = ref('')
 const notice = ref('')
+const loading = ref(true)
 const scanning = ref(false)
 const scanSupported = ref(typeof window !== 'undefined' && 'BarcodeDetector' in window)
 
@@ -36,6 +39,8 @@ async function loadReservations() {
     }
   } catch (cause) {
     error.value = cause.message
+  } finally {
+    loading.value = false
   }
 }
 
@@ -59,7 +64,7 @@ async function submitCheckIn(rawToken = token.value) {
   const seatId = parseSeatToken(rawToken)
   const body = seatId ? { seat_id: seatId } : undefined
   if (rawToken && !seatId) {
-    error.value = '无法识别座位二维码，请使用 studyroom:seat:<编号> 或座位 ID'
+    error.value = '无法识别这个二维码，请对准座位上的码，或改输入座位编号。'
     return
   }
   try {
@@ -76,7 +81,7 @@ async function startScan() {
   error.value = ''
   notice.value = ''
   if (!scanSupported.value) {
-    error.value = '当前浏览器不支持摄像头扫码，请改用手输座位令牌。'
+    error.value = '当前浏览器不支持摄像头扫码，请改用下方输入座位编号。'
     return
   }
   try {
@@ -106,7 +111,7 @@ async function startScan() {
     }, 500)
   } catch (cause) {
     scanning.value = false
-    error.value = cause.message || '无法打开摄像头，请检查权限或改用手输。'
+    error.value = cause.message || '无法打开摄像头，请检查权限或改用手输座位编号。'
   }
 }
 
@@ -129,59 +134,73 @@ onBeforeUnmount(stopScan)
 </script>
 
 <template>
-  <h2>扫码签到</h2>
-  <p class="hint">对准桌上二维码，或粘贴 <code>studyroom:seat:&lt;座位ID&gt;</code>。不刷脸。</p>
+  <p class="hint">对准座位上的二维码即可签到；也可以在下方输入座位编号。</p>
   <p v-if="error" class="error">{{ error }}</p>
   <p v-if="notice" class="ok">{{ notice }}</p>
 
-  <section class="panel">
-    <label>
-      选择预约
-      <select v-model="reservationId">
-        <option disabled value="">请选择</option>
-        <option v-for="row in reserved" :key="row.id" :value="String(row.id)">
-          {{ row.reservation_no }} · {{ row.room_name }} / {{ row.seat_code }} ·
-          {{ new Date(row.start_time).toLocaleString('zh-CN') }}
-        </option>
-      </select>
-    </label>
-    <p v-if="!reserved.length" class="hint">当前没有待签到的预约。</p>
-  </section>
+  <NlLoading v-if="loading" />
 
-  <section class="panel">
-    <h3>摄像头扫码</h3>
-    <div class="scan-actions">
-      <button
-        v-if="!scanning"
-        type="button"
-        class="primary"
-        :disabled="!reservationId"
-        @click="startScan"
-      >
-        打开摄像头
-      </button>
-      <button v-else type="button" @click="stopScan">关闭摄像头</button>
-      <button type="button" @click="router.push('/workflows')">返回预约台</button>
-    </div>
-    <video v-show="scanning" ref="video" class="preview" playsinline muted></video>
-    <p v-if="!scanSupported" class="hint">本浏览器没有 BarcodeDetector，请使用下方手输。</p>
-  </section>
+  <template v-else>
+    <EmptyState
+      v-if="!reserved.length"
+      title="当前没有待签到的预约"
+      action-to="/workflows"
+      action-text="去预约一个座位"
+    />
 
-  <section class="panel">
-    <h3>手动输入座位令牌</h3>
-    <form class="manual" @submit.prevent="submitCheckIn()">
-      <input
-        v-model="token"
-        placeholder="studyroom:seat:12 或 12"
-        autocomplete="off"
-        spellcheck="false"
-      />
-      <button class="primary" :disabled="!reservationId">签到</button>
-      <button type="button" :disabled="!reservationId" @click="submitCheckIn('')">
-        无码手动签到
-      </button>
-    </form>
-  </section>
+    <template v-else>
+      <section class="panel">
+        <label>
+          选择预约
+          <select v-model="reservationId">
+            <option disabled value="">请选择</option>
+            <option v-for="row in reserved" :key="row.id" :value="String(row.id)">
+              {{ row.reservation_no }} / {{ row.room_name }} / {{ row.seat_code }} /
+              {{ new Date(row.start_time).toLocaleString('zh-CN') }}
+            </option>
+          </select>
+        </label>
+      </section>
+
+      <section class="panel">
+        <h3>摄像头扫码</h3>
+        <div class="scan-actions">
+          <button
+            v-if="!scanning"
+            type="button"
+            class="primary"
+            :disabled="!reservationId"
+            @click="startScan"
+          >
+            打开摄像头
+          </button>
+          <button v-else type="button" @click="stopScan">关闭摄像头</button>
+          <button type="button" @click="router.push('/workflows')">返回预约台</button>
+        </div>
+        <div v-show="scanning" class="scan-frame">
+          <video ref="video" class="preview" playsinline muted></video>
+          <span class="scan-hint">将二维码置于框内</span>
+        </div>
+        <p v-if="!scanSupported" class="hint">这台浏览器暂时不能扫码，请改用下方输入座位编号。</p>
+      </section>
+
+      <section class="panel">
+        <h3>输入座位编号</h3>
+        <form class="manual" @submit.prevent="submitCheckIn()">
+          <input
+            v-model="token"
+            placeholder="例如 12，或粘贴座位码"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button class="primary" :disabled="!reservationId">签到</button>
+          <button type="button" :disabled="!reservationId" @click="submitCheckIn('')">
+            无码手动签到
+          </button>
+        </form>
+      </section>
+    </template>
+  </template>
 </template>
 
 <style scoped>
@@ -196,9 +215,27 @@ onBeforeUnmount(stopScan)
   min-width: 16rem;
   flex: 1;
 }
-.preview {
+.scan-frame {
   width: min(100%, 420px);
-  border-radius: 0.5rem;
+  margin-top: 8px;
+  padding: 10px;
+  border: 2px solid var(--brand);
+  border-radius: 16px;
+  background: var(--bg-elevated);
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+}
+.preview {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  max-height: 360px;
+  object-fit: cover;
+  border-radius: 12px;
   background: #111;
+}
+.scan-hint {
+  color: var(--muted);
+  font-size: 0.86rem;
 }
 </style>

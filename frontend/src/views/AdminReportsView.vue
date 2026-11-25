@@ -1,9 +1,13 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { getToken } from '../api/client.js'
+import { violationTypeLabel } from '../labels.js'
+import NlLoading from '../components/NlLoading.vue'
+import EmptyState from '../components/EmptyState.vue'
 
 const report = ref(null)
 const error = ref('')
+const loading = ref(true)
 /** 按浏览器本地日历格式化日期，避免采用 UTC 日期边界。 */
 function dateForInput(value) {
   // 报表筛选日期与用户界面显示的日历日保持一致。
@@ -31,6 +35,8 @@ async function loadReport() {
     report.value = data
   } catch (cause) {
     error.value = cause.message
+  } finally {
+    loading.value = false
   }
 }
 
@@ -81,6 +87,7 @@ onMounted(loadReport)
     <button type="button" :disabled="!report" @click="downloadExcel">导出 Excel</button>
   </form>
   <p v-if="error" class="error">{{ error }}</p>
+  <NlLoading v-else-if="loading" />
   <template v-if="report">
     <section class="metrics">
       <article>
@@ -103,7 +110,7 @@ onMounted(loadReport)
     <p class="hint">{{ report.definition.utilization }}</p>
     <section class="panel">
       <h3>预约高峰</h3>
-      <p v-if="!report.booking_peaks.length">该期间没有预约。</p>
+      <EmptyState v-if="!report.booking_peaks.length" title="该期间没有预约。" />
       <table v-else>
         <thead>
           <tr>
@@ -123,7 +130,7 @@ onMounted(loadReport)
     </section>
     <section class="panel">
       <h3>违规趋势</h3>
-      <p v-if="!report.violation_trends.length">该期间没有违规记录。</p>
+      <EmptyState v-if="!report.violation_trends.length" title="该期间没有违规记录。" />
       <table v-else>
         <thead>
           <tr>
@@ -135,7 +142,7 @@ onMounted(loadReport)
         <tbody>
           <tr v-for="row in report.violation_trends" :key="`${row.day}-${row.type}`">
             <td>{{ row.day }}</td>
-            <td>{{ row.type }}</td>
+            <td>{{ violationTypeLabel(row.type) }}</td>
             <td>{{ row.count }}</td>
           </tr>
         </tbody>
