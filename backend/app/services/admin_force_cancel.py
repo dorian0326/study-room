@@ -15,6 +15,7 @@ from app.services.notifications import create_notification
 
 
 def now():
+    """可被测试替换；默认转发到 timeutil.now（clock 夹具会 patch 后者）。"""
     return timeutil.now()
 
 
