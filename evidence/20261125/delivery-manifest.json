@@ -1,5 +1,5 @@
 {
-  "source_head": "e2929f761be4295b6124af765b07a9d0dd65ce84",
+  "source_head": "bd3ae4b39acb80afd9b6c12ebea82195a6f1b160",
   "branch": "codex/course-delivery",
   "working_tree_uncommitted": true,
   "local_links_checked": 52,
@@ -17,8 +17,8 @@
     },
     {
       "path": ".github/workflows/ci.yml",
-      "bytes": 980,
-      "sha256": "c203b632ae143deee74cbd090accbe85bdec1aea47eba4d73e3869092960ecdf"
+      "bytes": 1306,
+      "sha256": "fc60479eac01dfef78d33d978f029ba952bb8141e2ac38ae5592800dfabe68e1"
     },
     {
       "path": ".gitignore",
