@@ -4,6 +4,7 @@ import hashlib
 import hmac
 from datetime import datetime, timedelta
 
+from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -39,6 +40,8 @@ def process_gate_event(session: Session, body: GateEventIn) -> dict:
     moment = now()
     recorded_at = body.recorded_at.astimezone(moment.tzinfo)
     delay_seconds = int((moment - recorded_at).total_seconds())
+    if recorded_at > moment:
+        raise HTTPException(422, "门禁事件时间不能晚于服务端时间")
     delayed = delay_seconds > 300
 
     # 同一来源事件号只处理一次；重复回调直接返回首次同步结果。
@@ -246,7 +249,7 @@ def _state_matches(body: GateEventIn, reservation: Reservation) -> bool:
     if body.record_type == E.EntryExitType.ENTRY:
         if reservation.status == E.ReservationStatus.TEMP_LEAVE:
             return reservation.temp_leave_state == E.TempLeaveState.WAITING
-        return reservation.status == E.ReservationStatus.RESERVED
+        return False  # 入馆不能代替座位扫码签到（CHG-02 / UC-010）。
     return reservation.status in (E.ReservationStatus.ACTIVE, E.ReservationStatus.TEMP_LEAVE)
 
 

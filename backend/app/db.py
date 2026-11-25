@@ -7,6 +7,7 @@ from pathlib import Path
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.pool import NullPool
 
 from app.config import get_settings
 
@@ -21,7 +22,10 @@ def make_engine(url: str | None = None) -> Engine:
     settings = get_settings()
     url = url or settings.database_url
     _ensure_sqlite_dir(url)
-    engine = create_engine(url, connect_args={"check_same_thread": False})
+    # Requests may retain an authentication session while opening a write session.
+    # A small bounded pool can deadlock those nested acquisitions under HTTP load.
+    # SQLite connections are cheap; do not hold a scarce pool slot across layers.
+    engine = create_engine(url, connect_args={"check_same_thread": False}, poolclass=NullPool)
     # 关闭 pysqlite 的隐式事务处理，由下面的 begin 事件统一发 BEGIN，
     # 这样 transaction(immediate=True) 才能用 BEGIN IMMEDIATE 拿写锁
 

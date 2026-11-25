@@ -1,0 +1,2306 @@
+{
+  "alembic_version": {
+    "columns": [
+      {
+        "name": "version_num",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      }
+    ],
+    "foreign_keys": [],
+    "indexes": [],
+    "checks": [],
+    "unique": [],
+    "primary_key": {
+      "constrained_columns": [
+        "version_num"
+      ],
+      "name": "alembic_version_pkc"
+    }
+  },
+  "appeals": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "user_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "violation_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "restriction_id",
+        "type": "INTEGER",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "reason",
+        "type": "TEXT",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "evidence",
+        "type": "TEXT",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "deadline",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "reviewer_id",
+        "type": "INTEGER",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "result",
+        "type": "VARCHAR(32)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "reviewed_at",
+        "type": "DATETIME",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "review_comment",
+        "type": "TEXT",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [
+      {
+        "name": "fk_appeals_restriction_id_restrictions",
+        "constrained_columns": [
+          "restriction_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "restrictions",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "SET NULL"
+        }
+      },
+      {
+        "name": "fk_appeals_reviewer_id_users",
+        "constrained_columns": [
+          "reviewer_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "users",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "SET NULL"
+        }
+      },
+      {
+        "name": "fk_appeals_user_id_users",
+        "constrained_columns": [
+          "user_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "users",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "RESTRICT"
+        }
+      },
+      {
+        "name": "fk_appeals_violation_id_violation_records",
+        "constrained_columns": [
+          "violation_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "violation_records",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "CASCADE"
+        }
+      }
+    ],
+    "indexes": [],
+    "checks": [
+      {
+        "sqltext": "result IN ('approved', 'rejected')",
+        "name": "ck_appeals_appeal_result"
+      },
+      {
+        "sqltext": "length(trim(reason)) > 0",
+        "name": "ck_appeals_reason_not_blank"
+      }
+    ],
+    "unique": [],
+    "primary_key": {
+      "constrained_columns": [
+        "id"
+      ],
+      "name": "pk_appeals"
+    }
+  },
+  "arrival_records": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "reservation_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "user_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "seat_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "arrival_status",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "arrived_at",
+        "type": "DATETIME",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "arrival_method",
+        "type": "VARCHAR(32)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "ended_at",
+        "type": "DATETIME",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "end_method",
+        "type": "VARCHAR(32)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "sync_delay_seconds",
+        "type": "INTEGER",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [
+      {
+        "name": "fk_arrival_records_reservation_id_reservations",
+        "constrained_columns": [
+          "reservation_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "reservations",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "CASCADE"
+        }
+      },
+      {
+        "name": "fk_arrival_records_seat_id_seats",
+        "constrained_columns": [
+          "seat_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "seats",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "RESTRICT"
+        }
+      },
+      {
+        "name": "fk_arrival_records_user_id_users",
+        "constrained_columns": [
+          "user_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "users",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "RESTRICT"
+        }
+      }
+    ],
+    "indexes": [],
+    "checks": [
+      {
+        "sqltext": "arrival_method IN ('qr', 'manual')",
+        "name": "ck_arrival_records_arrival_method"
+      },
+      {
+        "sqltext": "arrival_status IN ('absent', 'on_time', 'late', 'early')",
+        "name": "ck_arrival_records_arrival_status"
+      },
+      {
+        "sqltext": "end_method IN ('button', 'auto_timeout', 'admin_release')",
+        "name": "ck_arrival_records_end_method"
+      }
+    ],
+    "unique": [],
+    "primary_key": {
+      "constrained_columns": [
+        "id"
+      ],
+      "name": "pk_arrival_records"
+    }
+  },
+  "audit_logs": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "operator_id",
+        "type": "INTEGER",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "op_type",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "target_type",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "target_id",
+        "type": "VARCHAR(64)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "occurred_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "before_value",
+        "type": "TEXT",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "after_value",
+        "type": "TEXT",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "ip_address",
+        "type": "VARCHAR(45)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "result",
+        "type": "VARCHAR(16)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [
+      {
+        "name": "fk_audit_logs_operator_id_users",
+        "constrained_columns": [
+          "operator_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "users",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "SET NULL"
+        }
+      }
+    ],
+    "indexes": [
+      {
+        "name": "ix_audit_logs_occurred_at",
+        "column_names": [
+          "occurred_at"
+        ],
+        "unique": 0,
+        "dialect_options": {}
+      }
+    ],
+    "checks": [
+      {
+        "sqltext": "op_type IN ('admin_action', 'violation', 'permission_change')",
+        "name": "ck_audit_logs_audit_op_type"
+      }
+    ],
+    "unique": [],
+    "primary_key": {
+      "constrained_columns": [
+        "id"
+      ],
+      "name": "pk_audit_logs"
+    }
+  },
+  "auth_sessions": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "token_hash",
+        "type": "VARCHAR(64)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "user_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "expires_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "revoked_at",
+        "type": "DATETIME",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "ip_address",
+        "type": "VARCHAR(45)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "user_agent",
+        "type": "VARCHAR(255)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [
+      {
+        "name": "fk_auth_sessions_user_id_users",
+        "constrained_columns": [
+          "user_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "users",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "CASCADE"
+        }
+      }
+    ],
+    "indexes": [
+      {
+        "name": "ix_auth_sessions_user_id",
+        "column_names": [
+          "user_id"
+        ],
+        "unique": 0,
+        "dialect_options": {}
+      }
+    ],
+    "checks": [],
+    "unique": [
+      {
+        "name": "uq_auth_sessions_token_hash",
+        "column_names": [
+          "token_hash"
+        ]
+      }
+    ],
+    "primary_key": {
+      "constrained_columns": [
+        "id"
+      ],
+      "name": "pk_auth_sessions"
+    }
+  },
+  "calendar_days": {
+    "columns": [
+      {
+        "name": "day",
+        "type": "DATE",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "day_type",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "note",
+        "type": "VARCHAR(128)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [],
+    "indexes": [],
+    "checks": [
+      {
+        "sqltext": "day_type IN ('weekday', 'weekend', 'holiday', 'exam_week')",
+        "name": "ck_calendar_days_day_type"
+      }
+    ],
+    "unique": [],
+    "primary_key": {
+      "constrained_columns": [
+        "day"
+      ],
+      "name": "pk_calendar_days"
+    }
+  },
+  "entry_exit_records": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "external_id",
+        "type": "VARCHAR(64)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "source_system",
+        "type": "VARCHAR(64)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "masked_user_key",
+        "type": "VARCHAR(64)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "record_type",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "recorded_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "recognition",
+        "type": "VARCHAR(32)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "received_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "expires_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "sync_status",
+        "type": "VARCHAR(16)",
+        "nullable": false,
+        "default": "'pending'",
+        "primary_key": 0
+      },
+      {
+        "name": "sync_delay_seconds",
+        "type": "INTEGER",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "reservation_id",
+        "type": "INTEGER",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "manual_note",
+        "type": "TEXT",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [
+      {
+        "name": "fk_entry_exit_records_reservation_id_reservations",
+        "constrained_columns": [
+          "reservation_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "reservations",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "SET NULL"
+        }
+      }
+    ],
+    "indexes": [
+      {
+        "name": "ix_entry_exit_records_masked_user_key",
+        "column_names": [
+          "masked_user_key"
+        ],
+        "unique": 0,
+        "dialect_options": {}
+      }
+    ],
+    "checks": [
+      {
+        "sqltext": "record_type IN ('entry', 'exit')",
+        "name": "ck_entry_exit_records_entry_exit_type"
+      },
+      {
+        "sqltext": "recognition IN ('face', 'card')",
+        "name": "ck_entry_exit_records_recognition_method"
+      }
+    ],
+    "unique": [
+      {
+        "name": "uq_entry_exit_records_source_system_external_id",
+        "column_names": [
+          "source_system",
+          "external_id"
+        ]
+      }
+    ],
+    "primary_key": {
+      "constrained_columns": [
+        "id"
+      ],
+      "name": "pk_entry_exit_records"
+    }
+  },
+  "login_logs": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "user_id",
+        "type": "INTEGER",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "student_no",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "event",
+        "type": "VARCHAR(16)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "success",
+        "type": "BOOLEAN",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "reason",
+        "type": "VARCHAR(32)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "occurred_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "ip_address",
+        "type": "VARCHAR(45)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "user_agent",
+        "type": "VARCHAR(255)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [
+      {
+        "name": "fk_login_logs_user_id_users",
+        "constrained_columns": [
+          "user_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "users",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "SET NULL"
+        }
+      }
+    ],
+    "indexes": [
+      {
+        "name": "ix_login_logs_occurred_at",
+        "column_names": [
+          "occurred_at"
+        ],
+        "unique": 0,
+        "dialect_options": {}
+      },
+      {
+        "name": "ix_login_logs_student_no",
+        "column_names": [
+          "student_no"
+        ],
+        "unique": 0,
+        "dialect_options": {}
+      }
+    ],
+    "checks": [],
+    "unique": [],
+    "primary_key": {
+      "constrained_columns": [
+        "id"
+      ],
+      "name": "pk_login_logs"
+    }
+  },
+  "notifications": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "user_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "type",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "content",
+        "type": "TEXT",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "sent_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "channel",
+        "type": "VARCHAR(16)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "is_read",
+        "type": "BOOLEAN",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "idempotency_key",
+        "type": "VARCHAR(128)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [
+      {
+        "name": "fk_notifications_user_id_users",
+        "constrained_columns": [
+          "user_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "users",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "CASCADE"
+        }
+      }
+    ],
+    "indexes": [
+      {
+        "name": "ix_notifications_user_read",
+        "column_names": [
+          "user_id",
+          "is_read"
+        ],
+        "unique": 0,
+        "dialect_options": {}
+      }
+    ],
+    "checks": [
+      {
+        "sqltext": "channel = 'in_app'",
+        "name": "ck_notifications_in_app_only"
+      },
+      {
+        "sqltext": "type IN ('reservation_confirmed', 'checkin_reminder', 'violation', 'maintenance', 'system', 'temp_leave')",
+        "name": "ck_notifications_notification_type"
+      }
+    ],
+    "unique": [
+      {
+        "name": "uq_notifications_idempotency_key",
+        "column_names": [
+          "idempotency_key"
+        ]
+      }
+    ],
+    "primary_key": {
+      "constrained_columns": [
+        "id"
+      ],
+      "name": "pk_notifications"
+    }
+  },
+  "opening_schedules": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "room_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "day_type",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "open_time",
+        "type": "TIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "close_time",
+        "type": "TIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "effective_from",
+        "type": "DATE",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "effective_to",
+        "type": "DATE",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "enabled",
+        "type": "BOOLEAN",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [
+      {
+        "name": "fk_opening_schedules_room_id_study_rooms",
+        "constrained_columns": [
+          "room_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "study_rooms",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "CASCADE"
+        }
+      }
+    ],
+    "indexes": [],
+    "checks": [
+      {
+        "sqltext": "day_type IN ('weekday', 'weekend', 'holiday', 'exam_week')",
+        "name": "ck_opening_schedules_day_type"
+      },
+      {
+        "sqltext": "effective_to IS NULL OR effective_from IS NULL OR effective_from <= effective_to",
+        "name": "ck_opening_schedules_effective_range"
+      },
+      {
+        "sqltext": "open_time < close_time",
+        "name": "ck_opening_schedules_open_before_close"
+      }
+    ],
+    "unique": [],
+    "primary_key": {
+      "constrained_columns": [
+        "id"
+      ],
+      "name": "pk_opening_schedules"
+    }
+  },
+  "password_reset_tokens": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "token_hash",
+        "type": "VARCHAR(64)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "user_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "issued_by",
+        "type": "INTEGER",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "expires_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "used_at",
+        "type": "DATETIME",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [
+      {
+        "name": "fk_password_reset_tokens_issued_by_users",
+        "constrained_columns": [
+          "issued_by"
+        ],
+        "referred_schema": null,
+        "referred_table": "users",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "SET NULL"
+        }
+      },
+      {
+        "name": "fk_password_reset_tokens_user_id_users",
+        "constrained_columns": [
+          "user_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "users",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "CASCADE"
+        }
+      }
+    ],
+    "indexes": [],
+    "checks": [],
+    "unique": [
+      {
+        "name": "uq_password_reset_tokens_token_hash",
+        "column_names": [
+          "token_hash"
+        ]
+      }
+    ],
+    "primary_key": {
+      "constrained_columns": [
+        "id"
+      ],
+      "name": "pk_password_reset_tokens"
+    }
+  },
+  "permissions": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "code",
+        "type": "VARCHAR(64)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "description",
+        "type": "VARCHAR(255)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "resource",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "action",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [],
+    "indexes": [],
+    "checks": [],
+    "unique": [
+      {
+        "name": "uq_permissions_code",
+        "column_names": [
+          "code"
+        ]
+      }
+    ],
+    "primary_key": {
+      "constrained_columns": [
+        "id"
+      ],
+      "name": "pk_permissions"
+    }
+  },
+  "reservations": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "reservation_no",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "user_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "room_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "seat_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "start_time",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "end_time",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "status",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "cancel_type",
+        "type": "VARCHAR(32)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "cancel_reason",
+        "type": "TEXT",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "cancelled_at",
+        "type": "DATETIME",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "expire_reason",
+        "type": "VARCHAR(64)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "remark",
+        "type": "TEXT",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "temp_leave_at",
+        "type": "DATETIME",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "temp_leave_state",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "idempotency_key",
+        "type": "VARCHAR(64)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "request_fingerprint",
+        "type": "VARCHAR(64)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [
+      {
+        "name": "fk_reservations_room_id_study_rooms",
+        "constrained_columns": [
+          "room_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "study_rooms",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "RESTRICT"
+        }
+      },
+      {
+        "name": "fk_reservations_seat_id_seats",
+        "constrained_columns": [
+          "seat_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "seats",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "RESTRICT"
+        }
+      },
+      {
+        "name": "fk_reservations_user_id_users",
+        "constrained_columns": [
+          "user_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "users",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "RESTRICT"
+        }
+      }
+    ],
+    "indexes": [
+      {
+        "name": "ix_reservations_user_start",
+        "column_names": [
+          "user_id",
+          "start_time"
+        ],
+        "unique": 0,
+        "dialect_options": {}
+      },
+      {
+        "name": "uq_reservations_active_seat_start",
+        "column_names": [
+          "seat_id",
+          "start_time"
+        ],
+        "unique": 1,
+        "dialect_options": {
+          "sqlite_where": "status IN ('RESERVED', 'ACTIVE', 'TEMP_LEAVE')"
+        }
+      }
+    ],
+    "checks": [
+      {
+        "sqltext": "cancel_type IN ('normal', 'late', 'system')",
+        "name": "ck_reservations_cancel_type"
+      },
+      {
+        "sqltext": "status IN ('RESERVED', 'ACTIVE', 'TEMP_LEAVE', 'COMPLETED', 'CANCELLED', 'ADMIN_CANCELLED', 'EXPIRED', 'TIMED_OUT')",
+        "name": "ck_reservations_reservation_status"
+      },
+      {
+        "sqltext": "start_time < end_time",
+        "name": "ck_reservations_start_before_end"
+      },
+      {
+        "sqltext": "temp_leave_state IN ('none', 'waiting', 'returned', 'timed_out')",
+        "name": "ck_reservations_temp_leave_state"
+      }
+    ],
+    "unique": [
+      {
+        "name": "uq_reservations_idempotency_key",
+        "column_names": [
+          "idempotency_key"
+        ]
+      },
+      {
+        "name": "uq_reservations_reservation_no",
+        "column_names": [
+          "reservation_no"
+        ]
+      }
+    ],
+    "primary_key": {
+      "constrained_columns": [
+        "id"
+      ],
+      "name": "pk_reservations"
+    }
+  },
+  "restrictions": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "user_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "ban_days",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "warning_count",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "trigger_condition",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "start_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "end_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "status",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "lifted_at",
+        "type": "DATETIME",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "lift_reason",
+        "type": "TEXT",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "lifted_by",
+        "type": "INTEGER",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [
+      {
+        "name": "fk_restrictions_lifted_by_users",
+        "constrained_columns": [
+          "lifted_by"
+        ],
+        "referred_schema": null,
+        "referred_table": "users",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "SET NULL"
+        }
+      },
+      {
+        "name": "fk_restrictions_user_id_users",
+        "constrained_columns": [
+          "user_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "users",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "RESTRICT"
+        }
+      }
+    ],
+    "indexes": [],
+    "checks": [
+      {
+        "sqltext": "ban_days >= 1",
+        "name": "ck_restrictions_ban_days_positive"
+      },
+      {
+        "sqltext": "status IN ('active', 'lifted', 'expired')",
+        "name": "ck_restrictions_restriction_status"
+      },
+      {
+        "sqltext": "start_at < end_at",
+        "name": "ck_restrictions_start_before_end"
+      }
+    ],
+    "unique": [],
+    "primary_key": {
+      "constrained_columns": [
+        "id"
+      ],
+      "name": "pk_restrictions"
+    }
+  },
+  "role_permissions": {
+    "columns": [
+      {
+        "name": "role_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "permission_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 2
+      }
+    ],
+    "foreign_keys": [
+      {
+        "name": "fk_role_permissions_permission_id_permissions",
+        "constrained_columns": [
+          "permission_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "permissions",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "CASCADE"
+        }
+      },
+      {
+        "name": "fk_role_permissions_role_id_roles",
+        "constrained_columns": [
+          "role_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "roles",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "CASCADE"
+        }
+      }
+    ],
+    "indexes": [],
+    "checks": [],
+    "unique": [],
+    "primary_key": {
+      "constrained_columns": [
+        "role_id",
+        "permission_id"
+      ],
+      "name": "pk_role_permissions"
+    }
+  },
+  "roles": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "name",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "description",
+        "type": "VARCHAR(255)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "enabled",
+        "type": "BOOLEAN",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [],
+    "indexes": [],
+    "checks": [
+      {
+        "sqltext": "name IN ('user', 'admin', 'ops')",
+        "name": "ck_roles_role_name"
+      }
+    ],
+    "unique": [
+      {
+        "name": "uq_roles_name",
+        "column_names": [
+          "name"
+        ]
+      }
+    ],
+    "primary_key": {
+      "constrained_columns": [
+        "id"
+      ],
+      "name": "pk_roles"
+    }
+  },
+  "seats": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "room_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "code",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "zone_type",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "has_power",
+        "type": "BOOLEAN",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "by_window",
+        "type": "BOOLEAN",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "accessible",
+        "type": "BOOLEAN",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "status",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "status_changed_at",
+        "type": "DATETIME",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [
+      {
+        "name": "fk_seats_room_id_study_rooms",
+        "constrained_columns": [
+          "room_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "study_rooms",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "RESTRICT"
+        }
+      }
+    ],
+    "indexes": [],
+    "checks": [
+      {
+        "sqltext": "status IN ('available', 'reserved', 'in_use', 'maintenance', 'closed', 'disabled')",
+        "name": "ck_seats_seat_status"
+      },
+      {
+        "sqltext": "zone_type IN ('quiet', 'discussion', 'exam_prep')",
+        "name": "ck_seats_zone_type"
+      }
+    ],
+    "unique": [
+      {
+        "name": "uq_seats_room_id_code",
+        "column_names": [
+          "room_id",
+          "code"
+        ]
+      }
+    ],
+    "primary_key": {
+      "constrained_columns": [
+        "id"
+      ],
+      "name": "pk_seats"
+    }
+  },
+  "study_rooms": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "name",
+        "type": "VARCHAR(64)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "location",
+        "type": "VARCHAR(128)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "capacity",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "facilities",
+        "type": "TEXT",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "status",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "remark",
+        "type": "TEXT",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "floor",
+        "type": "VARCHAR(32)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [],
+    "indexes": [],
+    "checks": [
+      {
+        "sqltext": "capacity >= 0",
+        "name": "ck_study_rooms_capacity_non_negative"
+      },
+      {
+        "sqltext": "status IN ('open', 'closed')",
+        "name": "ck_study_rooms_room_status"
+      }
+    ],
+    "unique": [
+      {
+        "name": "uq_study_rooms_name",
+        "column_names": [
+          "name"
+        ]
+      }
+    ],
+    "primary_key": {
+      "constrained_columns": [
+        "id"
+      ],
+      "name": "pk_study_rooms"
+    }
+  },
+  "system_settings": {
+    "columns": [
+      {
+        "name": "key",
+        "type": "VARCHAR(64)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "value",
+        "type": "TEXT",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "updated_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "updated_by",
+        "type": "INTEGER",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [
+      {
+        "name": "fk_system_settings_updated_by_users",
+        "constrained_columns": [
+          "updated_by"
+        ],
+        "referred_schema": null,
+        "referred_table": "users",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "SET NULL"
+        }
+      }
+    ],
+    "indexes": [],
+    "checks": [],
+    "unique": [],
+    "primary_key": {
+      "constrained_columns": [
+        "key"
+      ],
+      "name": "pk_system_settings"
+    }
+  },
+  "user_roles": {
+    "columns": [
+      {
+        "name": "user_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "role_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 2
+      }
+    ],
+    "foreign_keys": [
+      {
+        "name": "fk_user_roles_role_id_roles",
+        "constrained_columns": [
+          "role_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "roles",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "CASCADE"
+        }
+      },
+      {
+        "name": "fk_user_roles_user_id_users",
+        "constrained_columns": [
+          "user_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "users",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "CASCADE"
+        }
+      }
+    ],
+    "indexes": [],
+    "checks": [],
+    "unique": [],
+    "primary_key": {
+      "constrained_columns": [
+        "user_id",
+        "role_id"
+      ],
+      "name": "pk_user_roles"
+    }
+  },
+  "users": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "student_no",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "password_hash",
+        "type": "VARCHAR(255)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "name",
+        "type": "VARCHAR(64)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "department",
+        "type": "VARCHAR(128)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "contact",
+        "type": "VARCHAR(128)",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "status",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [],
+    "indexes": [],
+    "checks": [
+      {
+        "sqltext": "status IN ('normal', 'disabled')",
+        "name": "ck_users_account_status"
+      },
+      {
+        "sqltext": "length(trim(student_no)) > 0",
+        "name": "ck_users_student_no_not_blank"
+      }
+    ],
+    "unique": [
+      {
+        "name": "uq_users_student_no",
+        "column_names": [
+          "student_no"
+        ]
+      }
+    ],
+    "primary_key": {
+      "constrained_columns": [
+        "id"
+      ],
+      "name": "pk_users"
+    }
+  },
+  "violation_records": {
+    "columns": [
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 1
+      },
+      {
+        "name": "user_id",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "violation_type",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "occurred_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "reservation_id",
+        "type": "INTEGER",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "arrival_record_id",
+        "type": "INTEGER",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "description",
+        "type": "TEXT",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "state",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "period_start",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "period_seq",
+        "type": "INTEGER",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "archived_at",
+        "type": "DATETIME",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "determined_by",
+        "type": "VARCHAR(16)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "result",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "restriction_id",
+        "type": "INTEGER",
+        "nullable": true,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "appeal_status",
+        "type": "VARCHAR(32)",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "is_offset",
+        "type": "BOOLEAN",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      },
+      {
+        "name": "created_at",
+        "type": "DATETIME",
+        "nullable": false,
+        "default": null,
+        "primary_key": 0
+      }
+    ],
+    "foreign_keys": [
+      {
+        "name": "fk_violation_records_user_id_users",
+        "constrained_columns": [
+          "user_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "users",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "RESTRICT"
+        }
+      },
+      {
+        "name": "fk_violation_records_restriction_id_restrictions",
+        "constrained_columns": [
+          "restriction_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "restrictions",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "SET NULL"
+        }
+      },
+      {
+        "name": "fk_violation_records_arrival_record_id_arrival_records",
+        "constrained_columns": [
+          "arrival_record_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "arrival_records",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "SET NULL"
+        }
+      },
+      {
+        "name": "fk_violation_records_reservation_id_reservations",
+        "constrained_columns": [
+          "reservation_id"
+        ],
+        "referred_schema": null,
+        "referred_table": "reservations",
+        "referred_columns": [
+          "id"
+        ],
+        "options": {
+          "ondelete": "SET NULL"
+        }
+      }
+    ],
+    "indexes": [
+      {
+        "name": "ix_violation_records_user_period",
+        "column_names": [
+          "user_id",
+          "period_start"
+        ],
+        "unique": 0,
+        "dialect_options": {}
+      }
+    ],
+    "checks": [
+      {
+        "sqltext": "appeal_status IN ('none', 'pending', 'approved', 'rejected')",
+        "name": "ck_violation_records_appeal_status"
+      },
+      {
+        "sqltext": "result IN ('warning', 'restricted')",
+        "name": "ck_violation_records_violation_result"
+      },
+      {
+        "sqltext": "state IN ('active', 'archived')",
+        "name": "ck_violation_records_violation_state"
+      },
+      {
+        "sqltext": "violation_type IN ('left_undeclared', 'no_show', 'no_checkout', 'late_cancel', 'temp_leave_timeout')",
+        "name": "ck_violation_records_violation_type"
+      }
+    ],
+    "unique": [],
+    "primary_key": {
+      "constrained_columns": [
+        "id"
+      ],
+      "name": "pk_violation_records"
+    }
+  }
+}

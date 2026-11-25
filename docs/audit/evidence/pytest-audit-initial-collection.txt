@@ -1,0 +1,15 @@
+
+=================================== ERRORS ====================================
+________________________ ERROR collecting test session ________________________
+ImportError while importing test module 'D:\DATA\university\3_1\Software Engineering\NAILONG-ZIXISHI\docs\audit\evidence\test_audit_findings.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+docs\audit\evidence\test_audit_findings.py:13: in <module>
+    from tests.conftest import api_db, client, login, make_user  # noqa: F401
+E   ModuleNotFoundError: No module named 'tests.conftest'
+- generated xml file: D:\DATA\university\3_1\Software Engineering\NAILONG-ZIXISHI\docs\audit\evidence\pytest-audit.xml -
+=========================== short test summary info ===========================
+ERROR backend
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.97s
+ExitCode: 2

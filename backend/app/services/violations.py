@@ -160,6 +160,7 @@ def record_violation(
     )
     session.add(violation)
     session.flush()
+    content = f"{content} 类型：{violation_type.value}；发生时间：{moment.isoformat()}。"
     create_notification(
         session,
         user_id=user_id,

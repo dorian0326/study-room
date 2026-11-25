@@ -1,0 +1,38 @@
+
+> study-room-frontend@0.1.0 format:check
+> prettier --check src/
+
+Checking formatting...
+[warn] src/api/client.js
+[warn] src/api/health.js
+[warn] src/App.vue
+[warn] src/assets/styles.css
+[warn] src/assets/x.css
+[warn] src/auth.js
+[warn] src/components/ConfirmDialog.vue
+[warn] src/components/StatusBadge.vue
+[warn] src/components/XIcon.vue
+[warn] src/confirm.js
+[warn] src/main.js
+[warn] src/router/index.js
+[warn] src/theme.js
+[warn] src/views/AdminAppealsView.vue
+[warn] src/views/AdminConfigView.vue
+[warn] src/views/AdminGateView.vue
+[warn] src/views/AdminLogsView.vue
+[warn] src/views/AdminOpsView.vue
+[warn] src/views/AdminReportsView.vue
+[warn] src/views/AdminSeatsView.vue
+[warn] src/views/AdminUsersView.vue
+[warn] src/views/ChangePasswordView.vue
+[warn] src/views/CheckInView.vue
+[warn] src/views/HomeView.vue
+[warn] src/views/LoginView.vue
+[warn] src/views/NotFoundView.vue
+[warn] src/views/NotificationsView.vue
+[warn] src/views/RegisterView.vue
+[warn] src/views/ResetPasswordView.vue
+[warn] src/views/ViolationsView.vue
+[warn] src/views/WorkflowsView.vue
+[warn] Code style issues found in 31 files. Run Prettier with --write to fix.
+ExitCode: 1

@@ -3,10 +3,12 @@
 import asyncio
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.api import (
     admin_config,
@@ -76,6 +78,25 @@ def create_app() -> FastAPI:
     app.include_router(admin_seats.router, prefix="/api")
     app.include_router(admin_violations.router, prefix="/api")
     app.include_router(reports.router, prefix="/api")
+    # Optional built SPA: all API routes are registered first, no /api fallback.
+    dist = Path(__file__).resolve().parents[2] / "frontend" / "dist"
+    if dist.is_dir() and (dist / "index.html").is_file():
+        if (dist / "assets").is_dir():
+            app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")
+
+        @app.get("/{path:path}", include_in_schema=False)
+        def spa(path: str):
+            if path == "api" or path.startswith("api/"):
+                raise HTTPException(404, "接口不存在")
+            candidate = (dist / path).resolve()
+            if not candidate.is_relative_to(dist.resolve()):
+                raise HTTPException(404, "文件不存在")
+            if candidate.is_file():
+                return FileResponse(candidate)
+            if Path(path).suffix:
+                raise HTTPException(404, "文件不存在")
+            return FileResponse(dist / "index.html")
+
     return app
 
 

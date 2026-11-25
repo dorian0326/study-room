@@ -64,6 +64,13 @@ def _assert_not_locked(session: Session, student_no: str) -> None:
     if settings.login_max_failures <= 0:
         return
     since = now() - timedelta(minutes=settings.login_lockout_minutes)
+    latest_success = session.scalar(
+        select(func.max(LoginLog.id)).where(
+            LoginLog.student_no == student_no.strip(),
+            LoginLog.event == "login",
+            LoginLog.success.is_(True),
+        )
+    )
     fails = int(
         session.scalar(
             select(func.count(LoginLog.id)).where(
@@ -71,6 +78,7 @@ def _assert_not_locked(session: Session, student_no: str) -> None:
                 LoginLog.event == "login",
                 LoginLog.success.is_(False),
                 LoginLog.occurred_at >= since,
+                LoginLog.id > (latest_success or 0),
             )
         )
         or 0

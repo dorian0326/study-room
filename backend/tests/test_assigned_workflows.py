@@ -146,7 +146,11 @@ def test_temporary_leave_timeout_creates_one_violation(
     moment = start
     monkeypatch.setattr("app.services.reservations.now", lambda: moment)
 
-    check_in = client.post(f"/api/reservations/{reservation['id']}/check-in", headers=headers)
+    check_in = client.post(
+        f"/api/reservations/{reservation['id']}/check-in",
+        headers=headers,
+        json={"seat_id": reservation["seat_id"]},
+    )
     assert check_in.status_code == 200
     leave = client.post(f"/api/reservations/{reservation['id']}/temporary-leave", headers=headers)
     assert leave.status_code == 200
@@ -467,7 +471,12 @@ def test_gate_exit_during_temp_leave_keeps_seat_and_entry_resumes(
     _, _, start, data = _create_reservation(client, admin_headers, headers)
     monkeypatch.setattr("app.services.reservations.now", lambda: start)
     assert (
-        client.post(f"/api/reservations/{data['id']}/check-in", headers=headers).status_code == 200
+        client.post(
+            f"/api/reservations/{data['id']}/check-in",
+            headers=headers,
+            json={"seat_id": data["seat_id"]},
+        ).status_code
+        == 200
     )
     assert (
         client.post(f"/api/reservations/{data['id']}/temporary-leave", headers=headers).status_code
@@ -517,7 +526,11 @@ def test_gate_entry_after_temp_leave_window_is_not_applied(
     headers = login("20261103", "secret123")
     _, _, start, data = _create_reservation(client, admin_headers, headers)
     monkeypatch.setattr("app.services.reservations.now", lambda: start)
-    client.post(f"/api/reservations/{data['id']}/check-in", headers=headers)
+    client.post(
+        f"/api/reservations/{data['id']}/check-in",
+        headers=headers,
+        json={"seat_id": data["seat_id"]},
+    )
     client.post(f"/api/reservations/{data['id']}/temporary-leave", headers=headers)
     late = start + timedelta(minutes=35)
     monkeypatch.setattr("app.services.gate.now", lambda: late)

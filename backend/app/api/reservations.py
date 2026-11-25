@@ -15,7 +15,7 @@ from fastapi import (
     status,
 )
 from pydantic import ValidationError
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app import timeutil
@@ -46,7 +46,8 @@ def now():
 router = APIRouter(tags=["student-workflows"])
 Reader = Annotated[User, Depends(require_permission("room:read"))]
 Owner = Annotated[User, Depends(require_permission("reservation:own"))]
-HistoryScope = Annotated[str, Query(pattern="^(all|current|history)$")]
+AllReservationsReader = Annotated[User, Depends(require_permission("reservation:read_all"))]
+HistoryScope = Annotated[str, Query(pattern="^(all|current|history|pending-confirmation)$")]
 IdempotencyKey = Annotated[
     str | None,
     Header(alias="Idempotency-Key", min_length=1, max_length=64, pattern=r"^[A-Za-z0-9._:-]+$"),
@@ -191,8 +192,14 @@ def list_my_reservations(user: Owner, session: SessionDep, scope: HistoryScope =
     visible = []
     for reservation, room_name, seat_code in rows:
         is_current = (
-            reservation.status in E.ACTIVE_RESERVATION_STATUSES and reservation.end_time >= moment
+            reservation.status in E.ACTIVE_RESERVATION_STATUSES and reservation.end_time > moment
         )
+        pending_confirmation = (
+            reservation.status in (E.ReservationStatus.ACTIVE, E.ReservationStatus.TEMP_LEAVE)
+            and reservation.end_time <= moment < reservation.end_time + service.CHECKOUT_GRACE
+        )
+        if scope == "pending-confirmation" and not pending_confirmation:
+            continue
         if scope == "current" and not is_current:
             continue
         if scope == "history" and is_current:
@@ -216,10 +223,34 @@ def current_reservations(user: Owner, session: SessionDep):
             .where(
                 Reservation.user_id == user.id,
                 Reservation.status.in_(E.ACTIVE_RESERVATION_STATUSES),
+                Reservation.end_time > now(),
             )
             .order_by(Reservation.start_time)
         )
         return [service.reservation_out(read, r) for r in bookings]
+
+
+@router.get("/admin/reservations")
+def all_reservations(
+    _: AllReservationsReader,
+    session: SessionDep,
+    user_id: int | None = None,
+    booking_status: Annotated[E.ReservationStatus | None, Query(alias="status")] = None,
+    page: Annotated[int, Query(ge=1)] = 1,
+    size: Annotated[int, Query(ge=1, le=100)] = 20,
+):
+    statement = select(Reservation)
+    if user_id is not None:
+        statement = statement.where(Reservation.user_id == user_id)
+    if booking_status is not None:
+        statement = statement.where(Reservation.status == booking_status)
+    total = session.scalar(select(func.count()).select_from(statement.subquery()))
+    rows = session.scalars(
+        statement.order_by(Reservation.start_time.desc(), Reservation.id.desc())
+        .offset((page - 1) * size)
+        .limit(size)
+    )
+    return {"total": total, "items": [ReservationOut.model_validate(row) for row in rows]}
 
 
 @router.get("/reservations/{rid}")
@@ -272,7 +303,7 @@ def check_in_reservation(
     reservation_id: int,
     user: Owner,
     session: SessionDep,
-    body: Annotated[CheckInIn | None, Body()] = None,
+    body: Annotated[CheckInIn, Body()],
 ):
     """验证预约归属和签到窗口；若带扫码座位信息则校验座位一致。"""
     return service.check_in(session, user.id, reservation_id, body)
@@ -315,7 +346,7 @@ def cancel_reservation(
 
 
 @router.get("/violations", response_model=list[ViolationOut])
-def list_my_violations(user: CurrentUser, session: SessionDep):
+def list_my_violations(user: Owner, session: SessionDep):
     return list(
         session.scalars(
             select(ViolationRecord)
@@ -326,7 +357,7 @@ def list_my_violations(user: CurrentUser, session: SessionDep):
 
 
 @router.post("/appeals", response_model=AppealOut, status_code=status.HTTP_201_CREATED)
-def submit_appeal(body: AppealCreate, user: CurrentUser, session: SessionDep):
+def submit_appeal(body: AppealCreate, user: Owner, session: SessionDep):
     session.commit()
     with transaction(session, immediate=True):
         violation = session.get(ViolationRecord, body.violation_id)
@@ -352,7 +383,7 @@ def submit_appeal(body: AppealCreate, user: CurrentUser, session: SessionDep):
 
 
 @router.get("/appeals", response_model=list[AppealOut])
-def list_my_appeals(user: CurrentUser, session: SessionDep):
+def list_my_appeals(user: Owner, session: SessionDep):
     return list(
         session.scalars(
             select(Appeal).where(Appeal.user_id == user.id).order_by(Appeal.created_at.desc())

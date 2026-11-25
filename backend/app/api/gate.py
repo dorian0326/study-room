@@ -10,8 +10,9 @@ from app.config import get_settings
 from app.db import transaction
 from app.deps import CurrentUser, SessionDep, require_permission
 from app.models import EntryExitRecord, Reservation, User
-from app.models.enums import NotificationType
+from app.models.enums import AuditOpType, NotificationType
 from app.schemas.workflows import GateEventIn, ManualGateAppealIn
+from app.services import audit
 from app.services.gate import process_gate_event, user_key_for_gate
 from app.services.notifications import create_notification
 from app.timeutil import now
@@ -69,7 +70,7 @@ def submit_gate_manual_appeal(
 
 @router.get("/records")
 def list_gate_records(
-    _: GateOperator,
+    operator: GateOperator,
     session: SessionDep,
     sync_status: str | None = None,
     limit: int = 100,
@@ -80,7 +81,7 @@ def list_gate_records(
     if sync_status:
         statement = statement.where(EntryExitRecord.sync_status == sync_status)
     rows = session.scalars(statement.limit(min(max(limit, 1), 500)))
-    return [
+    result = [
         {
             "id": row.id,
             "source_system": row.source_system,
@@ -95,3 +96,13 @@ def list_gate_records(
         }
         for row in rows
     ]
+    with transaction(session):
+        audit.record(
+            session,
+            operator=operator,
+            op_type=AuditOpType.ADMIN_ACTION,
+            target_type="entry_exit_read",
+            target_id=None,
+            after={"count": len(result), "sync_status": sync_status},
+        )
+    return result

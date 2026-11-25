@@ -57,6 +57,10 @@ async function submitCheckIn(rawToken = token.value) {
     return
   }
   const seatId = parseSeatToken(rawToken)
+  if (!rawToken) {
+    error.value = '请扫描座位二维码或输入座位标识'
+    return
+  }
   const body = seatId ? { seat_id: seatId } : undefined
   if (rawToken && !seatId) {
     error.value = '无法识别座位二维码，请使用 studyroom:seat:<编号> 或座位 ID'
@@ -177,9 +181,6 @@ onBeforeUnmount(stopScan)
         spellcheck="false"
       />
       <button class="primary" :disabled="!reservationId">签到</button>
-      <button type="button" :disabled="!reservationId" @click="submitCheckIn('')">
-        无码手动签到
-      </button>
     </form>
   </section>
 </template>

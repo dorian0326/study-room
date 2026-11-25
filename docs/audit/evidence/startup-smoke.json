@@ -1,0 +1,331 @@
+{
+  "database": "new temporary database under backend/.venv; migrated to head; removed after process shutdown",
+  "migration_exit": 0,
+  "health": {
+    "status": 200,
+    "body": {
+      "status": "ok",
+      "database": "sqlite",
+      "timezone": "Asia/Shanghai",
+      "server_time": "2026-11-25T09:24:45.450652+08:00"
+    }
+  },
+  "unauthenticated_rooms_status": 401,
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "operation_id": "health_api_health_get"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/register",
+      "operation_id": "register_api_auth_register_post"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "operation_id": "login_api_auth_login_post"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "operation_id": "logout_api_auth_logout_post"
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "operation_id": "me_api_auth_me_get"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/change-password",
+      "operation_id": "change_password_api_auth_change_password_post"
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/reset-password",
+      "operation_id": "reset_password_api_auth_reset_password_post"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/users",
+      "operation_id": "list_users_api_admin_users_get"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/users/{user_id}/roles",
+      "operation_id": "set_roles_api_admin_users__user_id__roles_put"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/admin/users/{user_id}/status",
+      "operation_id": "set_status_api_admin_users__user_id__status_patch"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/users/{user_id}/reset-code",
+      "operation_id": "issue_reset_code_api_admin_users__user_id__reset_code_post"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/rooms",
+      "operation_id": "list_rooms_api_admin_rooms_get"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/rooms",
+      "operation_id": "create_room_api_admin_rooms_post"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/rooms/{room_id}",
+      "operation_id": "update_room_api_admin_rooms__room_id__put"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/admin/rooms/{room_id}",
+      "operation_id": "delete_room_api_admin_rooms__room_id__delete"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/admin/rooms/{room_id}/status",
+      "operation_id": "set_room_status_api_admin_rooms__room_id__status_patch"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/rooms/{room_id}/schedules",
+      "operation_id": "list_schedules_api_admin_rooms__room_id__schedules_get"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/rooms/{room_id}/schedules",
+      "operation_id": "create_schedule_api_admin_rooms__room_id__schedules_post"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/rooms/{room_id}/schedules/{sid}",
+      "operation_id": "update_schedule_api_admin_rooms__room_id__schedules__sid__put"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/admin/rooms/{room_id}/schedules/{sid}",
+      "operation_id": "delete_schedule_api_admin_rooms__room_id__schedules__sid__delete"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/calendar",
+      "operation_id": "list_calendar_api_admin_calendar_get"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/calendar/{day}",
+      "operation_id": "upsert_calendar_day_api_admin_calendar__day__put"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/admin/calendar/{day}",
+      "operation_id": "delete_calendar_day_api_admin_calendar__day__delete"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/settings",
+      "operation_id": "read_settings_api_admin_settings_get"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/settings",
+      "operation_id": "update_settings_api_admin_settings_put"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ops/audit-logs",
+      "operation_id": "audit_logs_api_ops_audit_logs_get"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ops/login-logs",
+      "operation_id": "login_logs_api_ops_login_logs_get"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ops/backups",
+      "operation_id": "backups_api_ops_backups_get"
+    },
+    {
+      "method": "POST",
+      "path": "/api/ops/backups",
+      "operation_id": "backup_now_api_ops_backups_post"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ops/status",
+      "operation_id": "system_status_api_ops_status_get"
+    },
+    {
+      "method": "GET",
+      "path": "/api/rooms",
+      "operation_id": "public_rooms_api_rooms_get"
+    },
+    {
+      "method": "GET",
+      "path": "/api/seats",
+      "operation_id": "list_seats_api_seats_get"
+    },
+    {
+      "method": "GET",
+      "path": "/api/seats/{seat_id}",
+      "operation_id": "seat_detail_api_seats__seat_id__get"
+    },
+    {
+      "method": "GET",
+      "path": "/api/reservations",
+      "operation_id": "list_my_reservations_api_reservations_get"
+    },
+    {
+      "method": "POST",
+      "path": "/api/reservations",
+      "operation_id": "reserve_seat_api_reservations_post"
+    },
+    {
+      "method": "GET",
+      "path": "/api/reservations/current",
+      "operation_id": "current_reservations_api_reservations_current_get"
+    },
+    {
+      "method": "GET",
+      "path": "/api/reservations/{rid}",
+      "operation_id": "reservation_detail_api_reservations__rid__get"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/reservations/{rid}/seat",
+      "operation_id": "change_seat_api_reservations__rid__seat_patch"
+    },
+    {
+      "method": "POST",
+      "path": "/api/reservations/{reservation_id}/check-in",
+      "operation_id": "check_in_reservation_api_reservations__reservation_id__check_in_post"
+    },
+    {
+      "method": "POST",
+      "path": "/api/reservations/{reservation_id}/temporary-leave",
+      "operation_id": "temporary_leave_api_reservations__reservation_id__temporary_leave_post"
+    },
+    {
+      "method": "POST",
+      "path": "/api/reservations/{reservation_id}/return",
+      "operation_id": "return_to_seat_api_reservations__reservation_id__return_post"
+    },
+    {
+      "method": "POST",
+      "path": "/api/reservations/{reservation_id}/end",
+      "operation_id": "end_reservation_api_reservations__reservation_id__end_post"
+    },
+    {
+      "method": "POST",
+      "path": "/api/reservations/{reservation_id}/cancel",
+      "operation_id": "cancel_reservation_api_reservations__reservation_id__cancel_post"
+    },
+    {
+      "method": "GET",
+      "path": "/api/violations",
+      "operation_id": "list_my_violations_api_violations_get"
+    },
+    {
+      "method": "GET",
+      "path": "/api/appeals",
+      "operation_id": "list_my_appeals_api_appeals_get"
+    },
+    {
+      "method": "POST",
+      "path": "/api/appeals",
+      "operation_id": "submit_appeal_api_appeals_post"
+    },
+    {
+      "method": "GET",
+      "path": "/api/notifications",
+      "operation_id": "list_notifications_api_notifications_get"
+    },
+    {
+      "method": "POST",
+      "path": "/api/notifications/{notification_id}/read",
+      "operation_id": "mark_notification_read_api_notifications__notification_id__read_post"
+    },
+    {
+      "method": "POST",
+      "path": "/api/ops/entry-exit/mock",
+      "operation_id": "sync_mock_gate_event_api_ops_entry_exit_mock_post"
+    },
+    {
+      "method": "POST",
+      "path": "/api/ops/entry-exit/manual-appeals",
+      "operation_id": "submit_gate_manual_appeal_api_ops_entry_exit_manual_appeals_post"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ops/entry-exit/records",
+      "operation_id": "list_gate_records_api_ops_entry_exit_records_get"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/rooms/{room_id}/seats",
+      "operation_id": "list_seats_api_admin_rooms__room_id__seats_get"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/rooms/{room_id}/seats",
+      "operation_id": "create_seat_api_admin_rooms__room_id__seats_post"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/rooms/{room_id}/seats/{seat_id}",
+      "operation_id": "update_seat_api_admin_rooms__room_id__seats__seat_id__put"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/admin/rooms/{room_id}/seats/{seat_id}",
+      "operation_id": "delete_seat_api_admin_rooms__room_id__seats__seat_id__delete"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/admin/rooms/{room_id}/seats/{seat_id}/status",
+      "operation_id": "set_seat_status_api_admin_rooms__room_id__seats__seat_id__status_patch"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/rooms/{room_id}/seats/import",
+      "operation_id": "import_seats_api_admin_rooms__room_id__seats_import_post"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/violations",
+      "operation_id": "list_all_violations_api_admin_violations_get"
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/violations",
+      "operation_id": "create_manual_violation_api_admin_violations_post"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/appeals",
+      "operation_id": "list_appeals_api_admin_appeals_get"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/admin/appeals/{appeal_id}",
+      "operation_id": "review_appeal_api_admin_appeals__appeal_id__patch"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/reports",
+      "operation_id": "read_report_api_admin_reports_get"
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/reports/export.xlsx",
+      "operation_id": "export_report_api_admin_reports_export_xlsx_get"
+    }
+  ]
+}

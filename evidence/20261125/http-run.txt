@@ -1,0 +1,27 @@
+INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, initial schema：按 08 数据字典建表，并写入三类角色（HD-14）
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, auth_sessions 与 password_reset_tokens（#6 登录会话、密码重置码）
+INFO  [alembic.runtime.migration] Running upgrade 0002 -> 0003, seed permissions：写入权限矩阵快照（#7，BR-106 模块 × 动作）
+INFO  [alembic.runtime.migration] Running upgrade 0003 -> 0004, system_settings 与 calendar_days（#22 业务参数、节假日/考试周）
+INFO  [alembic.runtime.migration] Running upgrade 0004 -> 0005, login_logs 登录日志（#8）
+INFO  [alembic.runtime.migration] Running upgrade 0005 -> 0006, 为站内通知和门禁事件添加去重与同步状态字段。
+INFO  [alembic.runtime.migration] Running upgrade 0006 -> 0007, 可选楼层与创建预约请求指纹（#10、#13）。已有数据保持不变。
+INFO  [alembic.runtime.migration] Running upgrade 0007 -> 0008, 新增暂离超时违规类型 temp_leave_timeout（BR-071）。
+{
+  "steps": 220,
+  "read_p95_ms": 2692.908,
+  "write_p95_ms": 4364.842,
+  "write_statuses": {
+    "201": 1,
+    "409": 199
+  },
+  "zero_oversell": true,
+  "recovery": {
+    "tables_compared": 22,
+    "all_rows_match_snapshot": true,
+    "restore_seconds": 0.0409,
+    "rpo_zero_proven": false,
+    "note": "Stopped isolated server, restored exact snapshot; subsequent changes intentionally absent."
+  }
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "name": "alembic",
+    "version": "1.20.1",
+    "wheel": "alembic-1.20.1-py3-none-any.whl",
+    "sha256": "9970712cfb81ea26c8658d378aaa5b8f6ff9146e5bb111d70497c164016cf598"
+  },
+  {
+    "name": "pwdlib",
+    "version": "0.4.2",
+    "wheel": "pwdlib-0.4.2-py3-none-any.whl",
+    "sha256": "5e03f706382a040a04139f2bbb3378fa964661f8a74e1cec8da34a221c801bcf"
+  },
+  {
+    "name": "mako",
+    "version": "1.4.3",
+    "wheel": "mako-1.4.3-py3-none-any.whl",
+    "sha256": "723296007c870bfd6b3f0c3230dba7198096e5269297ebf5e4eff9e7ffa39d4f"
+  }
+]

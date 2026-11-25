@@ -1,0 +1,3146 @@
+{
+  "environment": "local Windows / webdev_3.12 / one Uvicorn worker / fresh migrated SQLite",
+  "http_steps": [
+    {
+      "name": "login:LOAD0000",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0001",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0002",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0003",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0004",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0005",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0006",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0007",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0008",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0009",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0010",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0011",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0012",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0013",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0014",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0015",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0016",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0017",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0018",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0019",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0020",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0021",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0022",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0023",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0024",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0025",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0026",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0027",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0028",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0029",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0030",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0031",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0032",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0033",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0034",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0035",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0036",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0037",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0038",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0039",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0040",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0041",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0042",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0043",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0044",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0045",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0046",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0047",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0048",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0049",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0050",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0051",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0052",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0053",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0054",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0055",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0056",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0057",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0058",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0059",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0060",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0061",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0062",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0063",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0064",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0065",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0066",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0067",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0068",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0069",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0070",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0071",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0072",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0073",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0074",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0075",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0076",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0077",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0078",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0079",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0080",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0081",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0082",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0083",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0084",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0085",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0086",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0087",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0088",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0089",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0090",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0091",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0092",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0093",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0094",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0095",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0096",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0097",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0098",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0099",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0100",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0101",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0102",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0103",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0104",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0105",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0106",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0107",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0108",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0109",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0110",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0111",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0112",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0113",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0114",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0115",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0116",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0117",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0118",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0119",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0120",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0121",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0122",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0123",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0124",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0125",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0126",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0127",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0128",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0129",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0130",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0131",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0132",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0133",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0134",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0135",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0136",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0137",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0138",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0139",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0140",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0141",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0142",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0143",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0144",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0145",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0146",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0147",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0148",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0149",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0150",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0151",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0152",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0153",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0154",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0155",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0156",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0157",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0158",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0159",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0160",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0161",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0162",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0163",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0164",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0165",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0166",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0167",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0168",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0169",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0170",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0171",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0172",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0173",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0174",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0175",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0176",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0177",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0178",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0179",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0180",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0181",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0182",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0183",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0184",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0185",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0186",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0187",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0188",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0189",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0190",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0191",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0192",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0193",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0194",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0195",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0196",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0197",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0198",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:LOAD0199",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:HTTPADMIN",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "login:HTTPOPS1",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "built SPA",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "unknown API stays 404",
+      "status": 404,
+      "expected": 404
+    },
+    {
+      "name": "anonymous denied",
+      "status": 401,
+      "expected": 401
+    },
+    {
+      "name": "student admin denied",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "name": "create",
+      "status": 201,
+      "expected": 201
+    },
+    {
+      "name": "same key replay",
+      "status": 201,
+      "expected": 201
+    },
+    {
+      "name": "blank checkin denied",
+      "status": 422,
+      "expected": 422
+    },
+    {
+      "name": "checkin",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "temporary leave",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "manual return denied",
+      "status": 409,
+      "expected": 409
+    },
+    {
+      "name": "mock gate return",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "end",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "history",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "notifications",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "admin gate denied",
+      "status": 403,
+      "expected": 403
+    },
+    {
+      "name": "ops gate audit",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "admin report",
+      "status": 200,
+      "expected": 200
+    },
+    {
+      "name": "export xlsx",
+      "status": 200,
+      "expected": 200
+    }
+  ],
+  "read_load": {
+    "clients": 200,
+    "rounds": 1,
+    "p95_ms": 2692.908,
+    "max_ms": 2802.404,
+    "statuses": {
+      "200": 200
+    },
+    "p95_target_ms": 2000,
+    "p95_pass": false,
+    "samples": [
+      {
+        "client": 0,
+        "status": 200,
+        "ms": 299.384
+      },
+      {
+        "client": 1,
+        "status": 200,
+        "ms": 306.235
+      },
+      {
+        "client": 2,
+        "status": 200,
+        "ms": 2136.36
+      },
+      {
+        "client": 3,
+        "status": 200,
+        "ms": 1501.212
+      },
+      {
+        "client": 4,
+        "status": 200,
+        "ms": 341.347
+      },
+      {
+        "client": 5,
+        "status": 200,
+        "ms": 1508.051
+      },
+      {
+        "client": 6,
+        "status": 200,
+        "ms": 334.115
+      },
+      {
+        "client": 7,
+        "status": 200,
+        "ms": 1564.518
+      },
+      {
+        "client": 8,
+        "status": 200,
+        "ms": 2178.313
+      },
+      {
+        "client": 9,
+        "status": 200,
+        "ms": 328.048
+      },
+      {
+        "client": 10,
+        "status": 200,
+        "ms": 1511.436
+      },
+      {
+        "client": 11,
+        "status": 200,
+        "ms": 2780.114
+      },
+      {
+        "client": 12,
+        "status": 200,
+        "ms": 343.448
+      },
+      {
+        "client": 13,
+        "status": 200,
+        "ms": 366.488
+      },
+      {
+        "client": 14,
+        "status": 200,
+        "ms": 343.889
+      },
+      {
+        "client": 15,
+        "status": 200,
+        "ms": 339.232
+      },
+      {
+        "client": 16,
+        "status": 200,
+        "ms": 2168.156
+      },
+      {
+        "client": 17,
+        "status": 200,
+        "ms": 1557.797
+      },
+      {
+        "client": 18,
+        "status": 200,
+        "ms": 340.289
+      },
+      {
+        "client": 19,
+        "status": 200,
+        "ms": 2546.313
+      },
+      {
+        "client": 20,
+        "status": 200,
+        "ms": 398.467
+      },
+      {
+        "client": 21,
+        "status": 200,
+        "ms": 1626.264
+      },
+      {
+        "client": 22,
+        "status": 200,
+        "ms": 373.272
+      },
+      {
+        "client": 23,
+        "status": 200,
+        "ms": 1548.42
+      },
+      {
+        "client": 24,
+        "status": 200,
+        "ms": 424.042
+      },
+      {
+        "client": 25,
+        "status": 200,
+        "ms": 2182.14
+      },
+      {
+        "client": 26,
+        "status": 200,
+        "ms": 1582.067
+      },
+      {
+        "client": 27,
+        "status": 200,
+        "ms": 435.305
+      },
+      {
+        "client": 28,
+        "status": 200,
+        "ms": 444.348
+      },
+      {
+        "client": 29,
+        "status": 200,
+        "ms": 468.759
+      },
+      {
+        "client": 30,
+        "status": 200,
+        "ms": 1594.518
+      },
+      {
+        "client": 31,
+        "status": 200,
+        "ms": 1614.148
+      },
+      {
+        "client": 32,
+        "status": 200,
+        "ms": 397.805
+      },
+      {
+        "client": 33,
+        "status": 200,
+        "ms": 471.62
+      },
+      {
+        "client": 34,
+        "status": 200,
+        "ms": 1300.191
+      },
+      {
+        "client": 35,
+        "status": 200,
+        "ms": 561.83
+      },
+      {
+        "client": 36,
+        "status": 200,
+        "ms": 478.919
+      },
+      {
+        "client": 37,
+        "status": 200,
+        "ms": 494.545
+      },
+      {
+        "client": 38,
+        "status": 200,
+        "ms": 2582.655
+      },
+      {
+        "client": 39,
+        "status": 200,
+        "ms": 522.978
+      },
+      {
+        "client": 40,
+        "status": 200,
+        "ms": 2193.637
+      },
+      {
+        "client": 41,
+        "status": 200,
+        "ms": 2187.233
+      },
+      {
+        "client": 42,
+        "status": 200,
+        "ms": 1879.613
+      },
+      {
+        "client": 43,
+        "status": 200,
+        "ms": 2620.975
+      },
+      {
+        "client": 44,
+        "status": 200,
+        "ms": 1909.054
+      },
+      {
+        "client": 45,
+        "status": 200,
+        "ms": 1033.461
+      },
+      {
+        "client": 46,
+        "status": 200,
+        "ms": 993.825
+      },
+      {
+        "client": 47,
+        "status": 200,
+        "ms": 1069.759
+      },
+      {
+        "client": 48,
+        "status": 200,
+        "ms": 2388.643
+      },
+      {
+        "client": 49,
+        "status": 200,
+        "ms": 1098.94
+      },
+      {
+        "client": 50,
+        "status": 200,
+        "ms": 2383.887
+      },
+      {
+        "client": 51,
+        "status": 200,
+        "ms": 2766.859
+      },
+      {
+        "client": 52,
+        "status": 200,
+        "ms": 2456.953
+      },
+      {
+        "client": 53,
+        "status": 200,
+        "ms": 1061.532
+      },
+      {
+        "client": 54,
+        "status": 200,
+        "ms": 748.398
+      },
+      {
+        "client": 55,
+        "status": 200,
+        "ms": 1055.042
+      },
+      {
+        "client": 56,
+        "status": 200,
+        "ms": 1917.278
+      },
+      {
+        "client": 57,
+        "status": 200,
+        "ms": 1058.638
+      },
+      {
+        "client": 58,
+        "status": 200,
+        "ms": 803.047
+      },
+      {
+        "client": 59,
+        "status": 200,
+        "ms": 2603.398
+      },
+      {
+        "client": 60,
+        "status": 200,
+        "ms": 707.924
+      },
+      {
+        "client": 61,
+        "status": 200,
+        "ms": 2332.789
+      },
+      {
+        "client": 62,
+        "status": 200,
+        "ms": 1712.39
+      },
+      {
+        "client": 63,
+        "status": 200,
+        "ms": 1959.899
+      },
+      {
+        "client": 64,
+        "status": 200,
+        "ms": 1102.448
+      },
+      {
+        "client": 65,
+        "status": 200,
+        "ms": 2494.695
+      },
+      {
+        "client": 66,
+        "status": 200,
+        "ms": 763.46
+      },
+      {
+        "client": 67,
+        "status": 200,
+        "ms": 710.7
+      },
+      {
+        "client": 68,
+        "status": 200,
+        "ms": 1670.913
+      },
+      {
+        "client": 69,
+        "status": 200,
+        "ms": 1276.111
+      },
+      {
+        "client": 70,
+        "status": 200,
+        "ms": 2295.37
+      },
+      {
+        "client": 71,
+        "status": 200,
+        "ms": 1086.11
+      },
+      {
+        "client": 72,
+        "status": 200,
+        "ms": 2685.718
+      },
+      {
+        "client": 73,
+        "status": 200,
+        "ms": 1685.873
+      },
+      {
+        "client": 74,
+        "status": 200,
+        "ms": 1650.048
+      },
+      {
+        "client": 75,
+        "status": 200,
+        "ms": 2692.908
+      },
+      {
+        "client": 76,
+        "status": 200,
+        "ms": 704.671
+      },
+      {
+        "client": 77,
+        "status": 200,
+        "ms": 655.887
+      },
+      {
+        "client": 78,
+        "status": 200,
+        "ms": 2314.995
+      },
+      {
+        "client": 79,
+        "status": 200,
+        "ms": 1829.79
+      },
+      {
+        "client": 80,
+        "status": 200,
+        "ms": 2617.373
+      },
+      {
+        "client": 81,
+        "status": 200,
+        "ms": 2284.168
+      },
+      {
+        "client": 82,
+        "status": 200,
+        "ms": 1722.44
+      },
+      {
+        "client": 83,
+        "status": 200,
+        "ms": 1734.365
+      },
+      {
+        "client": 84,
+        "status": 200,
+        "ms": 706.443
+      },
+      {
+        "client": 85,
+        "status": 200,
+        "ms": 1749.285
+      },
+      {
+        "client": 86,
+        "status": 200,
+        "ms": 2313.305
+      },
+      {
+        "client": 87,
+        "status": 200,
+        "ms": 2587.676
+      },
+      {
+        "client": 88,
+        "status": 200,
+        "ms": 568.05
+      },
+      {
+        "client": 89,
+        "status": 200,
+        "ms": 665.687
+      },
+      {
+        "client": 90,
+        "status": 200,
+        "ms": 634.81
+      },
+      {
+        "client": 91,
+        "status": 200,
+        "ms": 644.62
+      },
+      {
+        "client": 92,
+        "status": 200,
+        "ms": 1618.215
+      },
+      {
+        "client": 93,
+        "status": 200,
+        "ms": 517.453
+      },
+      {
+        "client": 94,
+        "status": 200,
+        "ms": 2802.404
+      },
+      {
+        "client": 95,
+        "status": 200,
+        "ms": 639.709
+      },
+      {
+        "client": 96,
+        "status": 200,
+        "ms": 575.692
+      },
+      {
+        "client": 97,
+        "status": 200,
+        "ms": 610.769
+      },
+      {
+        "client": 98,
+        "status": 200,
+        "ms": 1604.084
+      },
+      {
+        "client": 99,
+        "status": 200,
+        "ms": 540.727
+      },
+      {
+        "client": 100,
+        "status": 200,
+        "ms": 526.99
+      },
+      {
+        "client": 101,
+        "status": 200,
+        "ms": 1660.201
+      },
+      {
+        "client": 102,
+        "status": 200,
+        "ms": 505.286
+      },
+      {
+        "client": 103,
+        "status": 200,
+        "ms": 612.118
+      },
+      {
+        "client": 104,
+        "status": 200,
+        "ms": 2364.913
+      },
+      {
+        "client": 105,
+        "status": 200,
+        "ms": 564.99
+      },
+      {
+        "client": 106,
+        "status": 200,
+        "ms": 1995.452
+      },
+      {
+        "client": 107,
+        "status": 200,
+        "ms": 1271.85
+      },
+      {
+        "client": 108,
+        "status": 200,
+        "ms": 2531.117
+      },
+      {
+        "client": 109,
+        "status": 200,
+        "ms": 1208.71
+      },
+      {
+        "client": 110,
+        "status": 200,
+        "ms": 2106.474
+      },
+      {
+        "client": 111,
+        "status": 200,
+        "ms": 2694.95
+      },
+      {
+        "client": 112,
+        "status": 200,
+        "ms": 1233.36
+      },
+      {
+        "client": 113,
+        "status": 200,
+        "ms": 2052.9
+      },
+      {
+        "client": 114,
+        "status": 200,
+        "ms": 2037.413
+      },
+      {
+        "client": 115,
+        "status": 200,
+        "ms": 1103.174
+      },
+      {
+        "client": 116,
+        "status": 200,
+        "ms": 1793.435
+      },
+      {
+        "client": 117,
+        "status": 200,
+        "ms": 1788.56
+      },
+      {
+        "client": 118,
+        "status": 200,
+        "ms": 1833.037
+      },
+      {
+        "client": 119,
+        "status": 200,
+        "ms": 2710.364
+      },
+      {
+        "client": 120,
+        "status": 200,
+        "ms": 908.778
+      },
+      {
+        "client": 121,
+        "status": 200,
+        "ms": 2735.805
+      },
+      {
+        "client": 122,
+        "status": 200,
+        "ms": 890.92
+      },
+      {
+        "client": 123,
+        "status": 200,
+        "ms": 1426.665
+      },
+      {
+        "client": 124,
+        "status": 200,
+        "ms": 1438.251
+      },
+      {
+        "client": 125,
+        "status": 200,
+        "ms": 2631.054
+      },
+      {
+        "client": 126,
+        "status": 200,
+        "ms": 2648.629
+      },
+      {
+        "client": 127,
+        "status": 200,
+        "ms": 2676.774
+      },
+      {
+        "client": 128,
+        "status": 200,
+        "ms": 1322.391
+      },
+      {
+        "client": 129,
+        "status": 200,
+        "ms": 1498.033
+      },
+      {
+        "client": 130,
+        "status": 200,
+        "ms": 2095.95
+      },
+      {
+        "client": 131,
+        "status": 200,
+        "ms": 1362.384
+      },
+      {
+        "client": 132,
+        "status": 200,
+        "ms": 2069.116
+      },
+      {
+        "client": 133,
+        "status": 200,
+        "ms": 2044.416
+      },
+      {
+        "client": 134,
+        "status": 200,
+        "ms": 1764.299
+      },
+      {
+        "client": 135,
+        "status": 200,
+        "ms": 944.492
+      },
+      {
+        "client": 136,
+        "status": 200,
+        "ms": 903.449
+      },
+      {
+        "client": 137,
+        "status": 200,
+        "ms": 2642.472
+      },
+      {
+        "client": 138,
+        "status": 200,
+        "ms": 1873.342
+      },
+      {
+        "client": 139,
+        "status": 200,
+        "ms": 966.626
+      },
+      {
+        "client": 140,
+        "status": 200,
+        "ms": 2793.925
+      },
+      {
+        "client": 141,
+        "status": 200,
+        "ms": 1009.603
+      },
+      {
+        "client": 142,
+        "status": 200,
+        "ms": 841.316
+      },
+      {
+        "client": 143,
+        "status": 200,
+        "ms": 1443.113
+      },
+      {
+        "client": 144,
+        "status": 200,
+        "ms": 2523.135
+      },
+      {
+        "client": 145,
+        "status": 200,
+        "ms": 2363.037
+      },
+      {
+        "client": 146,
+        "status": 200,
+        "ms": 815.964
+      },
+      {
+        "client": 147,
+        "status": 200,
+        "ms": 1759.096
+      },
+      {
+        "client": 148,
+        "status": 200,
+        "ms": 775.464
+      },
+      {
+        "client": 149,
+        "status": 200,
+        "ms": 834.192
+      },
+      {
+        "client": 150,
+        "status": 200,
+        "ms": 2587.502
+      },
+      {
+        "client": 151,
+        "status": 200,
+        "ms": 807.592
+      },
+      {
+        "client": 152,
+        "status": 200,
+        "ms": 810.542
+      },
+      {
+        "client": 153,
+        "status": 200,
+        "ms": 2767.17
+      },
+      {
+        "client": 154,
+        "status": 200,
+        "ms": 1024.618
+      },
+      {
+        "client": 155,
+        "status": 200,
+        "ms": 2449.559
+      },
+      {
+        "client": 156,
+        "status": 200,
+        "ms": 1893.614
+      },
+      {
+        "client": 157,
+        "status": 200,
+        "ms": 1022.727
+      },
+      {
+        "client": 158,
+        "status": 200,
+        "ms": 886.668
+      },
+      {
+        "client": 159,
+        "status": 200,
+        "ms": 1043.499
+      },
+      {
+        "client": 160,
+        "status": 200,
+        "ms": 1026.847
+      },
+      {
+        "client": 161,
+        "status": 200,
+        "ms": 2468.872
+      },
+      {
+        "client": 162,
+        "status": 200,
+        "ms": 1932.295
+      },
+      {
+        "client": 163,
+        "status": 200,
+        "ms": 851.823
+      },
+      {
+        "client": 164,
+        "status": 200,
+        "ms": 2412.111
+      },
+      {
+        "client": 165,
+        "status": 200,
+        "ms": 957.066
+      },
+      {
+        "client": 166,
+        "status": 200,
+        "ms": 1861.622
+      },
+      {
+        "client": 167,
+        "status": 200,
+        "ms": 1838.245
+      },
+      {
+        "client": 168,
+        "status": 200,
+        "ms": 2401.376
+      },
+      {
+        "client": 169,
+        "status": 200,
+        "ms": 1380.816
+      },
+      {
+        "client": 170,
+        "status": 200,
+        "ms": 1399.638
+      },
+      {
+        "client": 171,
+        "status": 200,
+        "ms": 1865.093
+      },
+      {
+        "client": 172,
+        "status": 200,
+        "ms": 1295.851
+      },
+      {
+        "client": 173,
+        "status": 200,
+        "ms": 2496.411
+      },
+      {
+        "client": 174,
+        "status": 200,
+        "ms": 1265.73
+      },
+      {
+        "client": 175,
+        "status": 200,
+        "ms": 1212.356
+      },
+      {
+        "client": 176,
+        "status": 200,
+        "ms": 1978.659
+      },
+      {
+        "client": 177,
+        "status": 200,
+        "ms": 1966.057
+      },
+      {
+        "client": 178,
+        "status": 200,
+        "ms": 2752.43
+      },
+      {
+        "client": 179,
+        "status": 200,
+        "ms": 1203.652
+      },
+      {
+        "client": 180,
+        "status": 200,
+        "ms": 1950.799
+      },
+      {
+        "client": 181,
+        "status": 200,
+        "ms": 2606.942
+      },
+      {
+        "client": 182,
+        "status": 200,
+        "ms": 2461.922
+      },
+      {
+        "client": 183,
+        "status": 200,
+        "ms": 2115.98
+      },
+      {
+        "client": 184,
+        "status": 200,
+        "ms": 779.316
+      },
+      {
+        "client": 185,
+        "status": 200,
+        "ms": 2515.789
+      },
+      {
+        "client": 186,
+        "status": 200,
+        "ms": 2017.695
+      },
+      {
+        "client": 187,
+        "status": 200,
+        "ms": 2708.619
+      },
+      {
+        "client": 188,
+        "status": 200,
+        "ms": 1253.748
+      },
+      {
+        "client": 189,
+        "status": 200,
+        "ms": 1368.819
+      },
+      {
+        "client": 190,
+        "status": 200,
+        "ms": 1159.729
+      },
+      {
+        "client": 191,
+        "status": 200,
+        "ms": 1215.475
+      },
+      {
+        "client": 192,
+        "status": 200,
+        "ms": 1258.307
+      },
+      {
+        "client": 193,
+        "status": 200,
+        "ms": 1262.622
+      },
+      {
+        "client": 194,
+        "status": 200,
+        "ms": 2478.058
+      },
+      {
+        "client": 195,
+        "status": 200,
+        "ms": 1942.786
+      },
+      {
+        "client": 196,
+        "status": 200,
+        "ms": 1147.667
+      },
+      {
+        "client": 197,
+        "status": 200,
+        "ms": 865.7
+      },
+      {
+        "client": 198,
+        "status": 200,
+        "ms": 1200.402
+      },
+      {
+        "client": 199,
+        "status": 200,
+        "ms": 283.606
+      }
+    ]
+  },
+  "write_race": {
+    "clients": 200,
+    "rounds": 1,
+    "p95_ms": 4364.842,
+    "max_ms": 4773.205,
+    "statuses": {
+      "201": 1,
+      "409": 199
+    },
+    "p95_target_ms": 2000,
+    "p95_pass": false,
+    "samples": [
+      {
+        "client": 0,
+        "status": 409,
+        "ms": 1673.612
+      },
+      {
+        "client": 1,
+        "status": 409,
+        "ms": 3908.833
+      },
+      {
+        "client": 2,
+        "status": 409,
+        "ms": 3425.608
+      },
+      {
+        "client": 3,
+        "status": 409,
+        "ms": 4431.186
+      },
+      {
+        "client": 4,
+        "status": 409,
+        "ms": 1983.516
+      },
+      {
+        "client": 5,
+        "status": 409,
+        "ms": 1253.295
+      },
+      {
+        "client": 6,
+        "status": 409,
+        "ms": 4773.205
+      },
+      {
+        "client": 7,
+        "status": 409,
+        "ms": 2195.441
+      },
+      {
+        "client": 8,
+        "status": 409,
+        "ms": 4319.395
+      },
+      {
+        "client": 9,
+        "status": 409,
+        "ms": 3785.433
+      },
+      {
+        "client": 10,
+        "status": 409,
+        "ms": 4036.854
+      },
+      {
+        "client": 11,
+        "status": 409,
+        "ms": 2205.26
+      },
+      {
+        "client": 12,
+        "status": 409,
+        "ms": 1266.874
+      },
+      {
+        "client": 13,
+        "status": 409,
+        "ms": 2240.53
+      },
+      {
+        "client": 14,
+        "status": 409,
+        "ms": 1284.002
+      },
+      {
+        "client": 15,
+        "status": 409,
+        "ms": 3582.258
+      },
+      {
+        "client": 16,
+        "status": 409,
+        "ms": 4364.842
+      },
+      {
+        "client": 17,
+        "status": 409,
+        "ms": 2264.49
+      },
+      {
+        "client": 18,
+        "status": 409,
+        "ms": 1805.768
+      },
+      {
+        "client": 19,
+        "status": 409,
+        "ms": 2356.329
+      },
+      {
+        "client": 20,
+        "status": 409,
+        "ms": 1785.069
+      },
+      {
+        "client": 21,
+        "status": 409,
+        "ms": 3180.022
+      },
+      {
+        "client": 22,
+        "status": 409,
+        "ms": 1885.119
+      },
+      {
+        "client": 23,
+        "status": 409,
+        "ms": 3855.048
+      },
+      {
+        "client": 24,
+        "status": 409,
+        "ms": 2141.729
+      },
+      {
+        "client": 25,
+        "status": 409,
+        "ms": 3886.751
+      },
+      {
+        "client": 26,
+        "status": 409,
+        "ms": 2300.022
+      },
+      {
+        "client": 27,
+        "status": 409,
+        "ms": 3252.011
+      },
+      {
+        "client": 28,
+        "status": 409,
+        "ms": 1319.952
+      },
+      {
+        "client": 29,
+        "status": 409,
+        "ms": 2321.252
+      },
+      {
+        "client": 30,
+        "status": 409,
+        "ms": 4008.216
+      },
+      {
+        "client": 31,
+        "status": 409,
+        "ms": 3226.666
+      },
+      {
+        "client": 32,
+        "status": 409,
+        "ms": 1334.693
+      },
+      {
+        "client": 33,
+        "status": 409,
+        "ms": 2391.675
+      },
+      {
+        "client": 34,
+        "status": 409,
+        "ms": 2066.488
+      },
+      {
+        "client": 35,
+        "status": 409,
+        "ms": 3598.244
+      },
+      {
+        "client": 36,
+        "status": 409,
+        "ms": 4651.257
+      },
+      {
+        "client": 37,
+        "status": 409,
+        "ms": 1810.755
+      },
+      {
+        "client": 38,
+        "status": 409,
+        "ms": 2337.93
+      },
+      {
+        "client": 39,
+        "status": 409,
+        "ms": 2554.121
+      },
+      {
+        "client": 40,
+        "status": 409,
+        "ms": 2615.202
+      },
+      {
+        "client": 41,
+        "status": 409,
+        "ms": 3205.248
+      },
+      {
+        "client": 42,
+        "status": 409,
+        "ms": 3137.116
+      },
+      {
+        "client": 43,
+        "status": 409,
+        "ms": 2449.955
+      },
+      {
+        "client": 44,
+        "status": 409,
+        "ms": 3045.544
+      },
+      {
+        "client": 45,
+        "status": 409,
+        "ms": 3629.735
+      },
+      {
+        "client": 46,
+        "status": 409,
+        "ms": 3677.237
+      },
+      {
+        "client": 47,
+        "status": 409,
+        "ms": 4054.115
+      },
+      {
+        "client": 48,
+        "status": 409,
+        "ms": 2583.418
+      },
+      {
+        "client": 49,
+        "status": 409,
+        "ms": 1649.439
+      },
+      {
+        "client": 50,
+        "status": 409,
+        "ms": 2120.596
+      },
+      {
+        "client": 51,
+        "status": 409,
+        "ms": 2723.844
+      },
+      {
+        "client": 52,
+        "status": 409,
+        "ms": 1451.091
+      },
+      {
+        "client": 53,
+        "status": 409,
+        "ms": 2673.627
+      },
+      {
+        "client": 54,
+        "status": 409,
+        "ms": 2008.427
+      },
+      {
+        "client": 55,
+        "status": 409,
+        "ms": 2034.836
+      },
+      {
+        "client": 56,
+        "status": 409,
+        "ms": 1943.604
+      },
+      {
+        "client": 57,
+        "status": 409,
+        "ms": 4586.873
+      },
+      {
+        "client": 58,
+        "status": 409,
+        "ms": 3286.625
+      },
+      {
+        "client": 59,
+        "status": 409,
+        "ms": 1856.386
+      },
+      {
+        "client": 60,
+        "status": 409,
+        "ms": 3472.581
+      },
+      {
+        "client": 61,
+        "status": 409,
+        "ms": 2854.524
+      },
+      {
+        "client": 62,
+        "status": 409,
+        "ms": 2045.235
+      },
+      {
+        "client": 63,
+        "status": 409,
+        "ms": 2686.442
+      },
+      {
+        "client": 64,
+        "status": 409,
+        "ms": 4178.124
+      },
+      {
+        "client": 65,
+        "status": 409,
+        "ms": 2792.881
+      },
+      {
+        "client": 66,
+        "status": 409,
+        "ms": 2475.737
+      },
+      {
+        "client": 67,
+        "status": 409,
+        "ms": 2530.391
+      },
+      {
+        "client": 68,
+        "status": 409,
+        "ms": 1442.258
+      },
+      {
+        "client": 69,
+        "status": 409,
+        "ms": 3693.412
+      },
+      {
+        "client": 70,
+        "status": 409,
+        "ms": 2150.323
+      },
+      {
+        "client": 71,
+        "status": 409,
+        "ms": 1589.457
+      },
+      {
+        "client": 72,
+        "status": 409,
+        "ms": 4427.17
+      },
+      {
+        "client": 73,
+        "status": 409,
+        "ms": 2729.297
+      },
+      {
+        "client": 74,
+        "status": 409,
+        "ms": 3254.396
+      },
+      {
+        "client": 75,
+        "status": 409,
+        "ms": 4495.752
+      },
+      {
+        "client": 76,
+        "status": 409,
+        "ms": 2714.588
+      },
+      {
+        "client": 77,
+        "status": 409,
+        "ms": 3860.853
+      },
+      {
+        "client": 78,
+        "status": 409,
+        "ms": 3650.443
+      },
+      {
+        "client": 79,
+        "status": 409,
+        "ms": 3260.432
+      },
+      {
+        "client": 80,
+        "status": 409,
+        "ms": 2551.832
+      },
+      {
+        "client": 81,
+        "status": 409,
+        "ms": 4176.657
+      },
+      {
+        "client": 82,
+        "status": 409,
+        "ms": 1477.863
+      },
+      {
+        "client": 83,
+        "status": 409,
+        "ms": 2084.883
+      },
+      {
+        "client": 84,
+        "status": 409,
+        "ms": 2836.454
+      },
+      {
+        "client": 85,
+        "status": 409,
+        "ms": 3132.188
+      },
+      {
+        "client": 86,
+        "status": 409,
+        "ms": 2498.829
+      },
+      {
+        "client": 87,
+        "status": 409,
+        "ms": 3822.67
+      },
+      {
+        "client": 88,
+        "status": 409,
+        "ms": 1598.613
+      },
+      {
+        "client": 89,
+        "status": 409,
+        "ms": 4183.532
+      },
+      {
+        "client": 90,
+        "status": 409,
+        "ms": 3030.64
+      },
+      {
+        "client": 91,
+        "status": 409,
+        "ms": 1908.881
+      },
+      {
+        "client": 92,
+        "status": 409,
+        "ms": 2460.125
+      },
+      {
+        "client": 93,
+        "status": 409,
+        "ms": 3556.23
+      },
+      {
+        "client": 94,
+        "status": 409,
+        "ms": 3058.333
+      },
+      {
+        "client": 95,
+        "status": 409,
+        "ms": 2509.329
+      },
+      {
+        "client": 96,
+        "status": 409,
+        "ms": 2135.768
+      },
+      {
+        "client": 97,
+        "status": 409,
+        "ms": 4270.863
+      },
+      {
+        "client": 98,
+        "status": 409,
+        "ms": 3672.98
+      },
+      {
+        "client": 99,
+        "status": 409,
+        "ms": 1407.236
+      },
+      {
+        "client": 100,
+        "status": 409,
+        "ms": 2776.339
+      },
+      {
+        "client": 101,
+        "status": 409,
+        "ms": 4613.012
+      },
+      {
+        "client": 102,
+        "status": 409,
+        "ms": 1818.95
+      },
+      {
+        "client": 103,
+        "status": 409,
+        "ms": 3760.302
+      },
+      {
+        "client": 104,
+        "status": 409,
+        "ms": 2407.683
+      },
+      {
+        "client": 105,
+        "status": 409,
+        "ms": 3706.885
+      },
+      {
+        "client": 106,
+        "status": 409,
+        "ms": 3027.525
+      },
+      {
+        "client": 107,
+        "status": 409,
+        "ms": 2019.113
+      },
+      {
+        "client": 108,
+        "status": 409,
+        "ms": 1947.497
+      },
+      {
+        "client": 109,
+        "status": 409,
+        "ms": 3393.52
+      },
+      {
+        "client": 110,
+        "status": 409,
+        "ms": 2777.768
+      },
+      {
+        "client": 111,
+        "status": 409,
+        "ms": 1949.984
+      },
+      {
+        "client": 112,
+        "status": 409,
+        "ms": 2613.894
+      },
+      {
+        "client": 113,
+        "status": 409,
+        "ms": 3298.711
+      },
+      {
+        "client": 114,
+        "status": 409,
+        "ms": 3137.664
+      },
+      {
+        "client": 115,
+        "status": 409,
+        "ms": 4299.75
+      },
+      {
+        "client": 116,
+        "status": 409,
+        "ms": 2047.733
+      },
+      {
+        "client": 117,
+        "status": 409,
+        "ms": 3934.146
+      },
+      {
+        "client": 118,
+        "status": 409,
+        "ms": 3702.961
+      },
+      {
+        "client": 119,
+        "status": 409,
+        "ms": 1547.74
+      },
+      {
+        "client": 120,
+        "status": 409,
+        "ms": 2625.506
+      },
+      {
+        "client": 121,
+        "status": 409,
+        "ms": 2652.978
+      },
+      {
+        "client": 122,
+        "status": 409,
+        "ms": 3336.124
+      },
+      {
+        "client": 123,
+        "status": 409,
+        "ms": 2560.039
+      },
+      {
+        "client": 124,
+        "status": 409,
+        "ms": 1736.284
+      },
+      {
+        "client": 125,
+        "status": 409,
+        "ms": 1776.5
+      },
+      {
+        "client": 126,
+        "status": 409,
+        "ms": 3881.932
+      },
+      {
+        "client": 127,
+        "status": 409,
+        "ms": 4492.9
+      },
+      {
+        "client": 128,
+        "status": 409,
+        "ms": 1573.894
+      },
+      {
+        "client": 129,
+        "status": 409,
+        "ms": 2078.113
+      },
+      {
+        "client": 130,
+        "status": 409,
+        "ms": 4116.562
+      },
+      {
+        "client": 131,
+        "status": 409,
+        "ms": 2150.164
+      },
+      {
+        "client": 132,
+        "status": 409,
+        "ms": 2886.649
+      },
+      {
+        "client": 133,
+        "status": 409,
+        "ms": 3471.23
+      },
+      {
+        "client": 134,
+        "status": 409,
+        "ms": 3456.196
+      },
+      {
+        "client": 135,
+        "status": 409,
+        "ms": 2856.021
+      },
+      {
+        "client": 136,
+        "status": 409,
+        "ms": 2878.275
+      },
+      {
+        "client": 137,
+        "status": 409,
+        "ms": 4045.402
+      },
+      {
+        "client": 138,
+        "status": 409,
+        "ms": 3416.208
+      },
+      {
+        "client": 139,
+        "status": 409,
+        "ms": 4059.859
+      },
+      {
+        "client": 140,
+        "status": 409,
+        "ms": 2329.638
+      },
+      {
+        "client": 141,
+        "status": 409,
+        "ms": 1823.019
+      },
+      {
+        "client": 142,
+        "status": 409,
+        "ms": 3953.092
+      },
+      {
+        "client": 143,
+        "status": 409,
+        "ms": 2013.163
+      },
+      {
+        "client": 144,
+        "status": 409,
+        "ms": 4368.333
+      },
+      {
+        "client": 145,
+        "status": 409,
+        "ms": 4081.771
+      },
+      {
+        "client": 146,
+        "status": 409,
+        "ms": 1977.206
+      },
+      {
+        "client": 147,
+        "status": 409,
+        "ms": 2946.313
+      },
+      {
+        "client": 148,
+        "status": 409,
+        "ms": 1986.179
+      },
+      {
+        "client": 149,
+        "status": 409,
+        "ms": 2900.43
+      },
+      {
+        "client": 150,
+        "status": 409,
+        "ms": 3601.793
+      },
+      {
+        "client": 151,
+        "status": 409,
+        "ms": 2970.412
+      },
+      {
+        "client": 152,
+        "status": 409,
+        "ms": 3560.871
+      },
+      {
+        "client": 153,
+        "status": 409,
+        "ms": 2078.773
+      },
+      {
+        "client": 154,
+        "status": 409,
+        "ms": 3861.333
+      },
+      {
+        "client": 155,
+        "status": 409,
+        "ms": 2927.689
+      },
+      {
+        "client": 156,
+        "status": 409,
+        "ms": 4498.378
+      },
+      {
+        "client": 157,
+        "status": 409,
+        "ms": 3430.103
+      },
+      {
+        "client": 158,
+        "status": 409,
+        "ms": 2052.947
+      },
+      {
+        "client": 159,
+        "status": 409,
+        "ms": 2060.174
+      },
+      {
+        "client": 160,
+        "status": 409,
+        "ms": 3046.604
+      },
+      {
+        "client": 161,
+        "status": 409,
+        "ms": 2063.859
+      },
+      {
+        "client": 162,
+        "status": 409,
+        "ms": 2026.587
+      },
+      {
+        "client": 163,
+        "status": 409,
+        "ms": 3254.143
+      },
+      {
+        "client": 164,
+        "status": 409,
+        "ms": 3347.999
+      },
+      {
+        "client": 165,
+        "status": 409,
+        "ms": 1928.151
+      },
+      {
+        "client": 166,
+        "status": 409,
+        "ms": 4243.625
+      },
+      {
+        "client": 167,
+        "status": 409,
+        "ms": 2735.003
+      },
+      {
+        "client": 168,
+        "status": 409,
+        "ms": 2100.109
+      },
+      {
+        "client": 169,
+        "status": 409,
+        "ms": 1816.244
+      },
+      {
+        "client": 170,
+        "status": 409,
+        "ms": 3917.069
+      },
+      {
+        "client": 171,
+        "status": 409,
+        "ms": 2103.827
+      },
+      {
+        "client": 172,
+        "status": 409,
+        "ms": 3949.545
+      },
+      {
+        "client": 173,
+        "status": 409,
+        "ms": 3325.422
+      },
+      {
+        "client": 174,
+        "status": 409,
+        "ms": 4183.246
+      },
+      {
+        "client": 175,
+        "status": 409,
+        "ms": 3057.917
+      },
+      {
+        "client": 176,
+        "status": 409,
+        "ms": 1700.707
+      },
+      {
+        "client": 177,
+        "status": 409,
+        "ms": 2074.612
+      },
+      {
+        "client": 178,
+        "status": 409,
+        "ms": 2112.038
+      },
+      {
+        "client": 179,
+        "status": 409,
+        "ms": 2813.126
+      },
+      {
+        "client": 180,
+        "status": 409,
+        "ms": 4113.826
+      },
+      {
+        "client": 181,
+        "status": 409,
+        "ms": 2130.131
+      },
+      {
+        "client": 182,
+        "status": 409,
+        "ms": 1658.733
+      },
+      {
+        "client": 183,
+        "status": 409,
+        "ms": 2001.711
+      },
+      {
+        "client": 184,
+        "status": 409,
+        "ms": 3485.634
+      },
+      {
+        "client": 185,
+        "status": 409,
+        "ms": 3675.414
+      },
+      {
+        "client": 186,
+        "status": 409,
+        "ms": 1536.123
+      },
+      {
+        "client": 187,
+        "status": 409,
+        "ms": 2640.892
+      },
+      {
+        "client": 188,
+        "status": 409,
+        "ms": 3309.798
+      },
+      {
+        "client": 189,
+        "status": 409,
+        "ms": 1941.838
+      },
+      {
+        "client": 190,
+        "status": 409,
+        "ms": 3408.264
+      },
+      {
+        "client": 191,
+        "status": 409,
+        "ms": 1753.489
+      },
+      {
+        "client": 192,
+        "status": 409,
+        "ms": 2256.645
+      },
+      {
+        "client": 193,
+        "status": 409,
+        "ms": 4230.324
+      },
+      {
+        "client": 194,
+        "status": 409,
+        "ms": 3816.212
+      },
+      {
+        "client": 195,
+        "status": 409,
+        "ms": 3363.829
+      },
+      {
+        "client": 196,
+        "status": 409,
+        "ms": 2137.742
+      },
+      {
+        "client": 197,
+        "status": 409,
+        "ms": 2773.045
+      },
+      {
+        "client": 198,
+        "status": 409,
+        "ms": 3783.69
+      },
+      {
+        "client": 199,
+        "status": 201,
+        "ms": 1752.588
+      }
+    ],
+    "final_reservations": 1,
+    "zero_oversell_pass": true
+  },
+  "recovery": {
+    "tables_compared": 22,
+    "all_rows_match_snapshot": true,
+    "restore_seconds": 0.0409,
+    "rpo_zero_proven": false,
+    "note": "Stopped isolated server, restored exact snapshot; subsequent changes intentionally absent."
+  },
+  "limitations": [
+    "One synthetic 200-client burst; no soak test or production capacity claim",
+    "Simulated gate only",
+    "No monthly availability or calibrated NTP evidence"
+  ]
+}

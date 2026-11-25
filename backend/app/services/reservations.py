@@ -34,6 +34,9 @@ def now():
     return timeutil.now()
 
 
+CHECKOUT_GRACE = timedelta(minutes=30)  # CHG-03 / P-024: only confirmation, never seat ownership.
+
+
 @contextmanager
 def write_transaction(source: Session) -> Iterator[Session]:
     try:
@@ -165,7 +168,7 @@ def _sync_seat(session: Session, seat: Seat, at: datetime) -> None:
             )
         )
     )
-    if any(r.status != E.ReservationStatus.RESERVED for r in bookings):
+    if any(r.status != E.ReservationStatus.RESERVED and r.end_time > at for r in bookings):
         new = E.SeatStatus.IN_USE
     elif any(r.start_time <= at < r.end_time for r in bookings):
         new = E.SeatStatus.RESERVED
@@ -178,7 +181,7 @@ def _sync_seat(session: Session, seat: Seat, at: datetime) -> None:
 def _record_violation(
     session: Session, reservation: Reservation, kind: E.ViolationType, at: datetime
 ) -> None:
-    # 唯一行为去重在同一个写事务内完成；#19 可消费这些记录执行处罚与申诉。
+    # All sources use the same penalty pipeline within the caller's write transaction.
     if (
         session.scalar(
             select(ViolationRecord.id)
@@ -191,28 +194,14 @@ def _record_violation(
         is not None
     ):
         return
-    days = get_business_settings(session).violation_window_days
-    previous = session.scalar(
-        select(ViolationRecord)
-        .where(
-            ViolationRecord.user_id == reservation.user_id,
-            ViolationRecord.state == E.ViolationState.ACTIVE,
-            ViolationRecord.period_start <= at,
-            ViolationRecord.period_start > at - timedelta(days=days),
-        )
-        .order_by(ViolationRecord.period_start.desc(), ViolationRecord.period_seq.desc())
-    )
-    violation = ViolationRecord(
+    violation = record_violation(
+        session,
         user_id=reservation.user_id,
         reservation_id=reservation.id,
         violation_type=kind,
         occurred_at=at,
-        period_start=previous.period_start if previous else at,
-        period_seq=previous.period_seq + 1 if previous else 1,
         description="开始前15分钟内取消" if kind == E.ViolationType.LATE_CANCEL else "超窗未签到",
     )
-    session.add(violation)
-    session.flush()
     audit.record(
         session,
         operator=None,
@@ -231,6 +220,13 @@ def _expire_one(session: Session, reservation: Reservation, at: datetime) -> Non
     reservation.status = E.ReservationStatus.EXPIRED
     reservation.expire_reason = "no_show"
     _record_violation(session, reservation, E.ViolationType.NO_SHOW, at)
+    create_notification(
+        session,
+        user_id=reservation.user_id,
+        notification_type=E.NotificationType.SYSTEM,
+        content=f"预约 {reservation.reservation_no} 因未签到已自动释放。",
+        idempotency_key=f"reservation:{reservation.id}:no-show-released",
+    )
     _sync_seat(session, reservation.seat, at)
 
 
@@ -292,7 +288,7 @@ def _pick_seat_for_zone(
             .where(
                 Seat.room_id == room_id,
                 Seat.zone_type == zone_type,
-                Seat.status == E.SeatStatus.AVAILABLE,
+                Seat.status.not_in(BLOCKED_SEAT_STATUSES),
             )
             .order_by(Seat.code)
         )
@@ -399,6 +395,9 @@ def change_seat(source: Session, user_id: int, rid: int, sid: int) -> Reservatio
         original = reservation.seat
         reservation.seat = seat
         reservation.seat_id, reservation.room_id = seat.id, seat.room_id
+        arrival = _arrival(session, rid)
+        if arrival is not None:
+            arrival.seat_id = seat.id
         _sync_seat(session, original, at)
         _sync_seat(session, seat, at)
         return reservation_out(session, reservation)
@@ -444,6 +443,8 @@ def check_in(
         at = now()
         reservation = _owned(session, user_id, rid)
         seat = reservation.seat
+        if body is None:
+            raise BookingError(422, "请扫描座位二维码或输入自习室及座位编号")
         if body is not None:
             matched = (
                 body.seat_id == seat.id
@@ -471,6 +472,7 @@ def check_in(
                 .where(
                     Reservation.seat_id == seat.id,
                     Reservation.id != rid,
+                    Reservation.end_time > at,
                     Reservation.status.in_(
                         (E.ReservationStatus.ACTIVE, E.ReservationStatus.TEMP_LEAVE)
                     ),
@@ -549,41 +551,14 @@ def start_temporary_leave(session: Session, user: User, reservation_id: int) -> 
 
 
 def return_from_temporary_leave(session: Session, user: User, reservation_id: int) -> Reservation:
-    """在登记后的 30 分钟内返回并恢复预约使用状态。"""
-    settings = get_business_settings(session)
-    session.commit()
-    with transaction(session, immediate=True):
-        moment = now()
-        reservation = session.scalar(
-            select(Reservation).where(
-                Reservation.id == reservation_id, Reservation.user_id == user.id
-            )
-        )
-        if reservation is None:
-            raise HTTPException(http_status.HTTP_404_NOT_FOUND, "预约不存在")
-        if (
-            reservation.status != E.ReservationStatus.TEMP_LEAVE
-            or reservation.temp_leave_at is None
-            or reservation.temp_leave_state != E.TempLeaveState.WAITING
-        ):
-            raise HTTPException(http_status.HTTP_409_CONFLICT, "该预约没有待返回的临时离开记录")
-        deadline = reservation.temp_leave_at + timedelta(minutes=settings.temp_leave_minutes)
-        if moment > deadline:
-            raise HTTPException(
-                http_status.HTTP_409_CONFLICT, "临时离开已超时，预约正在等待系统释放"
-            )
-        if reservation.end_time <= moment:
-            raise HTTPException(http_status.HTTP_409_CONFLICT, "预约时段已结束，不能再恢复使用")
-        reservation.status = E.ReservationStatus.ACTIVE
-        reservation.temp_leave_state = E.TempLeaveState.RETURNED
-        create_notification(
-            session,
-            user_id=user.id,
-            notification_type=E.NotificationType.TEMP_LEAVE,
-            content="已记录你返回自习室。",
-            idempotency_key=f"reservation:{reservation.id}:returned:{reservation.temp_leave_at.isoformat()}",
-        )
-    return reservation
+    """Compatibility readback: only a processed gate entry can restore a seat."""
+    reservation = _owned(session, user.id, reservation_id)
+    if (
+        reservation.status == E.ReservationStatus.ACTIVE
+        and reservation.temp_leave_state == E.TempLeaveState.RETURNED
+    ):
+        return reservation
+    raise BookingError(409, "返回须由运维模拟入馆记录确认，不能手动恢复座位")
 
 
 def end_use(
@@ -603,8 +578,23 @@ def end_use(
         )
         if first is None:
             raise HTTPException(http_status.HTTP_404_NOT_FOUND, "预约不存在")
+        if first.status == E.ReservationStatus.COMPLETED:
+            arrival = _arrival(session, first.id)
+            seconds = (
+                max(
+                    0,
+                    int(
+                        (min(arrival.ended_at, first.end_time) - arrival.arrived_at).total_seconds()
+                    ),
+                )
+                if arrival and arrival.ended_at and arrival.arrived_at
+                else 0
+            )
+            return [first], seconds // 60
         if first.status not in (E.ReservationStatus.ACTIVE, E.ReservationStatus.TEMP_LEAVE):
             raise HTTPException(http_status.HTTP_409_CONFLICT, "该预约当前不能结束使用")
+        if moment >= first.end_time + CHECKOUT_GRACE:
+            raise BookingError(409, "已超过30分钟补确认期限，请等待系统自动处理")
         if (
             first.status == E.ReservationStatus.TEMP_LEAVE
             and first.temp_leave_at is not None
@@ -616,7 +606,7 @@ def end_use(
             )
         chain = [first]
         cursor = first.end_time
-        while True:
+        while moment < first.end_time:
             next_reservation = session.scalar(
                 select(Reservation)
                 .where(
@@ -640,10 +630,7 @@ def end_use(
 
         total_seconds = 0
         for reservation in chain:
-            if (
-                reservation.status == E.ReservationStatus.RESERVED
-                or reservation.start_time > moment
-            ):
+            if reservation.status == E.ReservationStatus.RESERVED:
                 reservation.status = E.ReservationStatus.CANCELLED
                 reservation.cancel_type = E.CancelType.NORMAL
                 reservation.cancelled_at = moment
@@ -715,35 +702,16 @@ def sweep_reservations(session: Session, moment: datetime | None = None) -> dict
             session.scalars(
                 select(Reservation).where(
                     Reservation.status == E.ReservationStatus.RESERVED,
-                    Reservation.start_time
-                    <= moment - timedelta(minutes=settings.no_show_after_minutes),
+                    (
+                        Reservation.start_time
+                        < moment - timedelta(minutes=settings.no_show_after_minutes)
+                    )
+                    | (Reservation.end_time <= moment),
                 )
             )
         )
         for reservation in pending:
-            reservation.status = E.ReservationStatus.EXPIRED
-            reservation.expire_reason = "no_show"
-            arrival = session.scalar(
-                select(ArrivalRecord).where(ArrivalRecord.reservation_id == reservation.id)
-            )
-            if arrival is not None:
-                arrival.arrival_status = E.ArrivalStatus.ABSENT
-            record_violation(
-                session,
-                user_id=reservation.user_id,
-                violation_type=E.ViolationType.NO_SHOW,
-                reservation_id=reservation.id,
-                description="预约开始后未在签到期限内到达，系统自动释放时段。",
-                occurred_at=moment,
-            )
-            create_notification(
-                session,
-                user_id=reservation.user_id,
-                notification_type=E.NotificationType.SYSTEM,
-                content=f"预约 {reservation.reservation_no} 因未签到已自动释放。",
-                idempotency_key=f"reservation:{reservation.id}:no-show-released",
-            )
-            _sync_seat(session, reservation.seat, moment)
+            _expire_one(session, reservation, moment)
             counts["no_show"] += 1
 
         active = list(
@@ -752,7 +720,7 @@ def sweep_reservations(session: Session, moment: datetime | None = None) -> dict
                     Reservation.status.in_(
                         (E.ReservationStatus.ACTIVE, E.ReservationStatus.TEMP_LEAVE)
                     ),
-                    Reservation.end_time <= moment,
+                    Reservation.end_time <= moment - CHECKOUT_GRACE,
                 )
             )
         )
@@ -762,7 +730,7 @@ def sweep_reservations(session: Session, moment: datetime | None = None) -> dict
                     Reservation.status == E.ReservationStatus.TEMP_LEAVE,
                     Reservation.temp_leave_at.is_not(None),
                     Reservation.temp_leave_at
-                    <= moment - timedelta(minutes=settings.temp_leave_minutes),
+                    < moment - timedelta(minutes=settings.temp_leave_minutes),
                 )
             )
         )

@@ -1,0 +1,4 @@
+Collecting fastapi
+  Downloading fastapi-0.165.0-py3-none-any.whl.metadata (27 kB)
+Collecting sqlalchemy
+  Downloading sqlalchemy-2.1.9-cp313-cp313-win_amd64.whl.metadata (9.9 kB)

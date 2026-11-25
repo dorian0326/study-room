@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="10" skipped="0" tests="10" time="9.562" timestamp="2026-11-25T09:21:14.111145+08:00" hostname="LAPTOP-VP3SEMHL"><testcase classname="" name="test_AUD01_third_late_cancel_must_trigger_restriction" time="2.086"><failure message="AssertionError: Third late-cancel warning created no restriction&#10;assert None is not None">..\docs\audit\evidence\test_audit_findings.py:60: in test_AUD01_third_late_cancel_must_trigger_restriction
+    assert ban is not None, "Third late-cancel warning created no restriction"
+E   AssertionError: Third late-cancel warning created no restriction
+E   assert None is not None</failure></testcase><testcase classname="" name="test_AUD02_lazy_expiry_must_trigger_restriction" time="0.440"><failure message="AssertionError: Lazy expiry bypassed the third-warning penalty&#10;assert None is not None&#10; +  where None = scalar(&lt;sqlalchemy.sql.selectable.Select object at 0x000002608C132270&gt;)&#10; +    where scalar = &lt;sqlalchemy.orm.session.Session object at 0x000002608BFCD6D0&gt;.scalar&#10; +    and   &lt;sqlalchemy.sql.selectable.Select object at 0x000002608C132270&gt; = where(&lt;sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x0000026089CFDD00&gt; == 1)&#10; +      where where = &lt;sqlalchemy.sql.selectable.Select object at 0x000002608BB7D630&gt;.where&#10; +        where &lt;sqlalchemy.sql.selectable.Select object at 0x000002608BB7D630&gt; = select(Restriction)&#10; +      and   &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x0000026089CFDD00&gt; = Restriction.user_id">..\docs\audit\evidence\test_audit_findings.py:71: in test_AUD02_lazy_expiry_must_trigger_restriction
+    assert session.scalar(select(Restriction).where(Restriction.user_id == c["uid"])) is not None, "Lazy expiry bypassed the third-warning penalty"
+E   AssertionError: Lazy expiry bypassed the third-warning penalty
+E   assert None is not None
+E    +  where None = scalar(&lt;sqlalchemy.sql.selectable.Select object at 0x000002608C132270&gt;)
+E    +    where scalar = &lt;sqlalchemy.orm.session.Session object at 0x000002608BFCD6D0&gt;.scalar
+E    +    and   &lt;sqlalchemy.sql.selectable.Select object at 0x000002608C132270&gt; = where(&lt;sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x0000026089CFDD00&gt; == 1)
+E    +      where where = &lt;sqlalchemy.sql.selectable.Select object at 0x000002608BB7D630&gt;.where
+E    +        where &lt;sqlalchemy.sql.selectable.Select object at 0x000002608BB7D630&gt; = select(Restriction)
+E    +      and   &lt;sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x0000026089CFDD00&gt; = Restriction.user_id</failure></testcase><testcase classname="" name="test_AUD03_sweep_must_preserve_inclusive_checkin_endpoint" time="0.416"><failure message="AssertionError: {&quot;detail&quot;:&quot;预约已失效、取消或已结束，无法签到&quot;}&#10;assert 409 == 200&#10; +  where 409 = &lt;Response [409 Conflict]&gt;.status_code">..\docs\audit\evidence\test_audit_findings.py:81: in test_AUD03_sweep_must_preserve_inclusive_checkin_endpoint
+    assert response.status_code == 200, response.text
+E   AssertionError: {"detail":"预约已失效、取消或已结束，无法签到"}
+E   assert 409 == 200
+E    +  where 409 = &lt;Response [409 Conflict]&gt;.status_code</failure></testcase><testcase classname="" name="test_AUD04_sweep_must_preserve_temp_leave_endpoint" time="0.445"><failure message="AssertionError: Sweeper released the seat at the inclusive return endpoint&#10;assert &lt;ReservationS...: 'TIMED_OUT'&gt; == &lt;ReservationS... 'TEMP_LEAVE'&gt;&#10;  &#10;  - TEMP_LEAVE&#10;  + TIMED_OUT">..\docs\audit\evidence\test_audit_findings.py:93: in test_AUD04_sweep_must_preserve_temp_leave_endpoint
+    assert session.get(Reservation, c["rid"]).status == E.ReservationStatus.TEMP_LEAVE, "Sweeper released the seat at the inclusive return endpoint"
+E   AssertionError: Sweeper released the seat at the inclusive return endpoint
+E   assert &lt;ReservationS...: 'TIMED_OUT'&gt; == &lt;ReservationS... 'TEMP_LEAVE'&gt;
+E     
+E     - TEMP_LEAVE
+E     + TIMED_OUT</failure></testcase><testcase classname="" name="test_AUD05_blocked_seat_must_cancel_future_booking[closed]" time="0.419"><failure message="AssertionError: Seat closed retained a future reservation&#10;assert &lt;ReservationS...D: 'RESERVED'&gt; == &lt;ReservationS...IN_CANCELLED'&gt;&#10;  &#10;  - ADMIN_CANCELLED&#10;  + RESERVED">..\docs\audit\evidence\test_audit_findings.py:103: in test_AUD05_blocked_seat_must_cancel_future_booking
+    assert session.get(Reservation, c["rid"]).status == E.ReservationStatus.ADMIN_CANCELLED, f"Seat {status} retained a future reservation"
+E   AssertionError: Seat closed retained a future reservation
+E   assert &lt;ReservationS...D: 'RESERVED'&gt; == &lt;ReservationS...IN_CANCELLED'&gt;
+E     
+E     - ADMIN_CANCELLED
+E     + RESERVED</failure></testcase><testcase classname="" name="test_AUD05_blocked_seat_must_cancel_future_booking[disabled]" time="0.595"><failure message="AssertionError: Seat disabled retained a future reservation&#10;assert &lt;ReservationS...D: 'RESERVED'&gt; == &lt;ReservationS...IN_CANCELLED'&gt;&#10;  &#10;  - ADMIN_CANCELLED&#10;  + RESERVED">..\docs\audit\evidence\test_audit_findings.py:103: in test_AUD05_blocked_seat_must_cancel_future_booking
+    assert session.get(Reservation, c["rid"]).status == E.ReservationStatus.ADMIN_CANCELLED, f"Seat {status} retained a future reservation"
+E   AssertionError: Seat disabled retained a future reservation
+E   assert &lt;ReservationS...D: 'RESERVED'&gt; == &lt;ReservationS...IN_CANCELLED'&gt;
+E     
+E     - ADMIN_CANCELLED
+E     + RESERVED</failure></testcase><testcase classname="" name="test_AUD06_change_seat_must_update_arrival_reference" time="0.419"><failure message="AssertionError: Arrival record still points at the old seat after change and check-in&#10;assert 1 == 2&#10; +  where 1 = &lt;app.models.entities.ArrivalRecord object at 0x000002608C168050&gt;.seat_id">..\docs\audit\evidence\test_audit_findings.py:114: in test_AUD06_change_seat_must_update_arrival_reference
+    assert arrival.seat_id == c["other"], "Arrival record still points at the old seat after change and check-in"
+E   AssertionError: Arrival record still points at the old seat after change and check-in
+E   assert 1 == 2
+E    +  where 1 = &lt;app.models.entities.ArrivalRecord object at 0x000002608C168050&gt;.seat_id</failure></testcase><testcase classname="" name="test_AUD07_return_without_entry_evidence_must_be_rejected" time="0.446"><failure message="AssertionError: Manual return succeeded with no gate entry evidence&#10;assert 200 in (403, 409, 422)&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">..\docs\audit\evidence\test_audit_findings.py:126: in test_AUD07_return_without_entry_evidence_must_be_rejected
+    assert response.status_code in (403, 409, 422), "Manual return succeeded with no gate entry evidence"
+E   AssertionError: Manual return succeeded with no gate entry evidence
+E   assert 200 in (403, 409, 422)
+E    +  where 200 = &lt;Response [200 OK]&gt;.status_code</failure></testcase><testcase classname="" name="test_AUD08_checkin_without_seat_identifier_must_be_rejected" time="0.416"><failure message="AssertionError: Check-in succeeded without any seat identifier&#10;assert 200 in (409, 422)&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">..\docs\audit\evidence\test_audit_findings.py:134: in test_AUD08_checkin_without_seat_identifier_must_be_rejected
+    assert response.status_code in (409, 422), "Check-in succeeded without any seat identifier"
+E   AssertionError: Check-in succeeded without any seat identifier
+E   assert 200 in (409, 422)
+E    +  where 200 = &lt;Response [200 OK]&gt;.status_code</failure></testcase><testcase classname="" name="test_AUD09_ops_must_not_access_personal_appeal_workflow" time="0.449"><failure message="AssertionError: Ops role was permitted to enter the personal appeal workflow&#10;assert 200 == 403&#10; +  where 200 = &lt;Response [200 OK]&gt;.status_code">..\docs\audit\evidence\test_audit_findings.py:140: in test_AUD09_ops_must_not_access_personal_appeal_workflow
+    assert response.status_code == 403, "Ops role was permitted to enter the personal appeal workflow"
+E   AssertionError: Ops role was permitted to enter the personal appeal workflow
+E   assert 200 == 403
+E    +  where 200 = &lt;Response [200 OK]&gt;.status_code</failure></testcase></testsuite></testsuites>

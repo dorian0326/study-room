@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
+from app import timeutil
 from app.db import transaction
 from app.deps import SessionDep, client_ip, require_permission
 from app.models import Reservation, Seat, StudyRoom, User
@@ -16,7 +17,11 @@ from app.models.enums import AuditOpType
 from app.schemas.workflows import SeatImportIn, SeatIn, SeatMaintenanceIn, SeatOut, SeatStatusOut
 from app.services import audit
 from app.services.notifications import create_notification
-from app.timeutil import now
+
+
+def now():
+    return timeutil.now()
+
 
 router = APIRouter(prefix="/admin/rooms", tags=["admin-seats"])
 RoomAdmin = Annotated[User, Depends(require_permission("room:manage"))]
@@ -66,7 +71,7 @@ def _cancel_for_maintenance(session: SessionDep, seat: Seat, operator: User, rea
             select(Reservation).where(
                 Reservation.seat_id == seat.id,
                 Reservation.status == E.ReservationStatus.RESERVED,
-                Reservation.start_time > moment,
+                Reservation.end_time > moment,
             )
         )
     )
@@ -147,7 +152,11 @@ def update_seat(
                 setattr(seat, field, value)
             seat.status_changed_at = now()
             # 完整更新接口若直接将座位置为维护，也执行与状态专用接口相同的预约取消流程。
-            if body.status == E.SeatStatus.MAINTENANCE and before["status"] != body.status.value:
+            if body.status in (
+                E.SeatStatus.MAINTENANCE,
+                E.SeatStatus.CLOSED,
+                E.SeatStatus.DISABLED,
+            ):
                 _cancel_for_maintenance(session, seat, operator, "管理员通过座位编辑设为维护")
             session.flush()
             _log(session, request, operator, seat.id, before, _dump_seat(seat))
@@ -176,7 +185,7 @@ def set_seat_status(
         seat.status = body.status
         seat.status_changed_at = now()
         cancelled = 0
-        if body.status == E.SeatStatus.MAINTENANCE:
+        if body.status in (E.SeatStatus.MAINTENANCE, E.SeatStatus.CLOSED, E.SeatStatus.DISABLED):
             cancelled = _cancel_for_maintenance(session, seat, operator, body.reason)
         after = _dump_seat(seat)
         after["cancelled_reservations"] = cancelled
@@ -270,7 +279,11 @@ def import_seats(
                     setattr(seat, field, value)
                 updated += 1
             seat.status_changed_at = now()
-            if values.status == E.SeatStatus.MAINTENANCE:
+            if values.status in (
+                E.SeatStatus.MAINTENANCE,
+                E.SeatStatus.CLOSED,
+                E.SeatStatus.DISABLED,
+            ):
                 _cancel_for_maintenance(
                     session,
                     seat,

@@ -94,7 +94,8 @@ def seat_status(
         bookings = [
             r
             for r in bookings
-            if r.status != E.ReservationStatus.RESERVED or r.start_time <= start < r.end_time
+            if (r.status != E.ReservationStatus.RESERVED and r.end_time > start)
+            or r.start_time <= start < r.end_time
         ]
     else:
         bookings = list(overlapping(session, seat.id, start, end))

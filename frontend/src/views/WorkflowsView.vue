@@ -165,7 +165,11 @@ async function openSeat(seatId) {
 }
 
 async function loadMine() {
-  mine.value = await api('/reservations?scope=current')
+  const [current, pending] = await Promise.all([
+    api('/reservations?scope=current'),
+    api('/reservations?scope=pending-confirmation'),
+  ])
+  mine.value = [...current, ...pending.map((row) => ({ ...row, pendingConfirmation: true }))]
 }
 
 async function loadHistory() {
@@ -197,7 +201,8 @@ function createReservation() {
       if (!form.seat_id) throw new Error('请选择座位，或切换到按区域自动分配')
       body.seat_id = Number(form.seat_id)
     }
-    if (form.request_key.trim()) body.request_key = form.request_key.trim()
+    if (!form.request_key.trim()) form.request_key = crypto.randomUUID()
+    body.request_key = form.request_key.trim()
     const created = await api('/reservations', { method: 'POST', body })
     notice.value = `已预约 ${created.reservation_no}（座位 ${created.seat_id}）`
     form.request_key = ''
@@ -409,7 +414,6 @@ function jumpTo(id) {
           <option value="">全部</option>
           <option value="quiet">静音区</option>
           <option value="discussion">讨论区</option>
-          <option value="open">开放区</option>
           <option value="exam_prep">考研区</option>
         </select>
       </label>
@@ -559,8 +563,8 @@ function jumpTo(id) {
         <input v-model="form.end_time" type="datetime-local" required />
       </label>
       <label>
-        幂等键（可选）
-        <input v-model="form.request_key" placeholder="至少 8 位，刷新重试时保持不变" />
+        请求编号（自动生成）
+        <input v-model="form.request_key" placeholder="提交时自动生成；失败重试保持不变" readonly />
       </label>
       <button class="primary">提交预约</button>
     </form>
@@ -579,6 +583,9 @@ function jumpTo(id) {
           <StatusBadge :status="row.status" />
         </header>
         <p class="when">🕒 {{ fmt(row.start_time) }} → {{ fmt(row.end_time) }}</p>
+        <p v-if="row.pendingConfirmation" class="warn">
+          时段已结束，座位已释放。请在结束后 30 分钟内补确认，逾期按未签退处理。
+        </p>
         <p v-if="isLateCancel(row) && row.status === 'RESERVED'" class="warn">
           临近开始，请尽快签到
         </p>
@@ -594,7 +601,13 @@ function jumpTo(id) {
           <button v-if="row.status === 'RESERVED'" type="button" @click="startChange(row)">
             改座位
           </button>
-          <button v-if="row.status === 'ACTIVE'" type="button" @click="tempLeave(row)">暂离</button>
+          <button
+            v-if="row.status === 'ACTIVE' && !row.pendingConfirmation"
+            type="button"
+            @click="tempLeave(row)"
+          >
+            暂离
+          </button>
           <button
             v-if="row.status === 'ACTIVE' || row.status === 'TEMP_LEAVE'"
             type="button"
