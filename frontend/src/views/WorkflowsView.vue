@@ -263,7 +263,16 @@ function endUse(row) {
   }, '已结束使用')
 }
 
+function isSeatBookable(seat) {
+  return ['available', 'AVAILABLE'].includes(seat?.status)
+}
+
 function useSeatForBooking(seat) {
+  if (!isSeatBookable(seat)) {
+    error.value = '这个座位当前不可预约，请另选一个空闲座位'
+    notice.value = ''
+    return
+  }
   if (changeForm.reservation_id) {
     changeForm.seat_id = String(seat.id)
     changeSeatInfo.value = seat
@@ -504,7 +513,7 @@ function jumpTo(id) {
                 <button type="button" @click="openSeat(seat.id)">详情</button>
                 <button
                   type="button"
-                  :disabled="!['available', 'AVAILABLE'].includes(seat.status)"
+                  :disabled="!isSeatBookable(seat)"
                   @click="useSeatForBooking(seat)"
                 >
                   选用
@@ -529,7 +538,7 @@ function jumpTo(id) {
             <button
               type="button"
               class="primary"
-              :disabled="!['available', 'AVAILABLE'].includes(seat.status)"
+              :disabled="!isSeatBookable(seat)"
               @click="useSeatForBooking(seat)"
             >
               选用
@@ -574,7 +583,12 @@ function jumpTo(id) {
         </div>
       </dl>
       <div class="row">
-        <button type="button" class="primary" @click="useSeatForBooking(selectedSeat)">
+        <button
+          type="button"
+          class="primary"
+          :disabled="!isSeatBookable(selectedSeat)"
+          @click="useSeatForBooking(selectedSeat)"
+        >
           用此座位预约
         </button>
       </div>
@@ -778,7 +792,7 @@ function jumpTo(id) {
 }
 .page-tabs {
   position: sticky;
-  top: 56px;
+  top: calc(56px + env(safe-area-inset-top, 0px));
   z-index: 4;
   margin: 0 0 16px;
   width: auto;
@@ -788,7 +802,7 @@ function jumpTo(id) {
   font-size: 0.92rem;
 }
 .panel {
-  scroll-margin-top: 112px;
+  scroll-margin-top: calc(112px + env(safe-area-inset-top, 0px));
 }
 /* 自习室目录：独立纸面卡片，选中用灯金描边 */
 .cards {
@@ -941,7 +955,7 @@ function jumpTo(id) {
   }
   .page-tabs {
     overflow-x: auto;
-    top: 56px;
+    top: calc(56px + env(safe-area-inset-top, 0px));
   }
   .page-tabs button {
     flex: none;

@@ -394,7 +394,7 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
   position: relative;
   display: grid;
   align-content: center;
-  padding: 32px 40px;
+  padding: calc(32px + env(safe-area-inset-top, 0px)) 40px 32px;
   background: var(--bg);
 }
 .auth-brand {
@@ -417,7 +417,7 @@ const roleText = computed(() => (auth.user?.roles || []).map((r) => ROLE_LABELS[
 }
 .theme-btn {
   position: absolute;
-  top: 16px;
+  top: calc(16px + env(safe-area-inset-top, 0px));
   right: 16px;
 }
 
@@ -762,8 +762,8 @@ button.menu-item:hover:not(:disabled) {
     padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
   }
   .topbar {
-    padding: 0 16px;
-    height: 56px;
+    padding: env(safe-area-inset-top, 0px) 16px 0;
+    height: calc(56px + env(safe-area-inset-top, 0px));
   }
   .topbar-sub {
     display: none;
@@ -866,7 +866,7 @@ button.menu-item:hover:not(:disabled) {
     height: 220px;
   }
   .auth-side {
-    padding: 24px 20px 40px;
+    padding: calc(24px + env(safe-area-inset-top, 0px)) 20px 40px;
   }
 }
 </style>
