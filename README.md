@@ -1,6 +1,6 @@
 # 奶龙自习室 · 智慧自习室管理系统（study-room）
 
-面向高校多间自习室的统一管理平台：把座位查看、预约、签到签退和违规治理放到线上，提升座位利用率与管理效率。本仓库是软件工程课程设计项目《智慧自习室管理系统》的代码。
+面向高校的智慧自习室座位预约系统：支持多间自习室的座位查看、预约、签到签退，以及违规与申诉处理。本仓库是软件工程课程设计项目的代码。
 
 **两种查看方式：**
 
@@ -24,14 +24,15 @@
 - [配置（环境变量）](#配置环境变量)
 - [CI 与分支规则](#ci-与分支规则)
 - [相关文档](#相关文档)
+- [界面与图片素材说明](#界面与图片素材说明)
 - [许可证](#许可证)
 
 ## 功能概览
 
 | 角色 | 功能 |
 | --- | --- |
-| 学生 | 学号注册、登录、找回和修改密码；按自习室、楼层、设施（电源、靠窗、无障碍）查找座位，或只选区域让系统自动分座；创建、改座、取消预约（冲突检测，迟取消会提示）；扫码或手输签到、暂离、结束；查看历史预约、违规记录并提交申诉；接收通知 |
-| 管理员 | 自习室、开放时段、节假日和系统参数配置；座位维护（含 CSV 导入）；用户管理、角色和停用；违规申诉审核；统计报表 |
+| 学生 | 学号注册、登录、找回和修改密码；按自习室、楼层、设施（电源、靠窗、无障碍）查找座位，或只选区域让系统自动分座；创建、改座、取消预约（冲突检测，迟取消会二次确认）；扫码或手输签到、暂离、结束；查看历史预约、违规记录并提交申诉；接收通知 |
+| 管理员 | 自习室、开放时段、节假日和系统参数配置；座位维护（含 CSV 导入）；用户管理、角色和停用；违规申诉审核；统计报表（可导出 Excel） |
 | 运维 | 系统日志与登录日志；备份和监控面板；闸机出入馆记录 |
 
 系统自动处理的规则：超时未签到释放座位并记违规；暂离超过 30 分钟记违规；违规累计后限制预约，违规按周期归档；关闭自习室或改开放时间时取消受影响的预约并通知；连续登录失败锁定账号。所有时间按 Asia/Shanghai（UTC+8）计算。
@@ -42,7 +43,7 @@
 | --- | --- |
 | 后端 | Python 3.11+、FastAPI、SQLAlchemy 2、Alembic、pwdlib（bcrypt） |
 | 数据库 | SQLite（WAL 模式，外键开启，关键写操作用立即事务） |
-| 前端 | Vue 3、Vite 6、vue-router，ESLint 9 和 Prettier |
+| 前端 | Vue 3、Vite 6、vue-router，Vitest、ESLint 9 和 Prettier |
 | 工程 | GitHub Actions CI，Issue 加 PR 协作，`main` 分支受保护 |
 
 ## 方式一：在线演示
@@ -53,7 +54,7 @@
 
 - 只有 HTTP，没有 HTTPS，请不要输入任何真实密码。
 - 这是**公共演示环境**，所有人共用同一套数据，别人的操作可能改变你看到的内容。
-- 数据都是 Mock 数据，按导入时间生成。导入时间在开放时段（07:00–22:30）之外时，不会有"使用中"和"暂离中"的预约。想要一份干净、时间准确的数据，请用本地运行。
+- 数据都是 Mock 数据，按导入时间生成。导入时间在开放时段（07:00–22:30）之外时，不会有「使用中」和「暂离中」的预约。想要一份干净、时间准确的数据，请用本地运行。
 
 ## 演示账号
 
@@ -76,16 +77,16 @@
 大约 10 分钟，按顺序走一遍：
 
 1. **学生 `20260001`**
-   - "首页"：看当前预约和提醒。
-   - "预约"：按自习室、楼层、设施筛选座位，点开座位详情，创建一个预约；再试改座和取消（迟取消会二次确认）；也可以只选区域让系统自动分座。
-   - "签到"：输入或扫描座位码签到，再试暂离和结束。
-   - "违规"：看违规记录、提交申诉；"通知"：看系统通知。
+   - 「首页」：看当前预约和提醒。
+   - 「预约」：按自习室、楼层、设施筛选座位，点开座位详情，创建一个预约；再试改座和取消（迟取消会二次确认）；也可以只选区域让系统自动分座。
+   - 「签到」：输入或扫描座位码签到，再试暂离和结束。
+   - 「违规」：看违规记录、提交申诉；「通知」：看系统通知。
 2. **学生 `20260014`**：尝试预约，会被提示违规限制中。**`20260015`**：登录被拒绝（账号已停用）。
 3. **管理员 `A0000001`**
-   - "自习室配置"：开放时段、节假日、参数；"座位管理"：增删改座位、标记维修。
-   - "用户管理"：查看、停用用户；"申诉处理"：审核 `20260004` 等人的申诉。
-   - "统计报表"：利用率等统计。
-4. **运维 `O0000001`**："系统日志"、"备份监控"（可手动备份）、"出入馆记录"。
+   - 「自习室配置」：开放时段、节假日、参数；「座位管理」：增删改座位、标记维修。
+   - 「用户管理」：查看、停用用户；「申诉处理」：审核 `20260004` 等人的申诉。
+   - 「统计报表」：利用率等统计，可导出 Excel。
+4. **运维 `O0000001`**：「系统日志」、「备份监控」（可手动备份）、「出入馆记录」。
 5. 接口：打开 `/docs`，在 Swagger 里直接调用接口。
 
 ## 方式二：本地运行
@@ -167,12 +168,12 @@ npm run dev                        # http://localhost:5173，/api 代理到 8000
 
 ### 测试与检查
 
-一条命令全部跑完：`python3 scripts/dev.py test`（ruff、pytest、前端单元测试、lint、format:check、build）。
+一条命令全部跑完：`python3 scripts/dev.py test`（ruff、pytest、前端 Vitest、lint、format:check、build）。
 
 也可以分开跑：
 
 ```bash
-cd backend && pytest && ruff check . && ruff format --check .
+cd backend && ruff check . && ruff format --check . && pytest
 cd frontend && npm test && npm run lint && npm run format:check && npm run build
 ```
 
@@ -180,7 +181,7 @@ cd frontend && npm test && npm run lint && npm run format:check && npm run build
 
 | 问题 | 解决 |
 | --- | --- |
-| 提示"还没有 backend/.venv"或"前端依赖未安装" | 先运行 `python3 scripts/dev.py setup` |
+| 提示「还没有 backend/.venv」或「前端依赖未安装」 | 先运行 `python3 scripts/dev.py setup` |
 | 8000 端口被占用 | 关掉占用 8000 的程序（macOS/Linux：`lsof -i :8000`；Windows：`netstat -ano \| findstr :8000`）。后端端口不能改 |
 | 5173 端口被占用 | 用 `--frontend-port 5174` 换端口 |
 | `npm ci` 报错或前端启动失败 | 检查 `node -v` 是否在 20 以上 |
@@ -210,8 +211,9 @@ study-room/
 │       ├── api/  components/  router/  assets/
 │       └── views/           # 页面：登录、首页、预约、签到、违规、通知、管理端、运维
 ├── scripts/dev.py           # 跨平台一键脚本
-├── docs/                    # 已知限制、预约模块进度
-├── .github/workflows/ci.yml # CI
+├── docs/                    # 需求、架构、接口、测试计划与报告
+│   └── evidence/            # 测试与审查证据
+├── .github/workflows/ci.yml # GitHub Actions CI
 ├── CONTRIBUTING.md
 └── LICENSE
 ```
@@ -222,6 +224,8 @@ study-room/
 
 | 变量 | 说明 |
 | --- | --- |
+| `STUDYROOM_DATABASE_URL` | SQLite 连接串，默认 `sqlite:///./data/study_room.db`（相对 `backend/` 目录）。 |
+| `STUDYROOM_TIMEZONE` | 时间基准，默认 `Asia/Shanghai`。 |
 | `STUDYROOM_ENV` | 运行环境，默认 `dev`；测试用 `test`，部署设为 `prod` 等其他值。 |
 | `STUDYROOM_GATE_HMAC_SECRET` | 门禁脱敏用户键的 HMAC 密钥。`STUDYROOM_ENV` 不是 `dev`/`test` 时必须设置为独立随机值，否则后端拒绝启动。 |
 | `STUDYROOM_LOGIN_MAX_FAILURES` | 连续登录失败锁定阈值，默认 `5`；`0` 关闭锁定。 |
@@ -231,26 +235,20 @@ study-room/
 
 ## CI 与分支规则
 
-- 每次推送和 PR 都会触发 GitHub Actions（`.github/workflows/ci.yml`）：后端 ruff 和 pytest（Python 3.11），前端 lint、format:check 和 build（Node 20）。
+- 推送到 `main`，以及打开或更新 Pull Request 时，会跑 GitHub Actions（`.github/workflows/ci.yml`）：后端 ruff check、ruff format --check 和 pytest（Python 3.11）；前端 Vitest、ESLint、Prettier 检查和 build（Node 20）。
 - `main` 受保护：改动必须走 Pull Request，CI 通过，并由 CODEOWNERS（@dorian0326）审核后 squash 合并。详见 [CONTRIBUTING.md](./CONTRIBUTING.md)。
 
 ## 相关文档
 
-- [文档基线索引](./docs/基线索引.md)：文档入口、当前基线和待确认范围
-- [软件架构设计方案（基线候选版）](./docs/软件架构设计方案_基线版.md)：当前代码结构和运行机制
+- [软件需求规格说明书](./docs/软件需求规格说明书.md)：需求基线（SRS）
+- [软件架构设计方案（基线版）](./docs/软件架构设计方案_基线版.md)：当前代码结构和运行机制
+- [软件架构设计方案（讨论稿）](./docs/软件架构设计方案_讨论稿.md)：基于需求和代码反向梳理的讨论稿
 - [架构确认与决策记录](./docs/架构确认与决策记录.md)：Q 问题、ADR 及其状态
 - [接口与关键设计说明书](./docs/接口与关键设计说明书.md)：当前 API 契约和数据/事务约束
 - [分阶段实现与测试计划](./docs/分阶段实现与测试计划.md)：阶段准入、测试案例和验收条件
-- [任务卡模板](./docs/tasks/任务卡模板.md)：新任务的输入基线、范围和完成标准
+- [单元与集成测试案例及执行报告](./docs/单元与集成测试案例及执行报告.md)：测试案例与执行记录
 - [测试证据目录说明](./docs/evidence/README.md)：如何保存可复核的测试与审查证据
-- [预约模块历史进度](./docs/reservation-progress.md)：Issue #10–#16 的实现、测试和遗留事项
-- [已知限制](./docs/limitations.md)：已记录的模拟边界、未验证指标和当前范围
 - [CONTRIBUTING.md](./CONTRIBUTING.md)：协作和提交规范
-
-## 许可证
-
-[MIT](./LICENSE) © 2026 Dorian Zhang
-
 
 ## 界面与图片素材说明
 
@@ -263,3 +261,7 @@ study-room/
 - `nailong-happy.webp`、`nailong-jump.webp`、`nailong-silly.webp`、`nailong-logo.png`：来自 Pinterest「奶龙 / nailong」搜索结果（i.pinimg.com），经抠图、统一尺寸、描边与阴影处理后压缩。
 
 **以上素材仅用于本软件工程课程设计作业的非商业演示，不得用于任何商业用途；如权利人有异议请联系删除。**
+
+## 许可证
+
+[MIT](./LICENSE) © 2026 Dorian Zhang
