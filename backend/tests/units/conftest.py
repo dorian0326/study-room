@@ -30,21 +30,39 @@ def session():
 @pytest.fixture
 def seat():
     room = StudyRoom(
-        id=1, name="一号自习室", location="图书馆", floor="3",
-        capacity=20, facilities="空调", status=E.RoomStatus.OPEN,
+        id=1,
+        name="一号自习室",
+        location="图书馆",
+        floor="3",
+        capacity=20,
+        facilities="空调",
+        status=E.RoomStatus.OPEN,
     )
     return Seat(
-        id=11, room_id=1, room=room, code="A01", zone_type=E.ZoneType.QUIET,
-        status=E.SeatStatus.AVAILABLE, has_power=True, by_window=True, accessible=False,
+        id=11,
+        room_id=1,
+        room=room,
+        code="A01",
+        zone_type=E.ZoneType.QUIET,
+        status=E.SeatStatus.AVAILABLE,
+        has_power=True,
+        by_window=True,
+        accessible=False,
     )
 
 
 @pytest.fixture
 def booking(seat, moment):
     return Reservation(
-        id=21, reservation_no="SR-UNIT-21", user_id=7, room_id=seat.room_id,
-        seat_id=seat.id, seat=seat, start_time=moment + timedelta(hours=1),
-        end_time=moment + timedelta(hours=2), status=E.ReservationStatus.RESERVED,
+        id=21,
+        reservation_no="SR-UNIT-21",
+        user_id=7,
+        room_id=seat.room_id,
+        seat_id=seat.id,
+        seat=seat,
+        start_time=moment + timedelta(hours=1),
+        end_time=moment + timedelta(hours=2),
+        status=E.ReservationStatus.RESERVED,
     )
 
 
@@ -55,8 +73,13 @@ def service_env(monkeypatch, session, moment, seat, booking):
     monkeypatch.setattr(reservations, "now", lambda: moment)
     mocks = SimpleNamespace()
     for name in (
-        "_user", "_restriction", "_expire_due", "_check_slot", "_sync_seat",
-        "_record_violation", "create_notification",
+        "_user",
+        "_restriction",
+        "_expire_due",
+        "_check_slot",
+        "_sync_seat",
+        "_record_violation",
+        "create_notification",
     ):
         mock = Mock()
         monkeypatch.setattr(reservations, name, mock)
@@ -67,8 +90,10 @@ def service_env(monkeypatch, session, moment, seat, booking):
     for name in ("_owned", "_seat", "reservation_out"):
         monkeypatch.setattr(reservations, name, getattr(mocks, name))
     settings = SimpleNamespace(
-        advance_booking_days=1, no_show_after_minutes=15,
-        late_cancel_minutes=15, checkin_open_before_minutes=15,
+        advance_booking_days=1,
+        no_show_after_minutes=15,
+        late_cancel_minutes=15,
+        checkin_open_before_minutes=15,
     )
     monkeypatch.setattr(reservations, "get_business_settings", lambda _: settings)
     return mocks

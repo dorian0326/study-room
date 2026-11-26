@@ -22,7 +22,11 @@ def test_change_seat_preserves_reservation_times(session, seat, booking, service
     assert result.seat_id == 12
     assert (result.start_time, result.end_time) == original_times
     service_env._check_slot.assert_called_once_with(
-        session, target, *original_times, 7, booking.id,
+        session,
+        target,
+        *original_times,
+        7,
+        booking.id,
     )
     assert service_env._sync_seat.call_count == 2
 

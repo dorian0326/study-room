@@ -11,7 +11,10 @@ from app.services.reservations import write_transaction as real_write_transactio
 
 
 def test_srs_uc009_notification_failure_must_not_rollback_cancel(
-    monkeypatch, session, booking, service_env,
+    monkeypatch,
+    session,
+    booking,
+    service_env,
 ):
     # 保留真实 write_transaction 和 transaction，只替代 Session 的创建。
     monkeypatch.setattr(service, "write_transaction", real_write_transaction)
