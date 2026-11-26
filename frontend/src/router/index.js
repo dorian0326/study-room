@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { auth, loadMe } from '../auth.js'
+import { authorizeNavigation } from './guard.js'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
@@ -58,18 +59,6 @@ export const routes = [
 
 const router = createRouter({ history: createWebHistory(), routes })
 
-/** 验证页面所需的登录状态和权限码。 */
-async function authorizeNavigation(to) {
-  if (!auth.loaded) await loadMe()
-  if (to.meta.auth && !auth.user) return { path: '/login', query: { next: to.fullPath } }
-  if (to.meta.perm && !auth.user.permissions.includes(to.meta.perm)) return '/'
-  if (to.meta.anyPerm) {
-    const ok = to.meta.anyPerm.some((p) => auth.user.permissions.includes(p))
-    if (!ok) return '/'
-  }
-  return true
-}
-
-router.beforeEach(authorizeNavigation)
+router.beforeEach((to) => authorizeNavigation(to, auth, loadMe))
 
 export default router
