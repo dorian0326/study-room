@@ -19,12 +19,19 @@ def test_create_saves_booking_and_arrival(session, seat, booking, service_env):
     assert replay is False
     assert isinstance(result, Reservation)
     assert (result.user_id, result.seat, result.start_time, result.end_time) == (
-        7, seat, body.start_time, body.end_time,
+        7,
+        seat,
+        body.start_time,
+        body.end_time,
     )
     added = [call.args[0] for call in session.add.call_args_list]
     assert any(isinstance(item, ArrivalRecord) and item.seat_id == seat.id for item in added)
     service_env._check_slot.assert_called_once_with(
-        session, seat, body.start_time, body.end_time, 7,
+        session,
+        seat,
+        body.start_time,
+        body.end_time,
+        7,
     )
     service_env.create_notification.assert_called_once()
 
@@ -44,7 +51,14 @@ def test_create_rejects_past_or_too_distant_start(session, seat, moment, service
     [(False, False, False, 422), (True, True, False, 409), (True, False, True, 409)],
 )
 def test_slot_rejects_closed_hours_or_conflicts(
-    monkeypatch, session, seat, booking, covered, overlaps, own_conflict, code,
+    monkeypatch,
+    session,
+    seat,
+    booking,
+    covered,
+    overlaps,
+    own_conflict,
+    code,
 ):
     monkeypatch.setattr(service, "covers", lambda *_: covered)
     monkeypatch.setattr(service, "overlapping", lambda *_: [booking] if overlaps else [])

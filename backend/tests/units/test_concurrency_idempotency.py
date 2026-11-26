@@ -31,7 +31,11 @@ def test_same_key_and_payload_replays_without_writing(session, booking, service_
 
 @pytest.mark.parametrize("other_user, other_payload", [(True, False), (False, True)])
 def test_key_cannot_be_reused_for_different_request(
-    session, booking, service_env, other_user, other_payload,
+    session,
+    booking,
+    service_env,
+    other_user,
+    other_payload,
 ):
     body = ReservationIn(seat_id=11, start_time=booking.start_time, end_time=booking.end_time)
     previous, _ = service.create(session, 7, body, "unit-key")
@@ -55,7 +59,9 @@ def test_write_transaction_requests_immediate_lock(monkeypatch, session):
         assert actual is session
 
     factory.assert_called_once_with(
-        session.get_bind.return_value, expire_on_commit=False, autoflush=False,
+        session.get_bind.return_value,
+        expire_on_commit=False,
+        autoflush=False,
     )
     transaction.assert_called_once_with(session, immediate=True)
 

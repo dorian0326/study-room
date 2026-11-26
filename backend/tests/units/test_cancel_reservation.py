@@ -11,7 +11,12 @@ from app.services.availability import BookingError
 
 @pytest.mark.parametrize("seconds, late", [(901, False), (900, True), (899, True)])
 def test_cancel_classifies_fifteen_minute_boundary(
-    session, booking, moment, service_env, seconds, late,
+    session,
+    booking,
+    moment,
+    service_env,
+    seconds,
+    late,
 ):
     booking.start_time = moment + timedelta(seconds=seconds)
 
@@ -22,7 +27,10 @@ def test_cancel_classifies_fifteen_minute_boundary(
     assert result.cancelled_at == moment
     if late:
         service_env._record_violation.assert_called_once_with(
-            session, booking, E.ViolationType.LATE_CANCEL, moment,
+            session,
+            booking,
+            E.ViolationType.LATE_CANCEL,
+            moment,
         )
     else:
         service_env._record_violation.assert_not_called()
