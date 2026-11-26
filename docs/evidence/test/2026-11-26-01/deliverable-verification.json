@@ -1,0 +1,31 @@
+{
+  "backend_junit_cases": 220,
+  "frontend_passed": 30,
+  "report_cases": 250,
+  "excel_rows": 250,
+  "worksheets": [
+    "测试用例表",
+    "证据索引"
+  ],
+  "summary_cached": "共250项；通过250项；失败0项。编写人列为文档整理责任；完整断言、步骤及证据见同编号报告与证据索引。",
+  "filter_tables": [
+    "TestCasesTable",
+    "EvidenceIndexTable"
+  ],
+  "freeze": {
+    "main": "C6",
+    "index": "B6"
+  },
+  "date": "2026-11-26 00:00:00",
+  "source_files_hash_checked": 201,
+  "application_and_test_files_changed": [],
+  "existing_documents_edited_during_run": [
+    "docs/接口与关键设计说明书.md",
+    "docs/软件架构设计方案_基线版.md",
+    "docs/软件架构设计方案_讨论稿.md"
+  ],
+  "missing_local_links": [],
+  "xlsx_sha256": "bb9c86b735a6e8bbb599a32df7df7556ff2383456ed99d616c8777ab7dd77792",
+  "xlsx_bytes": 69354,
+  "visual_review": "Both worksheets rendered and inspected; increased row heights after checking wrapped text."
+}

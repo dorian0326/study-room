@@ -1,0 +1,3588 @@
+diff --git a/backend/pyproject.toml b/backend/pyproject.toml
+index c5c223a..a6b86cd 100644
+--- a/backend/pyproject.toml
++++ b/backend/pyproject.toml
+@@ -34,3 +34,5 @@ select = ["E", "F", "I", "B", "UP"]
+ [tool.pytest.ini_options]
+ testpaths = ["tests"]
+ markers = ["case(id): 分阶段测试计划中的 TC-LOCAL 案例编号"]
++# 让直接执行 pytest（未 pip install -e . 时）也能 import app
++pythonpath = ["."]
+diff --git "a/docs/\346\216\245\345\217\243\344\270\216\345\205\263\351\224\256\350\256\276\350\256\241\350\257\264\346\230\216\344\271\246.md" "b/docs/\346\216\245\345\217\243\344\270\216\345\205\263\351\224\256\350\256\276\350\256\241\350\257\264\346\230\216\344\271\246.md"
+index ba579a5..a4ff39b 100644
+--- "a/docs/\346\216\245\345\217\243\344\270\216\345\205\263\351\224\256\350\256\276\350\256\241\350\257\264\346\230\216\344\271\246.md"
++++ "b/docs/\346\216\245\345\217\243\344\270\216\345\205\263\351\224\256\350\256\276\350\256\241\350\257\264\346\230\216\344\271\246.md"
+@@ -1,198 +1,1866 @@
+-# 接口与关键设计说明书
+-
+-更新日期：2026-11-12
+-状态：按代码整理的接口快照，待接口提供方/调用方交叉确认。运行服务的 FastAPI 文档位于 /docs；实现改变后应同步本文及测试。
+-
+-## 总体契约
+-
+-- HTTP API 统一位于 /api 下；前端开发服务器将 /api 转发到本地后端 8000 端口。
+-- 除注册、登录、健康检查等明确的公开接口外，当前接口通过 Authorization: Bearer 令牌识别登录用户。
+-- 前端路由权限仅用于导航体验，服务端接口仍需独立校验权限和对象归属。
+-- 当前常见错误状态为 401 未登录或会话无效、403 无权限/禁约、404 对象不存在或不属于当前用户、409 状态/资源冲突、422 请求字段或业务时间校验失败。具体错误体以实现中的 detail 为准；尚无统一错误码目录。
+-- 时间配置默认 Asia/Shanghai。预约请求时间要求带时区并转换到配置时区。当前不允许跨日预约；预约区间不要求固定 30 分钟粒度，短时段也允许。
+-- 查询接口的分页、过滤和排序按下表逐项说明；不得假设所有列表接口都支持分页。
+-
+-## 需求动作到接口追踪
+-
+-仓库未固定完整的需求主版本，因此下列 UC-LOCAL 编号只是便于文档讨论的本地业务动作分组，不替代原需求编号。历史交付引用的上游需求及部分确认见 [预约阶段交付记录](./reservation-progress.md)；后续应补充需求版本、Issue、确认人及外部依据。
+-
+-| 本地动作 | 业务结果 | 主要接口 | 相关测试/待确认 |
+-| --- | --- | --- | --- |
+-| UC-LOCAL-01 房间与座位准备 | 管理员维护房间、开放时段、校历和座位；用户查看可用资源。 | /api/admin/rooms、/api/admin/rooms/{room_id}/schedules、/api/admin/calendar、/api/admin/rooms/{room_id}/seats、/api/rooms | test_admin_config.py、test_assigned_workflows.py；角色与课程范围待确认。 |
+-| UC-LOCAL-02 预约与签到 | 用户选择时间区间和座位，创建预约并签到、取消或结束。 | /api/rooms、/api/reservations、/api/reservations/{reservation_id}/check-in、/cancel、/end | test_assigned_workflows.py；时间规则、角色和重试契约需由业务确认。 |
+-| UC-LOCAL-03 使用中离开与通知 | 用户登记暂离并返回；超时工作释放时段并写入违规与站内通知。 | /api/reservations/{reservation_id}/temporary-leave、/return、/api/notifications | test_assigned_workflows.py；期限和处罚口径待确认。 |
+-| UC-LOCAL-04 违规申诉 | 用户查看本人违规并提交申诉；管理员审核、写入结论并通知。 | /api/violations、/api/appeals、/api/admin/appeals | test_assigned_workflows.py；申诉期限及违规累计规则需确认。 |
+-| UC-LOCAL-05 运维和统计 | 管理员查询报表/导出；运维查看状态、日志、备份及脱敏门禁模拟记录。 | /api/admin/reports、/export.xlsx、/api/ops/* | test_backup_monitoring.py、test_assigned_workflows.py；真实门禁是已知范围外能力，见 docs/limitations.md。 |
+-
+-## API 清单
+-
+-表中的权限以当前后端依赖为准；“已登录”表示路由使用当前用户依赖，但具体角色是否可用仍需结合权限矩阵确认。
+-
+-| 方法 | 路径 | 调用者/权限 | 请求与成功响应摘要 |
+-| --- | --- | --- | --- |
+-| GET | /api/health | 公开 | 健康检查 JSON。 |
+-| POST | /api/auth/register | 未登录 | 注册请求；201 返回用户资料。 |
+-| POST | /api/auth/login | 未登录 | 学号/密码；返回会话令牌与用户资料。 |
+-| POST | /api/auth/logout | 已登录 | 撤销当前会话；204。 |
+-| GET | /api/auth/me | 已登录 | 当前用户资料和权限。 |
+-| POST | /api/auth/change-password | 已登录 | 修改当前用户密码；204。 |
+-| POST | /api/auth/reset-password | 未登录/重置凭证 | 使用重置码设置新密码；204。 |
+-| GET | /api/rooms | room:read | 可选 date（YYYY-MM-DD）；start_time/end_time 成对提供时按区间附加座位占用。返回房间楼层、容量、当天开放时段。 |
+-| GET | /api/seats | room:read | 可选 room_id、zone_type、available_only、has_power、by_window、accessible 和 date；按指定区间返回座位实时状态。 |
+-| GET | /api/seats/{seat_id} | room:read | 查询单个座位详情和二维码载荷；date/start_time/end_time 可共同指定状态查询区间。 |
+-| GET | /api/reservations | reservation:own | scope 为 all/current/history，默认 all；返回本人预约历史和房间/座位标签。 |
+-| GET | /api/reservations/current | reservation:own | 返回本人的当前有效预约。 |
+-| GET | /api/reservations/{rid} | reservation:own | 返回本人预约详情；其他用户或不存在对象均不可见。 |
+-| POST | /api/reservations | reservation:own | ReservationCreate；首次创建 201；幂等重放见关键请求字段。 |
+-| PATCH | /api/reservations/{rid}/seat | reservation:own | ChangeSeatIn.seat_id；重新检查资源冲突和预约状态。 |
+-| POST | /api/reservations/{reservation_id}/check-in | reservation:own | 可不带请求体手动签到，或提供 CheckInIn 中的座位 ID / 房间 ID 与座位编号。 |
+-| POST | /api/reservations/{reservation_id}/temporary-leave | reservation:own | 无请求体；登记临时离开并返回预约。 |
+-| POST | /api/reservations/{reservation_id}/return | reservation:own | 无请求体；返回恢复后的预约。 |
+-| POST | /api/reservations/{reservation_id}/end | reservation:own | EndUseIn.confirm；返回结束的预约 ID 列表和累计学习分钟。 |
+-| POST | /api/reservations/{reservation_id}/cancel | reservation:own | confirm 查询参数，默认 true；返回取消后的预约。 |
+-| GET | /api/violations | 已登录 | 返回本人违规记录。 |
+-| POST | /api/appeals | 已登录 | AppealCreate；201 返回申诉记录。 |
+-| GET | /api/appeals | 已登录 | 返回本人申诉和审核结果。 |
+-| GET | /api/notifications | 已登录 | unread_only 可选，limit 默认 50、范围 1–100。 |
+-| POST | /api/notifications/{notification_id}/read | 已登录 | 标记本人的通知已读；重复操作保持已读。 |
+-| GET | /api/admin/rooms | room:manage | 返回自习室列表。 |
+-| POST | /api/admin/rooms | room:manage | RoomIn（含可选 floor）；201 创建自习室。 |
+-| PUT | /api/admin/rooms/{room_id} | room:manage | 完整更新自习室资料。 |
+-| PATCH | /api/admin/rooms/{room_id}/status | room:manage | RoomStatusIn；关闭时取消未来预约并通知。 |
+-| DELETE | /api/admin/rooms/{room_id} | room:manage | 仅无座位且无预约历史时删除；204。 |
+-| GET | /api/admin/rooms/{room_id}/schedules | room:manage | 返回指定房间开放时段。 |
+-| POST | /api/admin/rooms/{room_id}/schedules | room:manage | ScheduleIn；201 创建时段。 |
+-| PUT | /api/admin/rooms/{room_id}/schedules/{sid} | room:manage | 更新时段；取消不再符合开放时间的未来预约并通知。 |
+-| DELETE | /api/admin/rooms/{room_id}/schedules/{sid} | room:manage | 删除时段，并处理受影响的未来预约；204。 |
+-| GET | /api/admin/calendar | room:manage | 返回特殊日期校历。 |
+-| PUT | /api/admin/calendar/{day} | room:manage | CalendarDayIn；路径日期须与请求体一致。 |
+-| DELETE | /api/admin/calendar/{day} | room:manage | 删除特殊日期；204。 |
+-| GET | /api/admin/settings | settings:manage | 返回业务参数。 |
+-| PUT | /api/admin/settings | settings:manage | 完整替换 BusinessSettings；额外字段拒绝。 |
+-| GET | /api/admin/rooms/{room_id}/seats | room:manage | 按座位编号返回布局。 |
+-| POST | /api/admin/rooms/{room_id}/seats | room:manage | SeatIn；201 创建座位。 |
+-| PUT | /api/admin/rooms/{room_id}/seats/{seat_id} | room:manage | 完整更新座位资料。 |
+-| PATCH | /api/admin/rooms/{room_id}/seats/{seat_id}/status | room:manage | SeatMaintenanceIn；返回变更状态和取消预约数。 |
+-| DELETE | /api/admin/rooms/{room_id}/seats/{seat_id} | room:manage | 仅从未有预约历史时删除；204。 |
+-| POST | /api/admin/rooms/{room_id}/seats/import | room:manage | CSV 文本导入；先全量校验，按编号新增/更新。 |
+-| GET | /api/admin/users | user:manage | q、role、page、size 过滤/分页；返回 total/items。 |
+-| PUT | /api/admin/users/{user_id}/roles | user:manage | RolesIn；不能移除自己的管理员角色。 |
+-| PATCH | /api/admin/users/{user_id}/status | user:manage | StatusIn；禁用账号会撤销会话。 |
+-| POST | /api/admin/users/{user_id}/reset-code | user:manage | 签发密码重置码；返回重置码及有效秒数。 |
+-| GET | /api/admin/violations | violation:manage | 可按 user_id 筛选，最多返回 500 条。 |
+-| POST | /api/admin/violations | violation:manage | ManualViolationIn；201 登记违规并写审计记录。 |
+-| GET | /api/admin/appeals | appeal:manage | pending_only 默认 true，最多返回 500 条。 |
+-| PATCH | /api/admin/appeals/{appeal_id} | appeal:manage | AppealReviewIn；审核申诉并写通知/审计。 |
+-| GET | /api/admin/reports | stats:read | start/end 可选；返回资源利用率、预约高峰和违规趋势。 |
+-| GET | /api/admin/reports/export.xlsx | data:export | 同一统计口径的 XLSX 文件。 |
+-| GET | /api/ops/audit-logs | audit_log:read | 查询操作审计日志。 |
+-| GET | /api/ops/login-logs | system_log:read | 查询登录日志。 |
+-| GET | /api/ops/backups | system:backup | 返回可用备份文件摘要。 |
+-| POST | /api/ops/backups | system:backup | 创建在线数据库备份；201 返回文件摘要。 |
+-| GET | /api/ops/status | system_log:read | 返回进程运行时长、数据库体积、用户/会话数、备份和请求指标。 |
+-| POST | /api/ops/entry-exit/mock | entry_exit:read | GateEventIn；接收脱敏门禁模拟事件。 |
+-| POST | /api/ops/entry-exit/manual-appeals | 已登录 | ManualGateAppealIn；提交本人门禁人工核验申请。 |
+-| GET | /api/ops/entry-exit/records | entry_exit:read | 可按 sync_status 过滤，limit 默认 100、上限 500；返回脱敏记录。 |
+-
+-## 关键请求字段
+-
+-### 预约
+-
+-POST /api/reservations 接受 ReservationCreate，并通过可选 Idempotency-Key 请求头或兼容的 request_key 字段去重：
+-
+-| 字段 | 类型/约束 | 说明 |
+-| --- | --- | --- |
+-| seat_id | 正整数，可选 | 指定目标座位；与自动分配字段二选一。 |
+-| room_id | 正整数，可选 | 自动分配时必填，指定目标自习室。 |
+-| zone_type | ZoneType，可选 | 自动分配时须与 room_id 一起提供；按座位编号挑选第一个合适座位。 |
+-| start_time | 带时区的日期时间，必填 | 转换到 Asia/Shanghai 后校验；不得早于当前时间。 |
+-| end_time | 带时区的日期时间，必填 | 必须晚于开始时间，且与开始时间同一天。 |
+-| Idempotency-Key | 1–64 个字母数字或 . _ : - 字符，可选请求头 | 推荐使用；同用户、同键、同请求指纹返回原预约，重放响应为 200 且包含 Idempotent-Replayed: true。 |
+-| request_key | 8–64 个字符，可选 | 兼容请求体键；同键不同请求或不同用户冲突时返回 409。兼容键重放保留当前 API 的 201 行为。 |
+-
+-当前实现的主要校验和不变量：
+-
+-- 同一自然日内预约；时间边界为半开区间 [start_time, end_time)，首尾相接允许连续预约。
+-- 不允许跨日，时段须完整落入开放时间；当前实现允许短于 30 分钟的时段。有效提前日期上限当前为一天（HD-34），即使管理参数配置更大也会被预约服务限制。
+-- 房间开放、座位可预约，预约区间完整落入当日有效开放时段；用户未处于生效禁约期且有效预约数未超过上限。
+-- 冲突检查、预约写入、签到占位记录及预约确认通知由一个 BEGIN IMMEDIATE 写事务完成。
+-- 同一用户不能建立时间重叠的有效预约；不同用户也不能同时占用同一座位的重叠时段。相邻的半开区间允许连续预约。
+-- backend/tests/test_reservations.py 覆盖 100 个竞争请求和并发同键重试；这不替代 docs/limitations.md 所列的 200 并发性能压测。
+-
+-### 当前 S1 资源与预约接口字段
+-
+-以下字段根据当前 Pydantic schema 及路由整理。除有默认值或注明可选外，字段必填；可空字段明确列出。接口提供方和调用方仍需共同确认这些实现是否符合需求。
+-
+-| 接口 | 请求字段与约束 | 成功响应 | 已实现的失败条件 |
+-| --- | --- | --- | --- |
+-| GET /api/rooms | date 可选；start_time/end_time 可选但必须成对提供且带时区。 | PublicRoom 数组：房间、楼层、容量、状态、日期及当天开放时间；提供时间范围时返回座位状态。 | 参数不成对、无时区或时间范围无效：422。 |
+-| GET /api/seats | room_id、zone_type、available_only、has_power、by_window、accessible 可选；若提供时间筛选，date/start_time/end_time 必须齐全，start/end 为本地时间且不跨零点。 | PublicSeat 数组，含房间和楼层信息、实时状态、qr_payload。 | 日期/时间参数不完整、时段非法或筛选字段错误：422；房间不存在：404。 |
+-| GET /api/seats/{seat_id} | date/start_time/end_time 均可省略；若提供须组成一个有效本地查询窗口。 | PublicSeat，含二维码载荷 studyroom:seat:{seat_id}。 | 座位不存在：404；时间参数无效：422。 |
+-| GET /api/reservations | scope 可选，all/current/history 之一，默认 all。 | ReservationHistoryOut 数组；仅当前用户记录，附 room_name/seat_code。 | 非法 scope：422。 |
+-| GET /api/reservations/current | 无请求字段。 | 当前用户仍有效的预约列表。 | 仅返回当前用户数据。 |
+-| GET /api/reservations/{rid} | 路径预约 ID。 | ReservationOut，含签到开/关时间。 | 非本人/不存在：404。 |
+-| POST /api/reservations | seat_id 或 room_id+zone_type；start_time/end_time 必填且带时区；Idempotency-Key 可选；request_key 可选。 | 首次 201；Header 键重放 200 并附 Idempotent-Replayed。 | 无效区间：422；禁约：403；关闭、时段冲突、同用户重叠或超上限：409；不存在座位/房间：404；写锁忙：503，Retry-After: 1。 |
+-| PATCH /api/reservations/{rid}/seat | ChangeSeatIn.seat_id 正整数。 | 更新后的 ReservationOut。 | 非本人/不存在：404；状态、禁约或目标冲突：409/403；字段额外项拒绝：422。 |
+-| POST /api/reservations/{reservation_id}/check-in | 可省略请求体进行手动签到；扫码请求须提供 seat_id，或 room_id 与 seat_code。 | 200 ReservationOut，含 checkin_opens_at/checkin_closes_at。 | 非本人/不存在：404；扫码座位与预约不匹配：409；签到窗外：409，超窗时预约过期且记违规。 |
+-| POST /api/reservations/{reservation_id}/temporary-leave | 无请求体；预约须处于 ACTIVE。 | ReservationOut，状态转为 TEMP_LEAVE。 | 非本人/不存在：404；状态错误或预约已结束：409。 |
+-| POST /api/reservations/{reservation_id}/return | 无请求体；须在 30 分钟暂离窗口内。 | ReservationOut，状态恢复 ACTIVE。 | 非本人/不存在：404；无待返回、超时或预约已结束：409。 |
+-| POST /api/reservations/{reservation_id}/end | EndUseIn.confirm 必须为 true。 | ended_reservations 和 duration_minutes。 | 未签到或当前状态不能结束：409；未确认：422。 |
+-| POST /api/reservations/{reservation_id}/cancel | confirm 查询参数默认 true。 | ReservationOut；重复取消返回原终态。 | 非本人/不存在：404；已签到或预约已开始：409；开始前 15 分钟内（含边界）取消会生成一条违规。 |
+-| POST /api/admin/rooms | name 必填 1–64；location 可空至多 128；floor 可空至多 32；capacity 默认 0 且非负；facilities、remark 可空文本。 | 201 RoomOut：输入字段及 id/status。 | 自习室名称重复：409；字段错误：422。 |
+-| PUT /api/admin/rooms/{room_id} | RoomIn 完整对象；字段约束同上。 | 200 RoomOut。 | 对象不存在：404；名称重复：409。 |
+-| PATCH /api/admin/rooms/{room_id}/status | status 必填：open/closed。 | 200 RoomOut。 | 对象不存在：404；枚举/字段非法：422；由 open 转 closed 会取消未来预约并通知。 |
+-| POST /api/admin/rooms/{room_id}/schedules | day_type 必填枚举；open_time/close_time 必填；effective_from/effective_to 可空日期；enabled 默认 true。开放时间必须早于关闭时间、不跨午夜，并在业务设置边界内；生效日期起始不得晚于结束。 | 201 ScheduleOut。 | 房间不存在：404；时间或日期规则不符：422。 |
+-| PUT /api/admin/rooms/{room_id}/schedules/{sid} | ScheduleIn 全量字段，约束同创建接口。 | 200 ScheduleOut。 | 时段不存在/不属于该房间：404；时间或日期规则不符：422；不再符合开放时间的未来预约会取消并通知。 |
+-| DELETE /api/admin/rooms/{room_id}/schedules/{sid} | 仅路径参数。 | 204。 | 时段不存在/不属于该房间：404；删除会处理不再落入有效开放时段的未来预约。 |
+-| PUT /api/admin/calendar/{day} | day 必填且须与路径相同；day_type 只允许 holiday/exam_week；note 可空至多 128。 | 200 CalendarDayOut。 | 路径与请求体日期不一致或 day_type 不适用：422。 |
+-| GET /api/admin/settings | 无请求参数。 | BusinessSettings 全量对象。 | 无设置权限：403。 |
+-| PUT /api/admin/settings | BusinessSettings 的完整对象；额外字段拒绝。默认值/范围见下表。 | 200 BusinessSettings。 | 越界值、开放时间边界逆序或额外字段：422。 |
+-| GET /api/admin/rooms/{room_id}/seats | 仅路径参数；按 room_id 筛选。 | SeatOut 数组，按 code 排序。 | 房间不存在：404。 |
+-| POST /api/admin/rooms/{room_id}/seats | code 必填 1–32；zone_type 默认 quiet；has_power/by_window/accessible 默认 false；status 默认 available。 | 201 SeatOut。 | 房间不存在：404；同房间编号重复：409。 |
+-| PUT /api/admin/rooms/{room_id}/seats/{seat_id} | SeatIn 全量对象；字段约束同创建接口。 | 200 SeatOut。 | 座位不存在或不属于房间：404；编号重复：409。设为 maintenance 会在事务内取消未开始预约并写通知/审计。 |
+-| PATCH /api/admin/rooms/{room_id}/seats/{seat_id}/status | status 必填；reason 默认“管理员设置座位状态”，长度 2–500。 | 200 SeatStatusOut，额外含 cancelled_reservations。 | 座位不存在或不属于房间：404；非法枚举/原因：422。maintenance 会取消未开始预约。 |
+-| POST /api/admin/rooms/{room_id}/seats/import | content 必填文本，长度 1–2,000,000；CSV 必须有 code 列，布尔列只接受 true/false、1/0、yes/no。 | 返回创建/更新计数。 | 房间不存在、空 CSV、重复编号或任一行非法：404/422；校验在开始写事务前完成。 |
+-
+-BusinessSettings 当前字段和范围：
+-
+-| 字段 | 默认值 | 范围/说明 |
+-| --- | --- | --- |
+-| advance_booking_days | 1 | 0–30 天。 |
+-| max_active_reservations | 1 | 1–10 条。 |
+-| checkin_open_before_minutes | 15 | 0–120 分钟。 |
+-| no_show_after_minutes | 15 | 1–120 分钟。 |
+-| late_cancel_minutes | 15 | 0–120 分钟。 |
+-| temp_leave_minutes | 30 | 固定 30 分钟。 |
+-| missed_checkout_merge | 2 | 1–10；每第 N 次 NO_CHECKOUT 计为一次警告，其余事件保留为抵消记录；业务口径待确认，见 Q-LOCAL-005。 |
+-| violation_window_days | 14 | 1–180 天。 |
+-| penalty_base_threshold | 3 | 1–50 次。 |
+-| penalty_threshold_step | 2 | 0–50 次。 |
+-| penalty_days_per_tier | 1 | 1–30 天/档。 |
+-| opening_earliest / opening_latest | 06:00 / 23:30 | opening_earliest 必须早于 opening_latest。 |
+-
+-### 临时离开、违规及通知
+-
+-- 当前默认临时离开期限为 30 分钟；成功返回可恢复 ACTIVE 状态。后台预约 worker 启动时先执行扫尾，再按默认 60 秒间隔处理超时释放、违规和提醒。
+-- 设置 reservation_sweep_interval_seconds=0 可关闭 worker；预约查询/操作路径仍会补做部分超时处理。运行失败会记录日志并继续下一轮。
+-- 预约终态、违规累计窗口、禁约阶梯、重复违规及门禁匹配规则均以当前 services 实现为准，正式业务结论需回填 Q/ADR 后再冻结。
+-- 通知为站内通知，使用业务幂等键降低后台重复扫描产生重复通知的风险。
+-
+-## 关键数据与权限设计
+-
+-| 数据对象 | 作用 | 重要约束 |
+-| --- | --- | --- |
+-| User / Role / Permission | 账号、角色和模块权限 | 学号唯一；账号禁用会撤销会话；角色权限矩阵定义于 backend/app/permissions.py。 |
+-| StudyRoom / Seat / OpeningSchedule / CalendarDay | 房间、座位、开放时段及特殊日期 | 座位编号在同一房间唯一；房间/座位有预约历史时限制删除。 |
+-| Reservation / ArrivalRecord | 预约状态与到达/结束事实 | 预约时间开始早于结束；活跃座位同一开始时刻有唯一索引；时间段重叠由业务写事务检查。 |
+-| ViolationRecord / Restriction / Appeal | 违规、禁约和申诉 | 违规及申诉与用户/预约关联；审核通过会归档相关违规并在条件满足时解除限制。 |
+-| Notification / AuditLog / LoginLog | 站内通知及操作/追溯 | 通知按用户隔离；管理写操作应留下审计记录。 |
+-| EntryExitRecord | 门禁事件追踪 | 仅存脱敏 keyed hash，不接收人脸或卡号；source_system + external_id 唯一。 |
+-
+-SQLite 连接启用外键、WAL 和 busy_timeout。数据库迁移由 Alembic 管理。权限采用模块/动作粒度；本人数据隔离仍需在接口查询中执行，不能只依赖角色权限码。
+-
+-## 实现限制与待确认
+-
+-1. Q-LOCAL-001 至 Q-LOCAL-006 解决并同步前，不将候选规则声明为冻结契约。
+-2. 当前 API 清单没有为每个错误定义稳定业务错误码；如果前端或外部调用方依赖错误码，应先另行评审并更新模式。
+-3. 门禁端点名为 mock，现有代码不构成真实校园门禁集成证明。
+-4. violations.record_violation 读取 missed_checkout_merge；默认值 2 时，NO_CHECKOUT 的第 1 次记为抵消记录，第 2 次计入一次警告，第 3 次重新成为抵消记录。test_br093_no_checkout_merge 覆盖该基础序列；自定义次数和累计窗口边界仍需补测，正式业务口径需由负责人确认后关闭 Q-LOCAL-005。
++# 智能自习室管理预约系统接口与关键设计说明书
++
++| 项目 | 内容 |
++|---|---|
++| 文档标识／版本 | IF-DESIGN-1.0／v1.0 |
++| 编制日期 | 2026-11-26 |
++| 团队 | 全网呼叫奶家人 |
++| 队长／需求与文档统筹 | 周俊博 |
++| 团队成员 | 周俊博、张东岩、方梓安 |
++| 输入架构基线 | ARCH-BL-1.0 |
++| 适用范围 | 已有系统接口契约、关键设计、实现差异及测试准备 |
++| 本地代码参照 | HEAD：671ca454a8fd4a69e0c7f619a5f540d277b930c0及2026-11-26工作区；存在未提交修改 |
++| 在线参照 | 2026-11-26读取的OpenAPI 3.1.0，应用study-room 0.1.0；51个路径、63个操作、53个组件模型 |
++
++## 1. 文档定位、依据与检查边界
++
++### 1.1 目的与阅读方法
++
++本说明书将需求中的业务动作落实为可供前后端对接、测试和交叉审查的接口契约，重点描述字段、权限、状态变化、失败副作用、事务、并发、幂等和异常恢复。项目主要功能已有实现，本文件是根据现有资料反向补齐的设计材料，不代表开发前已经完成相同设计或评审。
++
++第2～4章规定通用约定、追溯及响应结构；第5章细化关键业务契约和正常/失败/重复示例；第6章固定关键设计约束；第7章列明差异；第8章给出测试与责任。附录A逐项列出63个接口的方法、请求、响应和行为，附录B列出在线组件字段及约束，二者与正文共同组成接口契约，不可只按路径表对接。
++
++### 1.2 来源及可信度
++
++| 来源 | 用途 | 限制 |
++|---|---|---|
++| [软件需求规格说明书](软件需求规格说明书.md)，简称SRS | 业务规则、FR/BR、用例、权限及HD决定 | 不通过本文改写需求；残留冲突保留来源 |
++| [架构确认与决策记录](架构确认与决策记录.md) | 已有ADR与GAP整改约束 | 沿用原编号，不补造新的已接受决策 |
++| [架构基线](软件架构设计方案_基线版.md)、[讨论稿](软件架构设计方案_讨论稿.md) | 结构、状态、事务、DISC事项与质量要求 | 基线形成不等于全部实现达标 |
++| [在线接口页面](http://47.98.18.65/docs)、[OpenAPI定义](http://47.98.18.65/openapi.json) | 已部署服务声明的方法、路径、参数、模型和响应 | 自动生成声明不能证明业务正确，也不能完整表达校验器和事务 |
++| `backend/app/api/`、`schemas/`、`services/`、模型及前端调用 | 当前实现与输出字段 | 静态结论不等同运行结果 |
++| [教师指引](架构设计后确认与分阶段实现操作指引_学生版.md) | 接口契约、关键设计、证据和确认责任 | 按真实过程补齐，不伪造签署与测试 |
++| [GitHub Issues](https://github.com/dorian0326/study-room/issues?q=is%3Aissue) | 沿用已有任务规划 | 本轮不新建任务或以关闭状态替代验收 |
++
++本轮仅以GET读取`/docs`和`/openapi.json`，未向运行站点提交预约、认证、门禁、配置等业务请求。通过Python AST静态解析本地路由，确认本地63个业务操作的方法和路径与在线声明一致；这不证明远端提交版本、字段校验或数据库与本地完全相同。在线文档可继续变化，本次信息按读取日期定位。
++
++本轮未执行单元、接口、端到端、并发、性能或恢复测试。以下示例均为**合成设计示例／静态推导的预期**，不是现场抓包或测试通过记录。旧说明书中“缺少需求主版本”“真实门禁属于范围外”等结论不再继承。
++
++### 1.3 规范与现状的区分
++
++“设计约束”依据SRS和架构基线，表示必须达到的规则；“当前实现”表示代码中已经存在的行为；“差异”表示二者不一致或缺少验证。特别是空正文签到、无门禁记录主动返回、门禁代替扫码、乐观锁缺失、取消通知失败及边界竞争，均不因本文列出当前接口而获准改变需求。
++
++接口编号API-001～API-063按本次清单固定，同路径不同方法分别编号。TC-IF-001～018是本说明书新增的测试设计索引，不替代现有测试或任务编号，不表示已有同名自动测试函数。
++
++## 2. 通用协议、权限与错误约定
++
++### 2.1 请求与时间
++
++1. API统一以`/api`为前缀，普通请求与响应使用JSON。正文应发送`Content-Type: application/json`；无正文接口不应猜测字段。Excel响应另见API-063。
++2. 受保护接口使用`Authorization: Bearer <access_token>`；令牌为服务器会话凭证，不是JWT声明。不得在URL、样例证据或审计中保存真实密码、令牌与重置码。
++3. `integer`、`number`、`boolean`、`string`、`array<T>`分别表示整数、数值、布尔、字符串和数组；JSON使用true/false。类型转换现状依Pydantic，不额外承诺严格类型校验。
++4. 省略与null不同：模型字段“必填且可空”仍须出现，值允许null；“可省略”使用默认值。查询参数不发送可选值时应省略，不能以字符串`null`替代。
++5. 预约及门禁事件时间要求带时区，例如`2026-11-27T09:00:00+08:00`，服务端转换到Asia/Shanghai；`date`为`YYYY-MM-DD`。
++6. `/api/rooms`时间查询使用带时区完整datetime；`/api/seats`及详情则使用`date`加不带时区的本地`HH:MM[:SS]`，三项全有或全无。URL中的`+`需编码为`%2B`。不可把两组时间格式混用。
++7. 路径ID为整数；仅声明`integer`而未声明`gt=0`的路径参数不应被写成“框架保证正数”。不存在或归属不符按具体404处理。
++8. 不统一假设多余字段均被拒绝：ChangeSeatIn、CheckInIn、BusinessSettings显式forbid；部分其他输入模型沿用默认忽略。模型校验器里的跨字段规则由正文补齐。
++
++### 2.2 权限与对象范围
++
++| 权限或身份 | 单独角色可用范围 | 对象范围 |
++|---|---|---|
++| 公开 | 健康、注册、登录、凭重置码重置密码 | 不等于其他GET公开 |
++| CurrentUser | 三类已登录正常账户 | 违规、申诉、通知和门禁人工申请仍限本人 |
++| room:read | 用户、管理员、运维 | 公开资源信息，不含占用人隐私 |
++| reservation:own | 用户、管理员 | 本人预约；单独运维角色无此权限 |
++| room:manage／settings:manage／user:manage | 管理员 | 分别管理资源、参数、用户 |
++| violation:manage／appeal:manage | 管理员 | 全部相应业务记录，需审计 |
++| stats:read／data:export | 管理员 | 统计与导出分别授权 |
++| audit_log:read | 管理员、运维 | 操作审计 |
++| system_log:read | 运维 | 登录日志和运行状态 |
++| entry_exit:read／system:backup | 运维 | 门禁明细／备份；单独管理员不可读门禁 |
++
++角色可以组合，权限按角色集合计算。接口先检会话与账号可用性，再检模块权限和对象归属；替换预约、违规、通知ID不能越权。禁约与账号禁用不同：禁约阻止创建及换座，但允许取消已有预约；禁用账号在认证依赖被拒绝。部分CurrentUser入口并未要求reservation:own，此处如实记录，不把角色名称直接替换为权限检查。
++
++### 2.3 HTTP与错误体
++
++| 状态 | 当前典型含义 | 数据副作用 |
++|---|---|---|
++| 200／201 | 成功／创建；部分幂等重放也为201 | 按具体契约；200可能已执行状态变更 |
++| 204 | 成功无正文 | 客户端不可继续强制JSON解析 |
++| 400 | 原密码或重置码错误、自移除管理员/自禁用等 | 通常拒绝目标变更，不能省略具体错误 |
++| 401 | 缺少、无效、撤销或过期会话；登录凭据错误 | 登录失败仍写失败日志 |
++| 403 | 无模块权限、账号禁用或禁约 | 不能一律要求用户重新登录 |
++| 404 | 对象不存在、房间归属不符或本人范围不可见 | 不透露他人对象是否存在 |
++| 409 | 座位/状态/幂等键冲突、申诉过期或已处理等 | 超窗签到例外：可能提交失效与违规后返回409 |
++| 422 | 字段、时间、组合、确认或CSV等校验失败 | 框架拒绝时不进入业务；部分路由先补扫再失败，见下文 |
++| 429 | 登录失败阈值触发锁定 | 不能写成401；当前按时间窗口计失败数 |
++| 503 | 预约写事务中数据库锁忙/繁忙 | 返回Retry-After: 1；不代表所有管理接口统一有此映射 |
++| 500或其他未映射错误 | 未处理异常／数据库或文件故障 | 以事务边界判断，文件与审计不能假设原子 |
++
++当前没有全系统统一的业务错误码模型，以下三种结构均可能出现，不能给所有接口虚构`code`、`request_id`或`rule_id`：
++
++```json
++{"detail":"该座位在所选时段已被预约，请重新选择"}
++```
++
++```json
++{"detail":{"code":"invalid_credentials","message":"学号或密码错误"}}
++```
++
++```json
++{"detail":[{"type":"missing","loc":["body","seat_id"],"msg":"Field required","input":{}}]}
++```
++
++第三个是校验结构示意，具体缺失字段与错误上下文依模型而定。前端`api/client.js`兼容三种detail，204单独处理。当前客户端不通用暴露自定义请求头和响应头，创建可用正文request_key；不能声称已读取幂等重放头并自动处理所有重试。
++
++**副作用特别约定**：资源查询、历史、详情及换座部分路由先调用到期补扫；即使之后返回404/422，已经独立提交的到期处理可能保留。因此“失败不改变数据”默认仅指目标业务写事务，没有依据时不得扩大为全库完全不变。GET在当前实现也可能间接触发到期更新，须纳入审查。
++
++## 3. 业务动作、接口与责任追溯
++
++| 业务与依据 | 接口编号 | ADR／差异关联 | 提供／调用责任；交叉复核 |
++|---|---|---|---|
++| FR-001～007身份、密码、用户权限 | API-002～011 | ADR-01、权限矩阵 | 张东岩后端及认证页面；周俊博复核需求 |
++| FR-010～013房间、座位与状态 | API-031～033 | ADR-03/04、DISC-07 | 周俊博前后端；张东岩复核数据 |
++| FR-020～024创建换座取消；BR-050～052 | API-034～038、043 | ADR-02/03/10、DISC-01/06、GAP-A02/06/07 | 周俊博前后端；张东岩复核事务，方梓安复核纪律联动 |
++| FR-030～037扫码、超时、暂离和结束 | API-039～042、049～051及后台用例 | ADR-04/06、DISC-02～04、GAP-A05 | 周俊博负责扫码与未签释放，方梓安负责暂离结束门禁；双方对接，张东岩复核 |
++| FR-040～043违规、阶梯、申诉 | API-044～046、058～061 | ADR-07、GAP-A06 | 方梓安前后端；周俊博复核规则 |
++| FR-050～052站内通知、FR-060个人历史 | API-034、044～048 | ADR-05、GAP-A07 | 方梓安前后端；张东岩复核数据与权限 |
++| FR-070～073资源、开放时间和参数 | API-012～025、052～057 | ADR-08、GAP-A08/14 | 张东岩负责房间开放配置，方梓安负责座位；周俊博复核预约影响 |
++| 统计与Excel、隐私与审计 | API-062～063、026 | ADR-05/08、GAP-A10 | 方梓安负责报表，张东岩负责日志；交叉复核 |
++| FR-075、NFR-012等运维恢复 | API-001、026～030及CLI | ADR-09、DISC-05/09/10、GAP-A09～12 | 张东岩；周俊博、方梓安核对恢复业务 |
++
++沿用既有Issue #4～24、#36～38的业务规划，不创建替代任务体系。具体关联见架构基线§11.2；部分历史需求编号有残留，本文以SRS业务内容核对。接口提供方和前端调用方按上述职责协作，表中安排不表示已经完成双向签字。
++
++## 4. 输出结构与自动文档未覆盖部分
++
++### 4.1 预约输出的两种结构
++
++代码有两个同名ReservationOut，不能混用。本文分别命名为**R-CMD**与**R-FLOW**，仅是文档别名，不表示新增接口字段或修改代码。
++
++| 结构 | 适用接口 | 完整字段（冒号后为类型；?表示值可空） |
++|---|---|---|
++| R-CMD：`schemas/reservations.py::ReservationOut` | 创建、换座、签到、取消、当前列表元素、预约详情 | id:int、reservation_no:string、user_id:int、room_id:int、room_name:string、seat_id:int、seat_code:string、start_time:datetime、end_time:datetime、status:ReservationStatus、cancel_type:CancelType?、cancelled_at:datetime?、expire_reason:string?、arrived_at:datetime?、checkin_opens_at:datetime、checkin_closes_at:datetime |
++| R-FLOW：`schemas/workflows.py::ReservationOut` | 暂离、主动返回 | id:int、reservation_no:string、user_id:int、room_id:int、seat_id:int、start_time:datetime、end_time:datetime、status:ReservationStatus、created_at:datetime、cancelled_at:datetime?、cancel_reason:string?、temp_leave_at:datetime? |
++| R-HISTORY：ReservationHistoryOut | `GET /api/reservations`元素 | R-FLOW全部字段，加room_name:string、seat_code:string |
++
++R-CMD的所有字段在序列化结果中均定义，包括值为null的字段；R-FLOW的部分可空字段有默认值。附录B中的在线ReservationOut是R-FLOW，不能拿它描述创建返回。当前列表`GET …/current`按有效状态筛选，不与历史接口scope=current完全等价：后者还要求end_time≥now。
++
++R-CMD完整合成示例，其他章节若给少量字段，均标明为摘录：
++
++```json
++{
++  "id":101,"reservation_no":"SR20261126090000ABC123","user_id":1,
++  "room_id":2,"room_name":"示例自习室","seat_id":12,"seat_code":"A03",
++  "start_time":"2026-11-27T09:00:00+08:00","end_time":"2026-11-27T11:00:00+08:00",
++  "status":"RESERVED","cancel_type":null,"cancelled_at":null,"expire_reason":null,
++  "arrived_at":null,"checkin_opens_at":"2026-11-27T08:45:00+08:00",
++  "checkin_closes_at":"2026-11-27T09:15:00+08:00"
++}
++```
++
++### 4.2 资源及未声明响应的实际结构
++
++| 响应名 | 接口与字段 |
++|---|---|
++| Health | API-001：status:string、database:string、timezone:string、server_time:datetime字符串；健康检查执行SELECT 1，不证明所有功能正常 |
++| PublicRoom | API-031无时段：数组元素id/name/location?/floor?/capacity/facilities?/status/date/opening_hours；opening_hours元素open_time、close_time。字段类型见附录B对应基础类型，PublicRoom未完整暴露到在线组件 |
++| RoomWithSeats | API-031带时段：仅开放房间；PublicRoom字段加seats数组，元素id:int、code:string、zone_type、has_power/by_window/accessible:boolean、status:SeatStatus。不附用户身份，不等同/api/seats的全字段 |
++| PublicSeat | API-032数组／033单体：id/room_id:int、room_name/code:string、location/floor/facilities:string?、zone_type:ZoneType、has_power/by_window/accessible:boolean、status:SeatStatus、qr_payload:string（studyroom:seat:{id}） |
++| EndResult | API-042：ended_reservations:array<int>、duration_minutes:int；时长按当前到达/结束记录计算，不保证扣除暂离时长 |
++| ImportResult | API-057：created:int、updated:int、total:int |
++| GateResult | API-049：record_id:int、duplicate:boolean、sync_status:string、sync_delay_seconds:int、manual_appeal_required:boolean；reservation_id:int?在部分分支出现，重复分支可不含它 |
++| GateManualResult | API-050：record_id:int、status:string，当前为manual_review |
++| GateRecord | API-051数组元素：id:int、source_system/masked_user_key:string、record_type:EntryExitType、recorded_at/received_at:datetime、sync_status:string、sync_delay_seconds:int?、reservation_id:int?、manual_note:string? |
++| BackupInfo | API-028元素／029单体：name:string、size_bytes:int、created_at:number；created_at为文件mtime Unix秒数，不是ISO datetime |
++| UserPage | API-008：total:int、items:array<UserOut> |
++| AuditPage／LoginPage | API-026/027：total:int、items分别为array<AuditLogOut>／array<LoginLogOut> |
++| Monitor | API-030：uptime_seconds:int、database:{size_bytes:int,wal_bytes:int}、users:int、active_sessions:int、latest_backup:BackupInfo?、requests:{requests:int,by_status:object<string,int>,avg_ms:number,max_ms:number} |
++| Report | API-062：period:{start:date,end:date}、definition:{utilization:string,peak:string,violations:string}、utilization:{booked_hours:number,available_hours:number,rate:number}、reservation_count:int、booking_peaks:[{day:date,hour:int,reservations:int}]、violation_trends:[{day:date,type:string,count:int}] |
++| ExcelFile | API-063：XLSX二进制；Content-Type为application/vnd.openxmlformats-officedocument.spreadsheetml.sheet，Content-Disposition为attachment及日期文件名。不能按在线空JSON模型解析 |
++
++PublicRoom的id/capacity为int，name为string，status为RoomStatus，date为date；opening_hours为array<{open_time:time,close_time:time}>。其余标?的资源字段允许null。
++
++### 4.3 分页、排序和默认行为
++
++附录A逐接口列参数，这里固定关键差异，避免前端猜测：
++
++- 用户管理page默认1、size默认20上限100，按User.id升序；日志用page_no默认1、size默认50上限200，按日志id降序，时间过滤为[start,end)。
++- 个人历史无分页，start_time、id降序；当前预约列表按开始时间升序；个人违规按发生时间降序，个人申诉按创建时间降序。
++- 通知limit默认50、1～100，sent_at降序；管理员违规和申诉最多500条，分别按发生时间降序／创建时间升序；无通用分页游标。
++- 门禁limit默认100，代码钳制到1～500，并非越界必然422；received_at降序，sync_status是字符串过滤。
++- 房间列表按id升序，座位按room_id/code或指定房间code升序；开放时段按day_type/open_time，校历按日期升序，无分页。
++- 备份新到旧；统计无分页，默认截止今天、开始为截止前29天；最大日期差按代码为366天，含首尾，不把提示“一年”误写成固定365条日期。
++
++## 5. 关键业务接口契约与示例
++
++所有示例使用合成ID和时间，执行前须准备对应测试数据和固定服务端时钟。失败示例描述目标变更；前置到期补扫的独立副作用按§2.3另算。
++
++### 5.1 创建预约：API-035
++
++依据FR-020/023/024、UC-007、BR-001/010/011/050～052、ADR-02/03/10；测试TC-IF-003/004。调用者需reservation:own，服务端复核正常账号及所有有效禁约。
++
++正文必填start_time、end_time；选择seat_id，或同时room_id＋zone_type。附带seat_id及room/zone时，当前内部ReservationIn以seat_id为准并清空提示值。起止带时区、同日、start<end，开始不早于now，最多提前1天，完整落于合并开放窗口，无本人或座位重叠。时段不强制30分钟粒度；不是按max_active_reservations实现独立日次数额度。
++
++请求头Idempotency-Key可省略，长度1～64且仅字母数字及`._:-`；正文request_key可省略/null，长度8～64。头部优先，正文键按`SHA256(user_id + ':' + request_key)`存储；两种都没有时当前允许创建，重试无法保证去重。指纹包含用户、座位/房间区域及起止时间，不绑定不可变响应快照。
++
++| 场景 | 合成输入与前置 | 当前预期响应／后置 |
++|---|---|---|
++| 正常 | 用户无禁约，座位12开放；正文见下方，头部Idempotency-Key: reserve-demo-001 | 201，R-CMD；预约、到达占位、确认通知及座位同步同事务提交 |
++| 业务失败 | 座位12已有09:30～10:30有效预约，再申请09:00～11:00 | 409，detail为“该座位在所选时段已被预约，请重新选择”；无新预约 |
++| 同键重复 | 同用户、头部键及指纹完全相同 | 200，Idempotent-Replayed:true，返回同一预约当前R-CMD；正文键重放则保持201 |
++| 同键异载荷 | 保留键、seat_id改为13 | 409，“幂等键已被不同请求使用，请重新提交”；不生成第二预约 |
++| 锁忙 | 写锁超时，命中预约封装异常映射 | 503及Retry-After:1；以相同键稍后重试，不生成新意图 |
++
++```json
++{"seat_id":12,"start_time":"2026-11-27T09:00:00+08:00","end_time":"2026-11-27T11:00:00+08:00","request_key":"reserve-demo-001"}
++```
++
++成功完整结构见R-CMD示例。跨用户复用头部键返回409，不暴露原单。400/401/403/404/422等按实际分支判断，不把所有失败都列409。当前无version输入或条件更新，不宣称满足BR-051。
++
++### 5.2 换座：API-038
++
++依据FR-021、HD-36、ADR-03；TC-IF-005。正文仅seat_id:int>0，额外字段拒绝，时间和日期不能变。本人RESERVED且未超窗、无禁约，新座位可用并通过重叠检查；事务内更新room_id/seat_id及原新座位状态，失败保留原预约。无独立命令幂等键或version。
++
++| 场景 | 输入／条件 | 当前预期 |
++|---|---|---|
++| 正常 | PATCH /api/reservations/101/seat，正文{"seat_id":13} | 200 R-CMD，seat_id=13，起止与预约号保持 |
++| 业务失败 | 座位13冲突 | 409区间冲突，原座位12不丢失；传start_time额外字段为422 |
++| 重复 | 同一RESERVED预约再换到13 | 仍重新校验；资源规则未变时200当前结果，不新建预约。已签到或规则改变可409，不保证响应缓存 |
++
++当前换座只更新预约座位及展示，需额外核对已预建ArrivalRecord.seat_id是否同步；不把仅Reservation更新等同所有关联事实已一致。
++
++### 5.3 取消：API-043
++
++依据FR-022、UC-009、HD-20/25/27/40；TC-IF-006。confirm是**查询参数**，bool，默认true，非正文；false返回422。当前只允许本人RESERVED且now<start；已CANCELLED直接返回R-CMD。禁约不阻止取消；已签到改用结束使用。
++
++| 场景 | 输入／条件 | 当前预期 |
++|---|---|---|
++| 正常 | POST /api/reservations/101/cancel?confirm=true；距离开始20分钟 | 200 R-CMD，CANCELLED/normal，取消通知、释放；无迟取消违规 |
++| 临近取消 | 距开始10分钟 | 200，CANCELLED/late，生成迟取消事实；现有阶梯触发缺口见GAP-A06 |
++| 业务失败 | now≥start或原状态ACTIVE | 409，“预约已开始，未签到将按超窗规则处理”或状态提示；confirm=false为422 |
++| 重复 | 已CANCELLED后再提交相同取消 | 200当前R-CMD，不重复迟取消；其他终态不承诺相同结果 |
++| 通知失败 | 注入站内通知flush失败 | 当前同事务回滚；与SRS“取消仍生效、通知重试”不同，不能写成符合 |
++
++SRS UC-009验收标准有“禁止窗口内拒绝”残留，主流程及HD-20/25为允许临近取消记违规。本文保留冲突，不自行扩展为开始后可取消。失败示例JSON形态为`{"detail":"预约已开始，未签到将按超窗规则处理"}`。
++
++### 5.4 扫码签到：API-039
++
++依据FR-030/031、UC-010、HD-43、ADR-04；TC-IF-007/008。正文二选一：`{"seat_id":12}`，或`{"room_id":2,"seat_code":"A03"}`；标识组合必须完整且互斥。带正文才校验座位匹配，空对象无有效组合为422；当前省略正文或null可手动签到，是实现偏差，不作为规范用户路径。
++
++本人预约、正确座位、服务器窗口内、未结束且无其他ACTIVE/TEMP_LEAVE使用者，转ACTIVE并写ArrivalRecord。默认窗口08:45～09:15对应09:00开始预约，包含两端；后台整秒差异另列。
++
++| 场景 | 输入／条件 | 当前预期 |
++|---|---|---|
++| 正常 | POST /api/reservations/101/check-in，{"seat_id":12}，now=08:45 | 200 R-CMD，ACTIVE及arrived_at；arrival_method=qr |
++| 业务失败 | 错扫13 | 409，“扫码座位与本人预约不一致”；不签到 |
++| 超窗 | now=09:15:01，预约仍RESERVED | 当前先提交EXPIRED、未到场事实、释放，再返回409“签到窗口已关闭，预约已失效并记录1次违规” |
++| 重复 | ACTIVE预约再次提交正确座位 | 200原当前状态，不重置到达；重复时先校验正文，错座仍409 |
++
++不能笼统规定“409全回滚”；这里需要前端刷新结果以读取已提交失效。截止整秒同时扫尾可能提前失效，属于已知待修差异，不作为正确预期。
++
++### 5.5 暂离与返回：API-040/041
++
++依据FR-035～037、HD-15、ADR-04/06；TC-IF-009/010。两接口均无正文，返回R-FLOW，不含R-CMD全部字段。
++
++| 操作／场景 | 输入／条件 | 当前预期与规范边界 |
++|---|---|---|
++| 暂离正常 | POST …/101/temporary-leave，原ACTIVE、尚未结束 | 200，TEMP_LEAVE、temp_leave_at=now，waiting及暂离通知同事务 |
++| 暂离失败 | RESERVED或时段已结束 | 409“只有正在使用的预约可以临时离开”或已结束提示 |
++| 暂离重复 | 已TEMP_LEAVE再次提交 | 409，不重启30分钟计时；不称为200幂等重放 |
++| 返回正常（现状） | POST …/101/return，waiting、30分钟内且未结束 | 200 R-FLOW，ACTIVE、returned及通知；当前不检查门禁记录 |
++| 返回失败 | 超过30分钟或预约已结束 | 409，不恢复占用 |
++| 返回重复 | 已恢复ACTIVE后重提 | 409“该预约没有待返回的临时离开记录” |
++
++基线要求有效重新入馆证据，当前主动返回仅凭本人操作不能证明真实返回。将其作为降级需另有触发与审计依据，本文不把现状自动合法化。恰好暂离截止时刻和预约结束时刻分别对齐门禁、返回与扫尾测试。
++
++### 5.6 结束连续使用：API-042
++
++依据FR-032/034、HD-24/29；TC-IF-011。正文`{"confirm":true}`必填；false或缺失分别为业务422／框架422。本人起始段须ACTIVE/TEMP_LEAVE，暂离已超时不能借结束绕过处理。
++
++同用户、同座位、下一段start=上一段end的有效预约构成向后连续链。当前循环对RESERVED或尚未开始段置CANCELLED并通知，已开始使用段置COMPLETED并写结束事实；一次事务释放整链。
++
++| 场景 | 输入／条件 | 当前预期 |
++|---|---|---|
++| 正常 | POST …/101/end，{"confirm":true}；101使用中、102为相邻后续段 | 200，示例{"ended_reservations":[101,102],"duration_minutes":60}；60是合成数据下预期，非测量结果 |
++| 业务失败 | 起始段RESERVED、已完成或暂离超过期限 | 409，目标不结束；confirm=false为422“结束使用前必须明确确认” |
++| 重复 | 同一已COMPLETED起始段再次结束 | 409“该预约当前不能结束使用”，不重复通知 |
++
++当前累计分钟按到达时刻至min(now,end)求和取整，并非真实在座时长，不保证扣除暂离；不应与统计报表的预约时长混用。
++
++### 5.7 门禁事件与人工核验：API-049/050
++
++依据HD-15/16/30/31/52、NFR-013/014、ADR-06；TC-IF-010/017。mock入口要求entry_exit:read，不是公开设备入口。正文external_id、masked_user_key、record_type、recorded_at必填；source_system默认mock-gate；reservation_id可选。HMAC密钥不作为请求字段。
++
++| 操作／场景 | 合成输入／条件 | 当前预期 |
++|---|---|---|
++| mock正常 | external_id=gate-demo-001，source_system=mock-gate，record_type=entry，事件时间在有效窗口，脱敏键匹配 | 200 GateResult，duplicate=false、sync_status=synced；状态变化按当前代码，门禁直接签到偏差另列 |
++| mock业务异常 | 事件延迟301秒 | 仍200，sync_status=late、manual_appeal_required=true，保留事件，不自动改预约；不是HTTP失败 |
++| mock无法匹配 | 身份或预约/状态不匹配 | 200 unmatched及人工核验提示，不复活终态 |
++| mock重复 | 同source_system＋external_id原样重提 | 200 duplicate=true，返回首次同步信息，不重写业务；当前不校验重复载荷指纹 |
++| 人工申请正常 | POST /api/ops/entry-exit/manual-appeals，{"record_type":"exit","reason":"门禁故障需要人工核验","reservation_id":101} | CurrentUser本人范围；200，{"record_id":501,"status":"manual_review"}，记录及通知 |
++| 人工申请失败 | 指定他人预约 | 404“预约不存在”；不创建申请 |
++| 人工申请重复 | 同一正文再次提交 | 当前新建另一记录和通知，无请求键；不保证去重 |
++
++masked_user_key字段只校验16～64字符，不等于已经校验为真实64位HMAC十六进制格式。source/external重复而载荷改变仍返回首次结果，调用方不能借重放覆盖事件。当前未见未来事件时间的充分拒绝逻辑，应纳入负向测试。人工申请接口只留存待核验事件，不代表已有完整处理闭环或自动豁免处罚。
++
++### 5.8 管理维护：API-016/019/020/054/056
++
++依据UC-102、BR-060～065、HD-23、ADR-08；TC-IF-013。调用者room:manage。关闭房间、调整/删除开放时段、座位置maintenance时处理未来RESERVED，取消原因、通知和审计同用例事务；已签到不立即中断。未来按当前实现为start_time>now，不包含等于now。
++
++| 场景 | 输入／条件 | 当前预期 |
++|---|---|---|
++| 座位维护正常 | PATCH /api/admin/rooms/2/seats/12/status，{"status":"maintenance","reason":"座位电源维修"} | 200 SeatStatusOut，cancelled_reservations为本次取消数；只通知、无补偿和用户违规 |
++| 业务失败 | 路径room_id与seat归属不符 | 404“座位不存在”；不改变目标座位 |
++| 重复维护 | maintenance状态再提交同命令 | 当前200并重查未来RESERVED；已取消不重复取消/通知，但可能新增审计；不缓存原取消数 |
++| 房间关闭正常／重复 | PATCH …/rooms/2/status，{"status":"closed"} | 200 RoomOut；首次open→closed时取消未来预约；重复closed不重新执行同一转换，仍可记审计 |
++| 时段缩短／失败／重复 | PUT …/schedules/3，新时段合法／超开放边界／相同合法时段重提 | 200 ScheduleOut并处理冲突／422／200重新核对，不承诺响应缓存 |
++| 删除时段重复 | DELETE …/schedules/3后再删 | 首次204、再次404，不按“DELETE一定同响应”描述 |
++
++专用座位状态接口与批量导入使用立即写事务；完整PUT座位虽然也可触发维护取消，当前采用普通事务，不能声称全部入口锁序一致。closed/disabled和删除等语义按GAP-A14逐项验证，不因有status字段便认为已覆盖维护联动。
++
++### 5.9 座位CSV导入：API-057
++
++依据FR-071及座位管理需求；TC-IF-013。正文为JSON字符串content，长度1～2,000,000，**不是multipart上传**。CSV必须含code列，布尔列接受true/false、1/0、yes/no（不区分大小写）；区域和状态按枚举。先解析、校验所有行及重复code，再在事务内按房间＋code新增或更新。
++
++| 场景 | 合成输入／条件 | 当前预期 |
++|---|---|---|
++| 正常 | {"content":"code,zone_type,has_power\nA03,quiet,true\nA04,quiet,false"} | 200 ImportResult；示例首次为created=2、updated=0、total=2 |
++| 业务失败 | CSV两行code均A03，或布尔字段非法 | 422且不部分导入；指出行号或重复编号 |
++| 重复 | 同一CSV再次提交 | 当前按code更新，示例created=0、updated=2、total=2，可更新状态时间和审计；不新增重复座位 |
++
++省略列按SeatIn默认值填充，更新已有座位时会覆盖对应字段，不是“只更新CSV出现列”。导入可触发maintenance取消，不修改历史预约归属；状态变化与并发预约的规则仍需验证。
++
++### 5.10 申诉提交与审核：API-046/061
++
++依据FR-040～043、UC-104、BR-098、ADR-07；TC-IF-012。提交为CurrentUser本人违规，reason长5～4000、evidence可空且≤8000；当前服务以发生后7天为期限，moment>deadline才拒绝。管理员审核需appeal:manage，result仅approved/rejected，review_comment长2～4000；不能声称有降级等未实现选项。
++
++| 场景 | 合成输入／条件 | 当前预期 |
++|---|---|---|
++| 提交正常 | POST /api/appeals，{"violation_id":201,"reason":"门禁记录延迟导致误判","evidence":"申请核对当时入馆记录"} | 201 AppealOut，违规appeal_status=PENDING及申诉同事务 |
++| 提交失败 | 超7天或非本人 | 409期限错误／404“违规记录不存在” |
++| 提交重复 | 同违规已有pending申诉 | 409“该违规已有待审核申诉”；已处理后能否重提按当前期限/状态逻辑另测，不宣称永久唯一 |
++| 审核正常 | PATCH /api/admin/appeals/301，{"result":"approved","review_comment":"核验后确认记录延迟"} | 200 AppealOut；归档对应违规、解除关联ACTIVE限制、通知和审计同事务 |
++| 审核失败 | 申诉不存在或已处理 | 404／409；不改其他限制 |
++| 审核重复 | 相同结论再次提交 | 409“该申诉已处理”，不当成200重放 |
++
++同用户多项限制不得全部解除。SRS对审核处理语义如有更广要求，保留与当前二选一的差距。手工登记违规API-059在关联预约和类型相同时会复用纪律记录，但无预约关联时重复可能新增；普通事务并发去重能力不能凭顺序查询宣称完成。
++
++### 5.11 认证、账号管理与其他写操作
++
++依据FR-001～007、ADR-01及权限矩阵；TC-IF-001/002。注册Schema长度只是第一层，服务默认学号6～20位字母数字，密码至少8位且含字母数字，并受bcrypt字节上限；不能把password最小长度1当成最终策略。登录失败提示统一，当前按锁定时间窗口累计失败日志，不应仅凭注释写成“成功后重置连续失败计数”。
++
++| 接口 | 正常输入／结果 | 业务失败 | 重复请求 |
++|---|---|---|---|
++| API-002注册 | 合成学号20260001、姓名测试用户、密码Study1234；201 UserOut | 学号格式/弱密码422、已有学号409 | 相同学号409，不幂等返回旧账号 |
++| API-003登录 | 学号密码正确，200 LoginOut，默认expires_in为会话秒数 | 错误401对象detail；禁用403；锁定429 | 可新建多个会话，无登录请求去重 |
++| API-004注销 | 受保护POST无正文，204并撤销当前会话 | 无效会话401 | 同令牌再调用401；已达到退出效果不代表相同HTTP响应 |
++| API-006改密 | {"old_password":"Study1234","new_password":"NewStudy5678"}，204，撤销本人会话 | 原密码400/wrong_password、弱密码422 | 旧令牌已撤销通常401，不自动重试 |
++| API-007重置 | 学号、管理员签发码、新密码；204且旧会话撤销 | 无效/过期/已用码400/invalid_reset_code | 同码再次400，不重用凭证 |
++| API-009角色 | {"roles":["user","admin"]}，200 UserOut | 自移除管理员400；目标404 | 相同集合可200、可新增审计，无全局版本检查 |
++| API-010状态 | {"status":"disabled"}，200并撤销目标会话 | 自禁用400；目标404 | 同状态可200及审计，不新增账号 |
++| API-011签发重置码 | 无正文，200 ResetCodeOut，默认30分钟 | 用户404 | 再签新码并使旧未用码失效；返回秘密不能公开记日志 |
++| API-013新建房间／API-053新建座位 | 合法RoomIn／SeatIn；201对应对象 | 名称或房间内code重复409 | 相同唯一名称/code通常409 |
++| API-014/054完整更新 | 完整模型含默认字段，200 | 目标404、唯一冲突409 | 同值可成功并记审计；默认值可能覆盖省略字段 |
++| API-018创建开放时段 | 合法ScheduleIn，201 | 跨零点/超开放边界422、房间404 | 当前未见业务唯一去重，重复可创建重叠规则 |
++| API-022校历upsert | day=2026-11-27且正文同日期、holiday；200 | 日期不一致或非holiday/exam_week为422 | 同日期更新，可新增审计；当前未联动取消既有预约 |
++| API-025参数 | BusinessSettings值合法，200 | 额外字段、范围或最早≥最晚422 | 同值通常不新增参数变化审计；省略字段会回到模型默认值 |
++| API-015/023/055删除 | 无历史依赖、存在对象，204 | 对象404；房间/座位有历史409 | 首次204后再次404 |
++| API-048通知已读 | 本人ID，无正文，200 NotificationOut | 非本人404 | 200，保持is_read=true |
++| API-059手工违规 | user_id、type、description，可选reservation_id；201 | 用户或本人关联预约404 | 有关联预约同类型复用；无关联可新增，无通用请求键 |
++| API-029备份 | 无正文，201 BackupInfo并尝试审计 | 不支持文件型SQLite409；文件故障不保证统一映射 | 每次新备份，不幂等；审计失败可能已产生文件 |
++
++上述示例中的学号、密码仅为合成测试输入，不是真实账号；不得提交到运行站点创建用户。附录A/B提供各接口精确字段、默认与枚举，本节补足其业务正常/失败/重复行为。
++
++### 5.12 统计与文件下载：API-062/063
++
++依据统计导出需求、NFR-011/014；TC-IF-014/015。start/end为可选date，含首尾；默认end为服务端今天，start=end−29天，要求start≤end，代码日期差≤366天。
++
++当前分子为ACTIVE/TEMP_LEAVE/COMPLETED/TIMED_OUT预约的区间裁剪时长，不是实际入座时长；TIMED_OUT中可能包括未声明离馆或暂离超时。分母按当前开放房间、当前非维护/关闭/停用座位及匹配开放规则累加，没有历史资源快照，重叠开放规则也未按查询服务方式合并，因此历史利用率存在重算口径风险。高峰按开始日期小时统计所有预约记录，趋势按违规发生日期类型统计记录，不等于有效警告次数。
++
++正常GET返回Report；日期倒置为422；重复GET按当前数据重新计算，不能保证快照一致。导出同口径XLSX三表（利用率概览、预约高峰、违规趋势），流式响应和附件头；前端应以Blob接收，不能直接使用当前统一JSON客户端当作文件下载器。敏感导出的专用访问审计缺口沿用GAP-A10。
++
++## 6. 关键详细设计
++
++### 6.1 状态与时间不变量
++
++预约有效状态为RESERVED、ACTIVE、TEMP_LEAVE；终态COMPLETED、CANCELLED、ADMIN_CANCELLED、EXPIRED、TIMED_OUT不再占用。核心转换：创建→RESERVED；扫码→ACTIVE；暂离→TEMP_LEAVE；有效入馆返回→ACTIVE；主动结束→COMPLETED及连续后续段取消；取消→CANCELLED；维护→ADMIN_CANCELLED；未到场→EXPIRED；未签退/暂离超时/未声明离馆→TIMED_OUT。
++
++每次转换在写事务内重读当前状态与服务端时间，不能仅按页面显示判断。本人归属与禁约检查按用例分别执行；取消不检查禁约。重复命令按第5章，不使用统一“重复总返回200”的虚构规则。
++
++```mermaid
++stateDiagram-v2
++    [*] --> RESERVED: 创建
++    RESERVED --> ACTIVE: 扫码或编号回退
++    RESERVED --> CANCELLED: 开始前取消
++    RESERVED --> EXPIRED: 超窗未签到
++    RESERVED --> ADMIN_CANCELLED: 未来预约维护取消
++    ACTIVE --> TEMP_LEAVE: 声明暂离
++    TEMP_LEAVE --> ACTIVE: 有效入馆返回
++    ACTIVE --> COMPLETED: 确认结束
++    TEMP_LEAVE --> COMPLETED: 未超时确认结束
++    ACTIVE --> TIMED_OUT: 未声明离馆或未结束使用
++    TEMP_LEAVE --> TIMED_OUT: 暂离超时或时段结束
++```
++
++图为规范路径，空正文签到、门禁代扫码与主动return现状不混入规范图。默认签到闭区间与暂离截止的边界必须跨所有入口一致；现有后台阈值差异保留为缺陷。日期和参数发生改变时不能无快照便承诺历史规则不变。
++
++### 6.2 数据约束与并发顺序
++
++| 约束 | 实现／设计职责 | 局限 |
++|---|---|---|
++| 预约start<end | Schema及数据库CHECK | 同日、开放窗口还需业务校验 |
++| 同座同起点有效预约唯一 | seat_id＋start_time部分唯一索引 | 不排斥不同起点重叠 |
++| 完整时段排他 | 写锁内查询有效预约区间交叉 | 必须真实数据库多连接验证 |
++| 本人时段单座 | 写锁内按user_id查询交叉 | 不等于日次数/小时额度 |
++| 创建去重 | 可空唯一idempotency_key＋请求指纹 | 无键不能保证重试去重，头部键全库唯一 |
++| 门禁去重 | source_system＋external_id唯一 | 重复载荷无指纹核对 |
++| 通知去重 | 事件键唯一与同事务查询 | 部分时间型事件键不能替代命令级去重 |
++| 到达记录 | reservation_id外键、业务一般一条 | 当前无reservation_id唯一约束，需检查重复和换座同步 |
++| 违规去重 | 预约＋类型业务查询 | 多入口/普通事务不能直接视为数据库唯一保证 |
++
++核心预约顺序为：取得立即写事务→读用户和服务端时间→适用补扫/幂等检查→资格、开放和冲突→写事实→通知/相关审计→提交。重叠条件`existing.start < new.end AND existing.end > new.start`，相邻区间不冲突。业务独立Session不升级认证读事务。
++
++SQLite是数据库级写锁方案，没有按座位行加锁的既有实现，也没有Redis锁。普通管理事务与立即写事务并存，不能描述为所有接口遵守同一细粒度锁序。SRS要求的乐观版本尚未实现，后续设计应明确版本对象及`WHERE id=:id AND version=:old_version`条件更新，冲突409；该拟补约束不冒充现有请求字段。
++
++### 6.3 原子性、失败与通知补偿
++
++```mermaid
++sequenceDiagram
++    participant C as 调用方
++    participant A as 接口与权限
++    participant S as 业务用例
++    participant D as SQLite
++    C->>A: 命令与会话/适用请求键
++    A->>S: 已验证身份与输入
++    S->>D: BEGIN IMMEDIATE或明确普通事务
++    S->>D: 重读状态、资格、冲突
++    alt 正常业务写入
++        S->>D: 主事实及关联记录
++        S->>D: 通知与适用审计
++        S->>D: COMMIT
++        S-->>C: 成功
++    else 写入异常
++        S->>D: ROLLBACK
++        S-->>C: 失败，说明目标是否变化
++    end
++```
++
++当前通知直接flush，大多数与业务同事务；通知异常可能导致业务回滚。SRS UC-009要求取消仍生效且通知重试，因此“通知失败不影响取消”是**待落实设计约束**，不是上图已实现行为。后续可通过同库持久待补记录等方案保障可恢复投递，具体方案需单独设计，不在本轮增加表或消息中间件。
++
++超窗签到则先提交EXPIRED等事实再抛409，是明确的业务失败提交例外。查询前补扫和备份文件/审计分离是另外两类边界，测试分别核对，不统一套“非2xx就全回滚”。
++
++### 6.4 后台扫尾与恢复
++
++预约后台默认60秒，启动后执行扫尾、失败记录日志并下轮重试；请求路径expire_due只补部分未签到，不代替完整暂离、提醒和归档。默认备份与日志清理间隔0，即不启用。服务重启可能积压任务，合法状态条件与稳定事件键应保证补扫不重复处罚；需真实竞争验证。
++
++当前expire_due/签到使用严格大于窗口后缘，full_sweep按小于等于截止阈值筛选，整秒可竞争；同时存在预约内_record_violation与discipline.record_violation，前者未完整统一处罚/通知。修正前不能因为数据库有记录便宣布阶梯正确。
++
++恢复仅通过停服CLI，先留当前库、检查目标完整性及迁移兼容、恢复、逐笔对账、重启补扫；没有网页在线恢复接口。在线一致快照不证明RPO=0，文件生成与审计非原子，恢复流程与故障模型按架构基线执行。
++
++### 6.5 配置生效、审计与隐私
++
++BusinessSettings是13项字段模型，PUT省略字段会用默认值，不是PATCH；advance_booking_days可接受到30但创建仍按本期上限1天裁剪，temp_leave_minutes只能30，max_active_reservations不等于已执行独立数量额度。修改参数可能改变旧预约当前计算的窗口，未有PolicyVersion/快照，不能声称历史参数冻结。
++
++校历更新、参数变化与开放时段编辑触发的预约影响不同，不能仅凭同属“配置”便声称全部自动取消冲突预约。普通参数同值更新未发生变化时不新增变化审计；门禁读取、导出、到期清理及恢复记录仍需补齐覆盖。
++
++日志按保留期可清理且主机有文件权限者仍可影响SQLite，不能将追加式接口称为密码学不可篡改。门禁expires_at存在不等于已自动清理；日志清理仅删AuditLog/LoginLog。不得记录真实密码、会话、重置码、人脸、卡号或原始敏感请求。
++
++## 7. 线上声明、现状与基线差异
++
++| 事项 | 已知来源及事实 | 文档处置／验证出口 |
++|---|---|---|
++| OpenAPI响应不完整 | 创建、资源、门禁、结束等响应Schema为空；XLSX也未正确表达文件 | §4用源码补结构，附录保留“线上未定型”，不自行声称线上声明完整 |
++| 自定义校验不可见 | seat/zone组合、签到二选一、同日、时区与校历类别等在校验器 | 正文明确组合和失败，附录字段表不能单独使用 |
++| DISC-01／GAP-A01 | BR-051乐观版本与写锁现状不同 | 沿用基线，不给当前接口新增虚构version参数 |
++| DISC-02 | 模拟事件接收不等于30秒真实轮询、连续失败检测和恢复 | 真实联调与模拟分开，当前人工申请也不等于已完成审核闭环 |
++| DISC-03/04、GAP-A03/04 | 主动return、空正文签到、门禁直接ACTIVE | 现状可追溯，规范仍按入馆证据与扫码，不自动批准替代 |
++| DISC-06／GAP-A05 | 取消需求旧验收文字、开始时刻规则、扫尾整秒阈值 | 分别列来源，不以源码决定业务预期 |
++| GAP-A06 | 两条违规路径处罚与通知不统一 | 第3次迟取消、两类未到场入口重点对账 |
++| GAP-A07 | 通知同事务回滚与取消不阻塞要求不同 | 注入失败，验证业务成功及持久补偿设计；当前缺口不关闭 |
++| GAP-A08 | 无历史规则版本 | 参数前后旧预约回归，明确未来方案而不冒充已实现 |
++| GAP-A09/10/11 | 到期清理、敏感读取/导出审计覆盖及不可篡改边界 | 逐动作检查清理与访问记录 |
++| GAP-A12／DISC-05/10 | 快照与RPO=0、性能/长期监控证据不足 | 不以接口可读、备份存在或均值推导达标 |
++| GAP-A13/14 | 到达记录无唯一约束、换座关联待核，维护多个入口锁不同 | 一对多物理事实与业务一条预期分开；换座、维护/停用/导入分别验证 |
++| 本次补充线索 | 门禁未来时间及同键异载荷、手工违规并发、配置联动、报表历史口径 | 仅登记审查/测试关注点，不新设已接受ADR，不断言已运行复现 |
++
++## 8. 测试设计、责任与交付检查
++
++### 8.1 测试索引
++
++| 设计编号 | 关联接口／设计 | 最小正常、边界、异常与副作用核查 | 既有测试线索／责任 |
++|---|---|---|---|
++| TC-IF-001 | API-002～007 | 注册密码策略、登录错误/锁定、撤销与一次性重置码 | test_auth.py；张东岩 |
++| TC-IF-002 | 全部受保护接口、API-008～011 | 三角色及双用户替换ID，禁用/禁约区别，管理员门禁拒绝 | test_permissions.py；张东岩，方梓安复核 |
++| TC-IF-003 | API-031～038 | 查询两种时间格式、seat/zone、开放与相邻/交叉区间、换座关联 | test_reservations.py、units相关文件；周俊博 |
++| TC-IF-004 | API-035、并发约束 | 文件SQLite多连接抢同座/本人、同键重试、异载荷及锁忙 | test_reservations.py、units/test_concurrency_idempotency.py；周俊博、张东岩 |
++| TC-IF-005 | API-038 | 只改座位、冲突回滚、原新状态与ArrivalRecord.seat_id一致性 | units/test_change_seat.py；周俊博 |
++| TC-IF-006 | API-043 | 15分钟±1秒、开始时刻、重复、禁约取消、取消与未到场互斥 | units/test_cancel_reservation.py；周俊博，方梓安复核 |
++| TC-IF-007 | API-039 | 两端±1秒、错座、重复、空正文、已结束、上一位仍使用 | units/test_checkin_expiry.py；周俊博 |
++| TC-IF-008 | API-039及双扫尾 | 截止整秒竞争、异常409后数据库已提交、两条违规路径 | test_gaps.py、test_assigned_workflows.py；周俊博、方梓安 |
++| TC-IF-009 | API-040/041 | 暂离重复不重置、30分钟边界、结束上限、无门禁return差异 | test_assigned_workflows.py；方梓安 |
++| TC-IF-010 | API-049～051 | 重复/迟到/乱序/未来时间、未匹配、人工申请重复及隐私 | test_assigned_workflows.py；方梓安，张东岩复核 |
++| TC-IF-011 | API-042 | 显式确认、连续与非连续链、后续释放、重复、超时绕过 | test_assigned_workflows.py；方梓安 |
++| TC-IF-012 | API-044～046、058～061 | 3/5/7次、折算、14天、7天两端、并发审核、单限制解除 | test_assigned_workflows.py、test_gaps.py；方梓安 |
++| TC-IF-013 | API-012～025、052～057 | 维护三入口竞争、CSV全量失败、重复、默认覆盖、配置联动 | test_admin_config.py、test_assigned_workflows.py；张东岩、方梓安 |
++| TC-IF-014 | API-062/063 | 时间范围、分子分母、重叠规则、历史配置、XLSX类型与内容 | test_assigned_workflows.py；方梓安 |
++| TC-IF-015 | API-026/027/048/051/063 | 分页边界、本人已读、读取与导出审计、到期清理 | test_logs.py、test_permissions.py；张东岩、方梓安 |
++| TC-IF-016 | 关键写事务 | 预约/通知/审计中途故障注入，确认各事务与补扫副作用 | test_models.py、test_gaps.py；张东岩统筹 |
++| TC-IF-017 | API-001/028～030、CLI与后台 | 文件失败、审计失败、恢复对账、停机补扫、多进程前验证 | test_backup_monitoring.py、test_health.py；张东岩 |
++| TC-IF-018 | 接口清单与Schemas | 本地/线上方法路径、模型字段、空响应、错误声明与调用方差异 | 本次静态检查已比对方法路径；字段/运行仍需复核；全组 |
++
++以上是设计与测试线索，不声称现有测试已经覆盖表内全部场景。本轮未运行测试，TC-IF-001～017状态均为未执行；TC-IF-018仅完成63个方法路径的静态集合比对，不代表接口测试通过。测试预期应来自SRS/基线和明确业务确认，不能仅从当前有缺口的实现反推。
++
++### 8.2 责任与证据
++
++周俊博维护需求、接口索引及预约核心；张东岩负责身份、模型、配置、运维和测试整合；方梓安负责履约门禁、纪律通知、座位与统计。前后端按同一契约交叉核对，涉及其他成员模块时共同确认，实际复核日期与结果另据实记录。
++
++证据需包含代码版本与未提交差异、接口/测试编号、环境、合成账号、操作命令、原始输出、数据库终态、未执行原因与审查结论。复用现有docs/evidence及GitHub任务，不预填不存在的结果文件，不向运行系统做破坏性或写入测试。
++
++本次只更新本说明书；不修改代码、需求、架构文件、测试预期、Issue或运行数据库。线上仅做文档读取，没有保存真实业务凭证。修改共享契约、需求或数据库约束时，先记录影响并按已有Q/ADR和基线变更流程处理。
++
++## 附录A：63个接口的逐项契约
++
++以下清单以2026-11-26在线OpenAPI为字段声明来源，并结合本地路由补充权限、成功响应和业务行为。通用失败见§2.3，关键写接口正常/失败/重复及副作用见第5章，事务与隐私见第6章。引用模型的逐字段定义在附录B；不把OpenAPI未声明的业务错误认定为不会发生。
++
++### API-001 GET /api/health
++
++权限：公开。公开；数据库SELECT 1成功才返回健康JSON；不是全功能检查。
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 Health。
++
++在线失败声明：未逐项列出；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-002 POST /api/auth/register
++
++权限：公开。服务端再校验学号与密码策略；默认只注册user；重复学号409。
++
++正文：必填；application/json，RegisterIn。字段见附录B，组合与副作用见正文。
++
++成功响应：201 UserOut。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-003 POST /api/auth/login
++
++权限：公开。错误401、禁用403、失败锁定429；失败也写日志，重试可产生新会话。
++
++正文：必填；application/json，LoginIn。字段见附录B，组合与副作用见正文。
++
++成功响应：200 LoginOut。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-004 POST /api/auth/logout
++
++权限：CurrentUser。撤销当前会话并记录退出；同令牌再提交401，无正文。
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：204 无正文。
++
++在线失败声明：未逐项列出；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-005 GET /api/auth/me
++
++权限：CurrentUser。仅当前本人，roles与permissions由服务端返回，不输出哈希。
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 UserOut。
++
++在线失败声明：未逐项列出；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-006 POST /api/auth/change-password
++
++权限：CurrentUser。原密码错误400，成功撤销全部本人会话；再次用旧令牌401。
++
++正文：必填；application/json，ChangePasswordIn。字段见附录B，组合与副作用见正文。
++
++成功响应：204 无正文。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-007 POST /api/auth/reset-password
++
++权限：公开。凭一次性重置码；无效/过期/已使用400；成功撤销全部会话。
++
++正文：必填；application/json，ResetPasswordIn。字段见附录B，组合与副作用见正文。
++
++成功响应：204 无正文。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-008 GET /api/admin/users
++
++权限：user:manage。q按姓名/学号包含匹配；role过滤；page/size，id升序，总数与items。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| query | q | string / null | 否 | 无额外Schema范围 |
++| query | role | RoleName / null | 否 | 无额外Schema范围 |
++| query | page | integer | 否 | ≥ 1；默认 1 |
++| query | size | integer | 否 | ≥ 1；≤ 100；默认 20 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 UserPage。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-009 PUT /api/admin/users/{user_id}/roles
++
++权限：user:manage。不能移除自己的admin角色400；相同集合可重复写审计。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | user_id | integer | 是 | 无额外Schema范围 |
++
++正文：必填；application/json，RolesIn。字段见附录B，组合与副作用见正文。
++
++成功响应：200 UserOut。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-010 PATCH /api/admin/users/{user_id}/status
++
++权限：user:manage。不能自禁用400；禁用撤销目标会话；不是违规禁约。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | user_id | integer | 是 | 无额外Schema范围 |
++
++正文：必填；application/json，StatusIn。字段见附录B，组合与副作用见正文。
++
++成功响应：200 UserOut。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-011 POST /api/admin/users/{user_id}/reset-code
++
++权限：user:manage。重签使旧未用码失效；码为敏感信息；签发与审计并非一个原子提交。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | user_id | integer | 是 | 无额外Schema范围 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 ResetCodeOut。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-012 GET /api/admin/rooms
++
++权限：room:manage。全房间，按id升序，无分页。
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 array<RoomOut>。
++
++在线失败声明：未逐项列出；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-013 POST /api/admin/rooms
++
++权限：room:manage。名称冲突409；创建与审计同事务。
++
++正文：必填；application/json，RoomIn。字段见附录B，组合与副作用见正文。
++
++成功响应：201 RoomOut。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-014 PUT /api/admin/rooms/{room_id}
++
++权限：room:manage。完整模型更新，省略可选字段按默认覆盖；名称冲突409。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | room_id | integer | 是 | 无额外Schema范围 |
++
++正文：必填；application/json，RoomIn。字段见附录B，组合与副作用见正文。
++
++成功响应：200 RoomOut。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-015 DELETE /api/admin/rooms/{room_id}
++
++权限：room:manage。含座位或预约历史409；不存在404，重复删除404。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | room_id | integer | 是 | 无额外Schema范围 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：204 无正文。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-016 PATCH /api/admin/rooms/{room_id}/status
++
++权限：room:manage。open→closed时取消start>now的RESERVED；重复closed不重新转换；返回RoomOut无取消数。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | room_id | integer | 是 | 无额外Schema范围 |
++
++正文：必填；application/json，RoomStatusIn。字段见附录B，组合与副作用见正文。
++
++成功响应：200 RoomOut。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-017 GET /api/admin/rooms/{room_id}/schedules
++
++权限：room:manage。房间404；按day_type/open_time，无分页。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | room_id | integer | 是 | 无额外Schema范围 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 array<ScheduleOut>。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-018 POST /api/admin/rooms/{room_id}/schedules
++
++权限：room:manage。校验不跨零点、生效日期及配置开放边界；重复时段未设业务唯一去重。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | room_id | integer | 是 | 无额外Schema范围 |
++
++正文：必填；application/json，ScheduleIn。字段见附录B，组合与副作用见正文。
++
++成功响应：201 ScheduleOut。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-019 PUT /api/admin/rooms/{room_id}/schedules/{sid}
++
++权限：room:manage。立即写事务，更新后取消不再开放的未来RESERVED；返回ScheduleOut不额外暴露取消数。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | room_id | integer | 是 | 无额外Schema范围 |
++| path | sid | integer | 是 | 无额外Schema范围 |
++
++正文：必填；application/json，ScheduleIn。字段见附录B，组合与副作用见正文。
++
++成功响应：200 ScheduleOut。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-020 DELETE /api/admin/rooms/{room_id}/schedules/{sid}
++
++权限：room:manage。立即写事务，删除后重算未来预约；再次删除404。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | room_id | integer | 是 | 无额外Schema范围 |
++| path | sid | integer | 是 | 无额外Schema范围 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：204 无正文。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-021 GET /api/admin/calendar
++
++权限：room:manage。按day升序，无分页。
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 array<CalendarDayOut>。
++
++在线失败声明：未逐项列出；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-022 PUT /api/admin/calendar/{day}
++
++权限：room:manage。路径day必须等于正文；仅holiday/exam_week；upsert，未自动联动已有预约取消。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | day | string(date) | 是 | 无额外Schema范围 |
++
++正文：必填；application/json，CalendarDayIn。字段见附录B，组合与副作用见正文。
++
++成功响应：200 CalendarDayOut。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-023 DELETE /api/admin/calendar/{day}
++
++权限：room:manage。仅已配置特殊日，缺失/重复404；未自动联动已有预约取消。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | day | string(date) | 是 | 无额外Schema范围 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：204 无正文。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-024 GET /api/admin/settings
++
++权限：settings:manage。返回13项当前值与默认回退；不是完整环境配置。
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 BusinessSettings。
++
++在线失败声明：未逐项列出；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-025 PUT /api/admin/settings
++
++权限：settings:manage。模型有默认值，省略字段回默认，extra拒绝；同值未必新增审计；无历史快照。
++
++正文：必填；application/json，BusinessSettings。字段见附录B，组合与副作用见正文。
++
++成功响应：200 BusinessSettings。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-026 GET /api/ops/audit-logs
++
++权限：audit_log:read。时间[start,end)、operator学号、类型过滤；page_no/size；id降序。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| query | start | string(date-time) / null | 否 | 无额外Schema范围 |
++| query | end | string(date-time) / null | 否 | 无额外Schema范围 |
++| query | operator | string / null | 否 | 无额外Schema范围 |
++| query | op_type | AuditOpType / null | 否 | 无额外Schema范围 |
++| query | target_type | string / null | 否 | 无额外Schema范围 |
++| query | page_no | integer | 否 | ≥ 1；默认 1 |
++| query | size | integer | 否 | ≥ 1；≤ 200；默认 50 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 AuditPage。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-027 GET /api/ops/login-logs
++
++权限：system_log:read。时间[start,end)、student_no/event/success；event仅login/logout；id降序。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| query | start | string(date-time) / null | 否 | 无额外Schema范围 |
++| query | end | string(date-time) / null | 否 | 无额外Schema范围 |
++| query | student_no | string / null | 否 | 无额外Schema范围 |
++| query | event | string / null | 否 | pattern "^(login\|logout)$" |
++| query | success | boolean / null | 否 | 无额外Schema范围 |
++| query | page_no | integer | 否 | ≥ 1；默认 1 |
++| query | size | integer | 否 | ≥ 1；≤ 200；默认 50 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 LoginPage。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-028 GET /api/ops/backups
++
++权限：system:backup。备份新到旧，无分页；created_at是文件mtime秒。
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 array<BackupInfo>。
++
++在线失败声明：未逐项列出；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-029 POST /api/ops/backups
++
++权限：system:backup。每次新文件；快照与数据库审计非原子；不支持文件库409，其余文件错误不保证统一映射。
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：201 BackupInfo。
++
++在线失败声明：未逐项列出；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-030 GET /api/ops/status
++
++权限：system_log:read。只读进程状态，无P95或长期可用率；latest_backup可空；不是在线恢复。
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 Monitor。
++
++在线失败声明：未逐项列出；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-031 GET /api/rooms
++
++权限：room:read。start/end完整datetime成对；date可选；带时段仅开放房间，响应加seats；路由先到期补扫。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| query | date | string(date) / null | 否 | 无额外Schema范围 |
++| query | start_time | string(date-time) / null | 否 | 无额外Schema范围 |
++| query | end_time | string(date-time) / null | 否 | 无额外Schema范围 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 array<PublicRoom>；带时段为array<RoomWithSeats>。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-032 GET /api/seats
++
++权限：room:read。时间三项全有或全无；布尔/区域过滤，room_id不存在404；按room/code，无分页；先补扫。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| query | room_id | integer / null | 否 | > 0 |
++| query | zone_type | ZoneType / null | 否 | 无额外Schema范围 |
++| query | available_only | boolean | 否 | 默认 false |
++| query | has_power | boolean / null | 否 | 无额外Schema范围 |
++| query | by_window | boolean / null | 否 | 无额外Schema范围 |
++| query | accessible | boolean / null | 否 | 无额外Schema范围 |
++| query | date | string(date) / null | 否 | 无额外Schema范围 |
++| query | start_time | string(time) / null | 否 | 无额外Schema范围 |
++| query | end_time | string(time) / null | 否 | 无额外Schema范围 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 array<PublicSeat>。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-033 GET /api/seats/{seat_id}
++
++权限：room:read。时间规则同API-032；不存在404；返回二维码内容不含个人信息；先补扫。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | seat_id | integer | 是 | 无额外Schema范围 |
++| query | date | string(date) / null | 否 | 无额外Schema范围 |
++| query | start_time | string(time) / null | 否 | 无额外Schema范围 |
++| query | end_time | string(time) / null | 否 | 无额外Schema范围 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 PublicSeat。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-034 GET /api/reservations
++
++权限：reservation:own。scope默认all；current还判断end≥now；按start/id倒序，无分页；先补扫。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| query | scope | string | 否 | pattern "^(all\|current\|history)$"；默认 "all" |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 array<ReservationHistoryOut>。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-035 POST /api/reservations
++
++权限：reservation:own。§5.1完整契约；字段组合/时区/同日需校验；无键允许是现状；幂等和锁忙见正文。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| header | Idempotency-Key | string / null | 否 | 最短 1；最长 64；pattern "^[A-Za-z0-9._:-]+$" |
++
++正文：必填；application/json，ReservationCreate。字段见附录B，组合与副作用见正文。
++
++成功响应：201 R-CMD；头部键重放200／正文键重放201。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-036 GET /api/reservations/current
++
++权限：reservation:own。按有效状态、开始时间升序，无分页；不等同API-034的current过滤；先补扫。
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 array<R-CMD>。
++
++在线失败声明：未逐项列出；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-037 GET /api/reservations/{rid}
++
++权限：reservation:own。仅本人，非本人同404；先到期补扫；不是管理员全量详情入口。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | rid | integer | 是 | 无额外Schema范围 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 R-CMD。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-038 PATCH /api/reservations/{rid}/seat
++
++权限：reservation:own。§5.2；额外正文键拒绝；先补扫，换座失败保留原预约，关联到达座位需核对。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | rid | integer | 是 | 无额外Schema范围 |
++
++正文：必填；application/json，ChangeSeatIn。字段见附录B，组合与副作用见正文。
++
++成功响应：200 R-CMD。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-039 POST /api/reservations/{reservation_id}/check-in
++
++权限：reservation:own。§5.4；正文可省略是实现差异；超窗409可先提交失效；重复正确扫码200。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | reservation_id | integer | 是 | 无额外Schema范围 |
++
++正文：可省略；application/json，CheckInIn / null。字段见附录B，组合与副作用见正文。
++
++成功响应：200 R-CMD。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-040 POST /api/reservations/{reservation_id}/temporary-leave
++
++权限：reservation:own。§5.5；仅ACTIVE未结束，重复暂离409，不重启计时。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | reservation_id | integer | 是 | 无额外Schema范围 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 R-FLOW。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-041 POST /api/reservations/{reservation_id}/return
++
++权限：reservation:own。§5.5；无门禁即可恢复是现有差异；重复、超时、已结束409。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | reservation_id | integer | 是 | 无额外Schema范围 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 R-FLOW。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-042 POST /api/reservations/{reservation_id}/end
++
++权限：reservation:own。§5.6；confirm正文必填；连续链原子处理；重复结束409。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | reservation_id | integer | 是 | 无额外Schema范围 |
++
++正文：必填；application/json，EndUseIn。字段见附录B，组合与副作用见正文。
++
++成功响应：200 EndResult。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-043 POST /api/reservations/{reservation_id}/cancel
++
++权限：reservation:own。§5.3；confirm为查询默认true；已CANCELLED重放200；开始时刻及后拒绝。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | reservation_id | integer | 是 | 无额外Schema范围 |
++| query | confirm | boolean | 否 | 默认 true |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 R-CMD。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-044 GET /api/violations
++
++权限：CurrentUser。仅本人；按occurred_at降序，无分页，不是所有角色全量违规。
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 array<ViolationOut>。
++
++在线失败声明：未逐项列出；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-045 GET /api/appeals
++
++权限：CurrentUser。仅本人；按created_at降序，无分页。
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 array<AppealOut>。
++
++在线失败声明：未逐项列出；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-046 POST /api/appeals
++
++权限：CurrentUser。§5.10；7天内、本人违规、pending去重；无全局请求键。
++
++正文：必填；application/json，AppealCreate。字段见附录B，组合与副作用见正文。
++
++成功响应：201 AppealOut。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-047 GET /api/notifications
++
++权限：CurrentUser。本人；unread_only；limit 1～100；sent_at降序。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| query | unread_only | boolean | 否 | 默认 false |
++| query | limit | integer | 否 | ≥ 1；≤ 100；默认 50 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 array<NotificationOut>。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-048 POST /api/notifications/{notification_id}/read
++
++权限：CurrentUser。本人通知404屏蔽他人；重复保持已读，200。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | notification_id | integer | 是 | 无额外Schema范围 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 NotificationOut。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-049 POST /api/ops/entry-exit/mock
++
++权限：entry_exit:read。§5.7；运维模拟入口，重复source/external无载荷指纹检查；业务未匹配通常200。
++
++正文：必填；application/json，GateEventIn。字段见附录B，组合与副作用见正文。
++
++成功响应：200 GateResult。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-050 POST /api/ops/entry-exit/manual-appeals
++
++权限：CurrentUser。§5.7；CurrentUser可申请，不要求门禁读权限；本人预约；重复可新建。
++
++正文：必填；application/json，ManualGateAppealIn。字段见附录B，组合与副作用见正文。
++
++成功响应：200 GateManualResult。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-051 GET /api/ops/entry-exit/records
++
++权限：entry_exit:read。received_at降序；limit钳制1～500，非参数范围422；管理员单角色不可读。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| query | sync_status | string / null | 否 | 无额外Schema范围 |
++| query | limit | integer | 否 | 默认 100 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 array<GateRecord>。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-052 GET /api/admin/rooms/{room_id}/seats
++
++权限：room:manage。房间存在，座位code升序，无分页，不含x/y平面坐标。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | room_id | integer | 是 | 无额外Schema范围 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 array<SeatOut>。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-053 POST /api/admin/rooms/{room_id}/seats
++
++权限：room:manage。房间内code重复409；创建与审计。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | room_id | integer | 是 | 无额外Schema范围 |
++
++正文：必填；application/json，SeatIn。字段见附录B，组合与副作用见正文。
++
++成功响应：201 SeatOut。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-054 PUT /api/admin/rooms/{room_id}/seats/{seat_id}
++
++权限：room:manage。完整更新；普通事务，转maintenance会取消未来；不声称与专用PATCH同锁序。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | room_id | integer | 是 | 无额外Schema范围 |
++| path | seat_id | integer | 是 | 无额外Schema范围 |
++
++正文：必填；application/json，SeatIn。字段见附录B，组合与副作用见正文。
++
++成功响应：200 SeatOut。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-055 DELETE /api/admin/rooms/{room_id}/seats/{seat_id}
++
++权限：room:manage。有预约历史409，缺失/重复404，成功204。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | room_id | integer | 是 | 无额外Schema范围 |
++| path | seat_id | integer | 是 | 无额外Schema范围 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：204 无正文。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-056 PATCH /api/admin/rooms/{room_id}/seats/{seat_id}/status
++
++权限：room:manage。§5.8；立即写事务，maintenance触发取消；重复可新增审计，取消数是本次值。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | room_id | integer | 是 | 无额外Schema范围 |
++| path | seat_id | integer | 是 | 无额外Schema范围 |
++
++正文：必填；application/json，SeatMaintenanceIn。字段见附录B，组合与副作用见正文。
++
++成功响应：200 SeatStatusOut。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-057 POST /api/admin/rooms/{room_id}/seats/import
++
++权限：room:manage。§5.9；JSON内CSV文本；全量校验，code upsert，省略列默认覆盖，维护联动。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | room_id | integer | 是 | 无额外Schema范围 |
++
++正文：必填；application/json，SeatImportIn。字段见附录B，组合与副作用见正文。
++
++成功响应：200 ImportResult。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-058 GET /api/admin/violations
++
++权限：violation:manage。可选user_id；occurred_at降序，最多500，无页码。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| query | user_id | integer / null | 否 | 无额外Schema范围 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 array<ViolationOut>。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-059 POST /api/admin/violations
++
++权限：violation:manage。§5.10/11；校验目标及关联预约归属；重复有预约同类型可复用，无关联不保证。
++
++正文：必填；application/json，ManualViolationIn。字段见附录B，组合与副作用见正文。
++
++成功响应：201 ViolationOut。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-060 GET /api/admin/appeals
++
++权限：appeal:manage。pending_only默认true；created_at升序最多500，无分页。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| query | pending_only | boolean | 否 | 默认 true |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 array<AppealOut>。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-061 PATCH /api/admin/appeals/{appeal_id}
++
++权限：appeal:manage。§5.10；approved/rejected；已处理409；对应限制、通知与审计同事务。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| path | appeal_id | integer | 是 | 无额外Schema范围 |
++
++正文：必填；application/json，AppealReviewIn。字段见附录B，组合与副作用见正文。
++
++成功响应：200 AppealOut。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-062 GET /api/admin/reports
++
++权限：stats:read。§5.12；start/end含首尾，默认30天；按当前资源规则重算，非现场真实占用。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| query | start | string(date) / null | 否 | 无额外Schema范围 |
++| query | end | string(date) / null | 否 | 无额外Schema范围 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 Report。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++### API-063 GET /api/admin/reports/export.xlsx
++
++权限：data:export。§5.12；同统计口径，XLSX附件流；需Blob读取，访问审计缺口保留。
++
++| 位置 | 参数 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|---|
++| query | start | string(date) / null | 否 | 无额外Schema范围 |
++| query | end | string(date) / null | 否 | 无额外Schema范围 |
++
++正文：无已声明请求体，不能把查询参数放入JSON代替。
++
++成功响应：200 ExcelFile（二进制，覆盖线上空JSON声明）。
++
++在线失败声明：422 HTTPValidationError；认证、权限及业务错误需结合§2.3与本接口行为，不限于自动声明。
++
++
++## 附录B：在线组件模型逐字段定义
++
++本附录记录本次线上OpenAPI中53个组件的声明，供附录A引用。必填以required列表为准；`null`表示可空，默认值表示省略时回退。OpenAPI不完整表达的模型校验器和业务约束仍按正文。ReservationOut在此指R-FLOW；R-CMD及未自动声明的实际响应见第4章。
++
++### 模型 AccountStatus
++
++取值：`normal`、`disabled`。
++
++### 模型 AppealCreate
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| violation_id | integer | 是 | > 0 |
++| reason | string | 是 | 最短 5；最长 4000 |
++| evidence | string / null | 否 | 最长 8000 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 AppealOut
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| id | integer | 是 | 无额外Schema范围 |
++| user_id | integer | 是 | 无额外Schema范围 |
++| violation_id | integer | 是 | 无额外Schema范围 |
++| reason | string | 是 | 无额外Schema范围 |
++| evidence | string / null | 是 | 无额外Schema范围 |
++| deadline | string(date-time) | 是 | 无额外Schema范围 |
++| reviewer_id | integer / null | 是 | 无额外Schema范围 |
++| result | AppealResult / null | 是 | 无额外Schema范围 |
++| reviewed_at | string(date-time) / null | 是 | 无额外Schema范围 |
++| review_comment | string / null | 是 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 AppealResult
++
++取值：`approved`、`rejected`。
++
++### 模型 AppealReviewIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| result | AppealResult | 是 | 无额外Schema范围 |
++| review_comment | string | 是 | 最短 2；最长 4000 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 AppealStatus
++
++取值：`none`、`pending`、`approved`、`rejected`。
++
++### 模型 AuditOpType
++
++取值：`admin_action`、`violation`、`permission_change`。
++
++### 模型 BusinessSettings
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| advance_booking_days | integer | 否 | ≥ 0；≤ 30；默认 1 |
++| max_active_reservations | integer | 否 | ≥ 1；≤ 10；默认 1 |
++| checkin_open_before_minutes | integer | 否 | ≥ 0；≤ 120；默认 15 |
++| no_show_after_minutes | integer | 否 | ≥ 1；≤ 120；默认 15 |
++| late_cancel_minutes | integer | 否 | ≥ 0；≤ 120；默认 15 |
++| temp_leave_minutes | integer | 否 | ≥ 30；≤ 30；默认 30 |
++| missed_checkout_merge | integer | 否 | ≥ 1；≤ 10；默认 2 |
++| violation_window_days | integer | 否 | ≥ 1；≤ 180；默认 14 |
++| penalty_base_threshold | integer | 否 | ≥ 1；≤ 50；默认 3 |
++| penalty_threshold_step | integer | 否 | ≥ 0；≤ 50；默认 2 |
++| penalty_days_per_tier | integer | 否 | ≥ 1；≤ 30；默认 1 |
++| opening_earliest | string(time) | 否 | 默认 "06:00:00" |
++| opening_latest | string(time) | 否 | 默认 "23:30:00" |
++
++对象额外字段：显式拒绝。
++
++### 模型 CalendarDayIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| day | string(date) | 是 | 无额外Schema范围 |
++| day_type | DayType | 是 | 无额外Schema范围 |
++| note | string / null | 否 | 最长 128 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 CalendarDayOut
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| day | string(date) | 是 | 无额外Schema范围 |
++| day_type | DayType | 是 | 无额外Schema范围 |
++| note | string / null | 否 | 最长 128 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 ChangePasswordIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| old_password | string | 是 | 无额外Schema范围 |
++| new_password | string | 是 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 ChangeSeatIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| seat_id | integer | 是 | > 0 |
++
++对象额外字段：显式拒绝。
++
++### 模型 CheckInIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| seat_id | integer / null | 否 | > 0 |
++| room_id | integer / null | 否 | > 0 |
++| seat_code | string / null | 否 | 最短 1；最长 32 |
++
++对象额外字段：显式拒绝。
++
++### 模型 DayType
++
++取值：`weekday`、`weekend`、`holiday`、`exam_week`。
++
++### 模型 EndUseIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| confirm | boolean | 是 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 EntryExitType
++
++取值：`entry`、`exit`。
++
++### 模型 GateEventIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| external_id | string | 是 | 最短 1；最长 64 |
++| source_system | string | 否 | 最短 1；最长 64；默认 "mock-gate" |
++| masked_user_key | string | 是 | 最短 16；最长 64 |
++| record_type | EntryExitType | 是 | 无额外Schema范围 |
++| recorded_at | string(date-time) | 是 | 无额外Schema范围 |
++| reservation_id | integer / null | 否 | > 0 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 HTTPValidationError
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| detail | array<ValidationError> | 否 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 LoginIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| student_no | string | 是 | 无额外Schema范围 |
++| password | string | 是 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 LoginOut
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| access_token | string | 是 | 无额外Schema范围 |
++| token_type | string | 否 | 默认 "bearer" |
++| expires_in | integer | 是 | 无额外Schema范围 |
++| user | UserOut | 是 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 ManualGateAppealIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| record_type | EntryExitType | 是 | 无额外Schema范围 |
++| reason | string | 是 | 最短 5；最长 4000 |
++| reservation_id | integer / null | 否 | > 0 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 ManualViolationIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| user_id | integer | 是 | > 0 |
++| violation_type | ViolationType | 是 | 无额外Schema范围 |
++| reservation_id | integer / null | 否 | > 0 |
++| description | string | 是 | 最短 5；最长 4000 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 NotificationOut
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| id | integer | 是 | 无额外Schema范围 |
++| type | NotificationType | 是 | 无额外Schema范围 |
++| content | string | 是 | 无额外Schema范围 |
++| sent_at | string(date-time) | 是 | 无额外Schema范围 |
++| is_read | boolean | 是 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 NotificationType
++
++取值：`reservation_confirmed`、`checkin_reminder`、`violation`、`maintenance`、`system`、`temp_leave`。
++
++### 模型 RegisterIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| student_no | string | 是 | 最短 1；最长 32 |
++| name | string | 是 | 最短 1；最长 64 |
++| password | string | 是 | 最短 1；最长 128 |
++| department | string / null | 否 | 最长 128 |
++| contact | string / null | 否 | 最长 128 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 ReservationCreate
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| seat_id | integer / null | 否 | > 0 |
++| room_id | integer / null | 否 | > 0 |
++| zone_type | ZoneType / null | 否 | 无额外Schema范围 |
++| start_time | string(date-time) | 是 | 无额外Schema范围 |
++| end_time | string(date-time) | 是 | 无额外Schema范围 |
++| request_key | string / null | 否 | 最短 8；最长 64 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 ReservationHistoryOut
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| id | integer | 是 | 无额外Schema范围 |
++| reservation_no | string | 是 | 无额外Schema范围 |
++| user_id | integer | 是 | 无额外Schema范围 |
++| room_id | integer | 是 | 无额外Schema范围 |
++| seat_id | integer | 是 | 无额外Schema范围 |
++| start_time | string(date-time) | 是 | 无额外Schema范围 |
++| end_time | string(date-time) | 是 | 无额外Schema范围 |
++| status | ReservationStatus | 是 | 无额外Schema范围 |
++| created_at | string(date-time) | 是 | 无额外Schema范围 |
++| cancelled_at | string(date-time) / null | 否 | 无额外Schema范围 |
++| cancel_reason | string / null | 否 | 无额外Schema范围 |
++| temp_leave_at | string(date-time) / null | 否 | 无额外Schema范围 |
++| room_name | string | 是 | 无额外Schema范围 |
++| seat_code | string | 是 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 ReservationOut
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| id | integer | 是 | 无额外Schema范围 |
++| reservation_no | string | 是 | 无额外Schema范围 |
++| user_id | integer | 是 | 无额外Schema范围 |
++| room_id | integer | 是 | 无额外Schema范围 |
++| seat_id | integer | 是 | 无额外Schema范围 |
++| start_time | string(date-time) | 是 | 无额外Schema范围 |
++| end_time | string(date-time) | 是 | 无额外Schema范围 |
++| status | ReservationStatus | 是 | 无额外Schema范围 |
++| created_at | string(date-time) | 是 | 无额外Schema范围 |
++| cancelled_at | string(date-time) / null | 否 | 无额外Schema范围 |
++| cancel_reason | string / null | 否 | 无额外Schema范围 |
++| temp_leave_at | string(date-time) / null | 否 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 ReservationStatus
++
++取值：`RESERVED`、`ACTIVE`、`TEMP_LEAVE`、`COMPLETED`、`CANCELLED`、`ADMIN_CANCELLED`、`EXPIRED`、`TIMED_OUT`。
++
++### 模型 ResetCodeOut
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| reset_code | string | 是 | 无额外Schema范围 |
++| expires_in | integer | 是 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 ResetPasswordIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| student_no | string | 是 | 无额外Schema范围 |
++| reset_code | string | 是 | 无额外Schema范围 |
++| new_password | string | 是 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 RoleName
++
++取值：`user`、`admin`、`ops`。
++
++### 模型 RolesIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| roles | array<RoleName> | 是 | 最少元素 1 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 RoomIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| name | string | 是 | 最短 1；最长 64 |
++| location | string / null | 否 | 最长 128 |
++| floor | string / null | 否 | 最长 32 |
++| capacity | integer | 否 | ≥ 0；默认 0 |
++| facilities | string / null | 否 | 无额外Schema范围 |
++| remark | string / null | 否 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 RoomOut
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| name | string | 是 | 最短 1；最长 64 |
++| location | string / null | 否 | 最长 128 |
++| floor | string / null | 否 | 最长 32 |
++| capacity | integer | 否 | ≥ 0；默认 0 |
++| facilities | string / null | 否 | 无额外Schema范围 |
++| remark | string / null | 否 | 无额外Schema范围 |
++| id | integer | 是 | 无额外Schema范围 |
++| status | RoomStatus | 是 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 RoomStatus
++
++取值：`open`、`closed`。
++
++### 模型 RoomStatusIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| status | RoomStatus | 是 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 ScheduleIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| day_type | DayType | 是 | 无额外Schema范围 |
++| open_time | string(time) | 是 | 无额外Schema范围 |
++| close_time | string(time) | 是 | 无额外Schema范围 |
++| effective_from | string(date) / null | 否 | 无额外Schema范围 |
++| effective_to | string(date) / null | 否 | 无额外Schema范围 |
++| enabled | boolean | 否 | 默认 true |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 ScheduleOut
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| day_type | DayType | 是 | 无额外Schema范围 |
++| open_time | string(time) | 是 | 无额外Schema范围 |
++| close_time | string(time) | 是 | 无额外Schema范围 |
++| effective_from | string(date) / null | 否 | 无额外Schema范围 |
++| effective_to | string(date) / null | 否 | 无额外Schema范围 |
++| enabled | boolean | 否 | 默认 true |
++| id | integer | 是 | 无额外Schema范围 |
++| room_id | integer | 是 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 SeatImportIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| content | string | 是 | 最短 1；最长 2000000 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 SeatIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| code | string | 是 | 最短 1；最长 32 |
++| zone_type | ZoneType | 否 | 默认 "quiet" |
++| has_power | boolean | 否 | 默认 false |
++| by_window | boolean | 否 | 默认 false |
++| accessible | boolean | 否 | 默认 false |
++| status | SeatStatus | 否 | 默认 "available" |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 SeatMaintenanceIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| status | SeatStatus | 是 | 无额外Schema范围 |
++| reason | string | 否 | 最短 2；最长 500；默认 "管理员设置座位状态" |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 SeatOut
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| code | string | 是 | 最短 1；最长 32 |
++| zone_type | ZoneType | 否 | 默认 "quiet" |
++| has_power | boolean | 否 | 默认 false |
++| by_window | boolean | 否 | 默认 false |
++| accessible | boolean | 否 | 默认 false |
++| status | SeatStatus | 否 | 默认 "available" |
++| id | integer | 是 | 无额外Schema范围 |
++| room_id | integer | 是 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 SeatStatus
++
++取值：`available`、`reserved`、`in_use`、`maintenance`、`closed`、`disabled`。
++
++### 模型 SeatStatusOut
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| code | string | 是 | 最短 1；最长 32 |
++| zone_type | ZoneType | 否 | 默认 "quiet" |
++| has_power | boolean | 否 | 默认 false |
++| by_window | boolean | 否 | 默认 false |
++| accessible | boolean | 否 | 默认 false |
++| status | SeatStatus | 否 | 默认 "available" |
++| id | integer | 是 | 无额外Schema范围 |
++| room_id | integer | 是 | 无额外Schema范围 |
++| cancelled_reservations | integer | 否 | 默认 0 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 StatusIn
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| status | AccountStatus | 是 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 UserOut
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| id | integer | 是 | 无额外Schema范围 |
++| student_no | string | 是 | 无额外Schema范围 |
++| name | string | 是 | 无额外Schema范围 |
++| department | string / null | 是 | 无额外Schema范围 |
++| contact | string / null | 是 | 无额外Schema范围 |
++| status | AccountStatus | 是 | 无额外Schema范围 |
++| roles | array<RoleName> | 是 | 无额外Schema范围 |
++| permissions | array<string> | 否 | 默认 [] |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 ValidationError
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| loc | array<string / integer> | 是 | 无额外Schema范围 |
++| msg | string | 是 | 无额外Schema范围 |
++| type | string | 是 | 无额外Schema范围 |
++| input | 未定型 | 否 | 无额外Schema范围 |
++| ctx | object | 否 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 ViolationOut
++
++| 字段 | 类型 | 必填 | 范围／默认 |
++|---|---|---|---|
++| id | integer | 是 | 无额外Schema范围 |
++| user_id | integer | 是 | 无额外Schema范围 |
++| violation_type | ViolationType | 是 | 无额外Schema范围 |
++| occurred_at | string(date-time) | 是 | 无额外Schema范围 |
++| reservation_id | integer / null | 是 | 无额外Schema范围 |
++| description | string / null | 是 | 无额外Schema范围 |
++| state | ViolationState | 是 | 无额外Schema范围 |
++| period_start | string(date-time) | 是 | 无额外Schema范围 |
++| period_seq | integer | 是 | 无额外Schema范围 |
++| result | ViolationResult | 是 | 无额外Schema范围 |
++| appeal_status | AppealStatus | 是 | 无额外Schema范围 |
++
++对象额外字段：未声明拒绝，结合实际Pydantic配置，不假设统一拒绝。
++
++### 模型 ViolationResult
++
++取值：`warning`、`restricted`。
++
++### 模型 ViolationState
++
++取值：`active`、`archived`。
++
++### 模型 ViolationType
++
++取值：`left_undeclared`、`temp_leave_timeout`、`no_show`、`no_checkout`、`late_cancel`。
++
++### 模型 ZoneType
++
++取值：`quiet`、`discussion`、`exam_prep`。
+diff --git "a/docs/\346\236\266\346\236\204\347\241\256\350\256\244\344\270\216\345\206\263\347\255\226\350\256\260\345\275\225.md" "b/docs/\346\236\266\346\236\204\347\241\256\350\256\244\344\270\216\345\206\263\347\255\226\350\256\260\345\275\225.md"
+index fbe83b4..d9a384c 100644
+--- "a/docs/\346\236\266\346\236\204\347\241\256\350\256\244\344\270\216\345\206\263\347\255\226\350\256\260\345\275\225.md"
++++ "b/docs/\346\236\266\346\236\204\347\241\256\350\256\244\344\270\216\345\206\263\347\255\226\350\256\260\345\275\225.md"
+@@ -1,58 +1,779 @@
+-# 架构确认与决策记录
++# 智能自习室管理预约系统架构设计报告
+ 
+-更新日期：2026-11-12
+-状态说明：本文件是按当前仓库整理的候选记录。原始架构讨论稿和原 Q 编号未在仓库中找到，因此以下 Q-LOCAL / ADR-LOCAL 为临时编号；它们不是业务决定，也不能替代真实确认人签字。
++> 文档版本：v1.3  
++> 编制日期：2026-11-26  
++> 项目名称：智能自习室管理预约系统  
++> 编制团队：全网呼叫奶家人  
++> 队长：周俊博；队员：张东岩、方梓安  
+ 
+-## Q 确认与关闭记录
+ 
+-| 编号/标题 | 冲突及依据 | 选项与影响 | 最终决定 / 确认身份 / 依据 | 阻塞范围与验证场景 | 状态及关闭证据 |
+-| --- | --- | --- | --- | --- | --- |
+-| Q-LOCAL-001：需求与验收主依据 | 仓库中的 reservation-progress.md 引用了上游需求仓库的 SRS 和需求章节，并记录了 Issue #10–#16 的部分用户确认；对应上游需求版本没有固定在本仓库，不能代表 #17 以后全部范围。 | A：将课程任务书/上游需求固定为版本化基线；B：由课程负责人书面指定其他版本。会影响新功能范围、测试预期和验收。 | 待确认；确认人由组长指定；依据及版本待补。 | 未有依据的新增功能和验收预期需暂停猜测；已有历史记录覆盖的规则可按其原始 Issue 范围追溯。正常、边界、异常场景需对应来源。 | 待确认；历史记录见 docs/reservation-progress.md，仍无完整基线关闭证据。 |
+-| Q-LOCAL-002：角色命名与权限范围 | README 使用学生/管理员/运维等产品角色名称，后端权限枚举实际为 user/admin/ops；访客不作为后端 RoleName。外部术语与实际注册/授权模型的映射未形成正式记录。 | A：将学生映射到 user 并说明访客边界；B：按课程需求调整角色/权限。会影响注册、页面、权限、用户管理和文档。 | 待确认；业务确认人及复核人待指定。 | 角色相关变更受阻；核对访客可见范围、user/admin/ops 接口权限及禁用账户行为。 | 待确认；无覆盖全部角色的关闭证据。 |
+-| Q-LOCAL-003：学号格式 | backend/app/config.py 注释说明具体格式待确认；当前默认正则为 6–20 位字母数字。 | A：接受当前范围；B：使用课程/学校规定格式。会影响注册、登录和导入账号。 | 待确认；依据应为课程任务书或经确认的教学设定。 | 学号校验变更受阻；验证长度上下界、大小写、非 ASCII 和非法字符。 | 待确认；无关闭证据。 |
+-| Q-LOCAL-004：预约幂等键是否必填及来源 | 历史阶段交付记录将 Idempotency-Key 列为必填；当前路由实际允许不带键，并兼容请求体 request_key。当前有键时同用户、同负载重放返回原预约；不同负载或不同用户复用返回 409。 | A：按历史契约要求 Idempotency-Key；B：保留可选 Header 和 body.request_key 兼容模式。无键时无法保证重试去重；也影响首次/重放状态码。 | 待确认；由接口提供方与调用方确认，以当前需求版本为依据。 | 依赖自动重试或创建请求的客户端受影响；验证缺省键、Header 键、body 键、同键不同负载/用户，以及改座或取消后的重放。 | 已发现契约差异，待决定并同步接口与测试。 |
+-| Q-LOCAL-005：未签退累计规则 | BusinessSettings 暴露 missed_checkout_merge；violations.record_violation 已读取该参数，将每第 N 次 NO_CHECKOUT 计为一次警告，其余原始事件标为 is_offset。默认 N=2、可配置范围 1–10。schema 描述引用 P-009，但本仓库未固定正式需求版本。 | A：按当前代码规则和参数范围验收；B：由正式需求规定其他合并口径或窗口规则。会影响处罚累计、报表、通知和管理配置。 | 当前实现规则与参数：默认两次合并为一次警告，具体状态变化见接口说明；是否符合业务要求仍待有权负责人依据正式需求确认。 | 仅阻塞该规则的变更和验收结论；验证默认/非默认次数、累计窗口边界、重复事件及与其他违规类型的交互。 | 实现已存在；test_br093_no_checkout_merge 覆盖默认值下第 1、2、3 次事件。业务确认及非默认值/窗口边界证据待补。 |
+-| Q-LOCAL-006：真实门禁集成验收范围 | docs/limitations.md 明确当前门禁为 mock，没有真实校园闸机、一卡通或人脸系统对接；前端与后端已有扫码/手动签到流程和模拟事件接口。 | A：课程范围只验收扫码/手动签到与 mock；B：增加真实门禁集成。后者需要获准协议、密钥、测试环境和隐私审查。 | mock 实现边界已记录；是否扩展真实集成由课程范围确认人决定。 | 当前 mock 流程可独立继续；真实集成任务需先确认接口授权和测试环境。 | 实现限制见 docs/limitations.md；真实集成范围仍待课程确认。 |
++---
+ 
+-### Q 关闭流程
++## 〇、文档导读
+ 
+-关闭任何一项 Q 前，补充可检验的最终规则、真实确认人及角色、日期、业务依据、受影响资产、正常/边界/异常验证场景和独立复核证据。决定尚未同步到需求、接口和测试时，状态应为“已决定待同步”，而不是“已关闭”。
++本文给出本项目可直接实施和评审的架构方案，覆盖总体结构、模块边界、关键事务、数据模型、接口、部署、测试和演进。系统面向用户预约座位、扫码签到、临时离开、结束使用、违规申诉，也面向管理员的资源维护、规则配置、处罚复核、统计导出以及运维人员的日志、门禁、备份和监控。
+ 
+-## ADR 记录
++系统采用 Python FastAPI + SQLAlchemy + SQLite 的分层模块化单体，Vue3 + Vite 为浏览器前端，Alembic 管理数据库迁移，GitHub Actions 执行持续集成。门禁通过脱敏事件适配器接入，通知固定为站内通知。SRS 已将候补、统一身份认证实际对接、收费、硬件采购和培训列为本期范围外事项，架构不引入这些功能。报告中的人员为架构责任安排，不代表另有已经举行的评审会议或教师签署记录。
+ 
+-### ADR-LOCAL-001：前后端分离的 Web 架构
++## 一、阅读结论、依据与设计边界
+ 
+-- 状态：待团队评审。此项描述当前实现，不代表已获得架构批准。
+-- 背景：当前代码使用 Vue 3/Vite 前端、FastAPI 后端和 JSON API；前端通过 /api 代理调用服务端。
+-- 比较：继续前后端分离，或改为 FastAPI 服务端渲染。前者保留现有页面和 API 边界，后者减少单独前端运行部件但需要重做页面。
+-- 候选决定：当前阶段暂按现有 Vue 3 + FastAPI 结构维护。
+-- 理由与代价：现有代码和测试已按此分层；代价是前后端要共同维护接口契约和开发环境。
+-- 验证：执行前后端完整检查，逐页面核对 API 契约，确认部署环境能够提供前端静态资源与 /api 路由。
+-- 确认/复核：未记录；由团队指定架构负责人及交叉复核人。
+-- 重新评估条件：课程交付要求、部署环境或团队维护能力改变。
++### 1.1 已核验内容
+ 
+-### ADR-LOCAL-002：SQLite WAL 与预约写事务
++| 类别 | 结论 | 依据 |
++|---|---|---|
++| 范围 | SCOPE-01～SCOPE-10均有后端路由、前端页面或测试对应 | SRS §1.4.1；backend/app、frontend/src |
++| 角色 | 只有用户、管理员、运维三类 | SRS HD-14、§4.2；models/enums.py |
++| 预约 | 创建、换座、取消、冲突检测、幂等 | SRS UC-007/UC-009；services/reservations.py |
++| 履约 | 弹性签到、未签到释放、结束使用、暂离30分钟 | SRS BR-020～026、BR-070～072；reservations.py、gate.py |
++| 违规 | 离馆未声明、未到场、未签退/暂离超时、迟取消、阶梯禁约 | SRS BR-090～099；services/violations.py |
++| 管理 | 房间、座位、开放时间、校历、业务参数、申诉、报表和Excel导出 | api/admin_*.py、api/reports.py |
++| 运维 | 登录/操作日志、门禁记录、在线备份、运行状态 | api/ops_*.py、services/backup.py |
++| 安全 | bcrypt密码哈希、会话摘要、权限依赖、门禁HMAC脱敏 | security.py、auth.py、permissions.py、gate.py |
++| 数据库 | SQLite外键、WAL、busy_timeout、Asia/Shanghai时间 | db.py、models/base.py、config.py |
++| CI | 后端ruff/pytest，前端lint/format/build | .github/workflows/ci.yml |
++| 版本字段 | SRS BR-051要求乐观锁版本号；当前实体未定义独立version列 | SRS BR-051与当前Reservation模型审查 |
+ 
+-- 状态：已采用（依据 docs/reservation-progress.md 记录的用户确认）；并发容量和课程负载指标仍待验证。
+-- 背景：当前数据库默认 SQLite；连接启用外键、WAL 和 busy_timeout。预约冲突检查与插入使用 BEGIN IMMEDIATE，冲突区间按半开区间查询；请求指纹约束幂等键重放。
+-- 比较：保留 SQLite 并用写锁串行化关键检查，或改用服务型数据库并实现数据库级并发约束。SQLite 便于课程本地部署；服务型数据库更适合多写入者，但需要部署、迁移和备份配置。
+-- 决定：继续采用 SQLite 的立即写事务、唯一约束和幂等键，不新增乐观版本号锁。
+-- 理由与代价：该方案已用于本地课程交付；写请求通过数据库锁串行化，遇到 busy/locked 返回 503 并提示同键重试。
+-- 验证：backend/tests/test_reservations.py 含 100 个竞争预约、并发同键重试和写锁重试案例。docs/limitations.md 记录仍未做 200 并发负载测试；功能并发测试不等于性能验收。
+-- 确认/复核：历史用户确认见 docs/reservation-progress.md；确认人身份、日期和本 ADR 的独立交叉复核人仍待项目组补录。
+-- 重新评估条件：部署拓扑、负载要求、数据规模或并发验收阈值确定后。
++本文把代码中已经存在的事务和约束如实写成“现有机制”，把SRS要求但代码尚未体现的版本条件更新写成“架构约束”，不把设计目标冒充已完成验收。
++
++### 1.2 不改变的业务边界
++
++1. 用户包含学生和教师，不设置教师特权。
++2. 候补及候补转正因HD-41移出本期；释放的座位直接恢复可预约。
++3. 开始前大于15分钟取消不违规；小于等于15分钟允许取消并记一次迟取消违规；已签到不可取消。
++4. 签到窗口为预约开始前15分钟至开始后15分钟；超窗未签到转预约失效并记未到场违规。
++5. 用户点击临时离开后保留座位30分钟，重新入馆记录在期限内到达则恢复使用；未声明离馆直接释放并记违规。
++6. 违规固定14天累计，3、5、7、9次分别禁约1、2、3、4天；警告不扣除，周期到期归档而不删除。
++7. 维护座位、关闭房间或调整开放时段时，未来未签到预约强制取消并发送维修通知，不补偿；已签到不立即中断。
++8. 门禁接口只保存HMAC脱敏用户键和事件元数据，不保存人脸、卡号或学号原文；管理员不能查看门禁明细。
++9. 通知为站内通知；外部短信、邮件和推送不进入本期部署。
++10. 业务时间统一使用带时区的Asia/Shanghai时间；服务端时间是唯一裁决来源。
++
++### 1.3 需求追溯与架构回应
++
++| 需求 | 架构回应 | 验证 |
++|---|---|---|
++| FR-001～007 | auth路由、User/Role/Permission、会话、bcrypt、登录锁定和密码重置 | test_auth.py、test_permissions.py |
++| FR-010～013 | availability服务按日期、开放窗口、区域和设施属性计算座位状态 | test_reservations.py |
++| FR-020～024 | reservations服务事务校验开放时段、重叠、额度、禁约和幂等 | test_reservations.py、test_assigned_workflows.py |
++| FR-030～037 | 状态机、ArrivalRecord、暂离字段、后台扫尾和门禁适配器 | assigned_workflows测试 |
++| FR-040～043 | violations、restrictions、appeals及管理员复核事务 | gaps、assigned_workflows测试 |
++| FR-050～052 | Notification表和业务事件键去重 | 通知/预约测试 |
++| FR-060～061 | 本人历史、利用率/峰值/违规报表和XLSX导出 | reports测试 |
++| FR-070～073 | 管理房间、座位、开放时间、校历和SystemSetting | admin_config/admin_seats测试 |
++| NFR-001～004 | 健康检查、WAL、写锁、索引、并发测试 | health/models/reservations测试 |
++| NFR-005、011 | bcrypt、后端权限依赖、对象归属过滤、门禁脱敏 | auth/permissions/gate测试 |
++| NFR-006 | timeutil时钟接缝、服务端时区和边界测试 | health/reservations测试 |
++| NFR-007～008 | 参数键值表、AuditLog、LoginLog、追加式留痕 | logs/admin测试 |
++| NFR-012 | SQLite online backup、完整性检查、轮换和恢复演练 | backup_monitoring测试 |
++
++## 二、架构关注点与质量属性
++
++| 编号 | 风险 | 设计回应 | 观察判据 |
++|---|---|---|---|
++| AF-01 | 抢座超售 | BEGIN IMMEDIATE写事务、事务内重查重叠、有效状态唯一索引、冲突映射 | 同一座位时段有效预约数为1 |
++| AF-02 | 网络重试重复写入 | 用户+幂等键+请求指纹；通知使用稳定事件键 | 同键重放返回原结果 |
++| AF-03 | 客户端时钟篡改 | 所有窗口由服务端时钟在事务内复核 | 修改浏览器时间不能绕过规则 |
++| AF-04 | 门禁乱序/迟到 | source_system+external_id去重；超过300秒或无法匹配进入人工核验 | 旧事件不能复活终态预约 |
++| AF-05 | 违规重复或处罚错误 | reservation_id+类型去重、周期起点、序号、折算标记、独立Restriction | 3/5/7/9次阶梯稳定 |
++| AF-06 | 越权和隐私泄露 | require_permission统一拦截，查询按user_id和角色范围过滤 | 三角色矩阵和双用户越权全部拒绝 |
++| AF-07 | 维护误取消或漏通知 | 座位状态、未来预约取消、通知、审计同事务 | 已签到不被立即中断 |
++| AF-08 | 参数变更影响历史事实 | SystemSetting白名单；现有窗口读取当前参数；规则快照列入改进 | 参数变更回归及历史规则检查 |
++| AF-09 | 管理争议无证据 | AuditLog追加前后值、操作者、IP、结果 | 关键动作均有日志 |
++| AF-10 | 数据库故障 | online backup、完整性检查、保留14份、停机恢复 | 恢复库可通过校验和对账 |
++| AF-11 | SQLite写锁瓶颈 | 快速事务、读写会话、busy_timeout、503重试；压力后可换PostgreSQL | 逐步加压测P95和锁等待 |
++| AF-12 | 移动端扫码兼容性 | BarcodeDetector可用则摄像头扫描，否则手输座位ID或编号 | 390px和无API环境仍可签到 |
++
++质量目标直接采用SRS：可用性≥99.5%、P95接口≤2秒、目标并发≥200、超售0、服务端时间偏差≤1秒、密码bcrypt、关键操作100%留痕、RPO=0。课程演示环境不能替代生产长期监控和隔离压力测量。
++
++## 三、候选架构及比较
++
++### 3.1 方案A：简单分层单体
++
++前端请求进入FastAPI，路由直接调用SQLAlchemy和少量大服务。优点是开发快、部署简单；风险是预约、违规、门禁和管理操作会互相读写，权限和状态机分散，三人并行时容易产生边界冲突。
++
++### 3.2 方案B：分层模块化单体（选定）
++
++一个FastAPI部署单元内按认证、资源、预约履约、违规、门禁、通知、管理、报表、运维划分模块；每个模块有API、应用服务、模型和数据访问边界；跨模块核心用例使用本地事务编排。它保留SQLite事务和低部署成本，同时支持三人按领域并行、接口契约和独立测试。
++
++### 3.3 方案C：微服务
++
++认证、预约、资源、违规、通知分别部署并拥有独立数据库。服务间一致性、消息重试、补偿、链路追踪和运维环境会明显增加，不适合本项目的SQLite、三人团队和课程交付周期。
++
++| 维度 | 方案A | 方案B | 方案C |
++|---|---:|---:|---:|
++| 开发启动成本 | 低 | 中低 | 高 |
++| 本地事务 | 高但易混杂 | 高且边界清晰 | 需分布式一致性 |
++| 团队并行 | 低 | 高 | 中 |
++| 可测试性 | 中 | 高 | 高但复杂 |
++| 运维成本 | 低 | 低 | 高 |
++| 课程交付 | 高 | 高 | 低 |
++| 未来演进 | 低 | 高 | 已拆分 |
++
++选定方案B。未来若压力测试证明SQLite写锁无法满足目标，只替换数据库和基础设施实现，不改变应用服务和接口语义。
++
++## 四、目标架构与模块划分
++
++### 4.1 总体结构
++
++浏览器Vue3前端通过/api访问FastAPI。FastAPI负责CORS、路由、Pydantic请求模型、Bearer会话、权限依赖、错误处理和指标中间件。应用服务负责状态机和事务；SQLAlchemy负责持久化；SQLite启用外键、WAL和busy_timeout。reservation_worker和ops_worker由FastAPI lifespan启动。
++
++外部依赖为图书馆门禁/人脸系统、时间基准服务、浏览器摄像头和未来可选的统一认证。门禁当前通过脱敏mock接口接收，真实协议由适配器替换。
++
++### 4.2 模块和数据所有权
++
++| 模块 | 负责内容 | 主要数据 | 边界 |
++|---|---|---|---|
++| identity-access | 注册、登录、会话、密码、角色和权限 | User、Role、Permission、AuthSession、PasswordResetToken、LoginLog | 只提供身份和授权，不写预约或违规 |
++| resource | 房间、座位、开放时间、校历、实时可用性 | StudyRoom、Seat、OpeningSchedule、CalendarDay | 提供资源查询；不能直接写Reservation |
++| reservation-fulfillment | 创建、换座、取消、签到、结束、暂离、自动释放 | Reservation、ArrivalRecord | 是预约状态和占用唯一写入口 |
++| discipline | 三类违规、周期归档、处罚和申诉 | ViolationRecord、Restriction、Appeal | 统一计算警告和限制 |
++| gate-integration | 进出事件、脱敏匹配、重复/迟到降级 | EntryExitRecord | 只能通过公开预约能力改变状态 |
++| notification | 站内通知、事件键、已读 | Notification | 不反向修改业务事实 |
++| administration | 用户、资源、配置、维护、申诉 | 通过各模块公开服务写入 | 维护必须调用强制取消和审计 |
++| reporting | 利用率、峰值、违规趋势、XLSX | 只读查询 | 不写业务表 |
++| operations | 日志、门禁只读、状态、备份恢复 | AuditLog、LoginLog、备份文件、指标 | 运维动作也写审计 |
++| infrastructure | 事务、时钟、配置、迁移和错误 | SystemSetting及基础设施 | 不放业务规则 |
++
++### 4.3 依赖规则
++
++1. 路由和定时器只能调用应用用例，不能拼跨模块业务SQL。
++2. 跨模块用例由应用层统一开启本地事务；仓储不自行提交。
++3. 预约模块是Reservation状态和座位占用唯一写入口。
++4. 违规模块是ViolationRecord和Restriction唯一计算入口。
++5. 门禁适配器只输入脱敏DTO，不绕过幂等、权限和状态机。
++6. 报表只读，先按权限过滤再聚合。
++7. 所有业务时间来自统一时钟；禁止无时区时间参与裁决。
++8. 迁移脚本是数据库结构唯一演进渠道。
++9. 禁止万能接口和跨模块直接更新表。
++10. 已有通知与核心事实同事务提交；关键状态操作按设计补齐审计。认证失败日志使用独立事务，文件备份与数据库审计不构成一个原子事务。
++
++### 4.4 团队分工
++
++| 成员 | 负责模块/功能 | 交付物和复核 |
++|---|---|---|
++| 周俊博（队长） | 需求统筹；房间/座位查询与状态；创建预约、冲突、幂等、换座、取消；扫码签到和未签到释放 | availability、reservations、用户预约页面、关键事务测试；张东岩复核CI/事务，方梓安复核违规联动 |
++| 张东岩 | 脚手架、CI、SQLite模型和数据字典；认证、密码和权限；日志、备份、监控；房间/开放时间/系统参数管理；测试整合 | main/db/models/auth/permissions/ops/admin_config和CI；周俊博复核需求，方梓安复核管理流程 |
++| 方梓安 | 结束使用、临时离开、门禁同步降级；违规、处罚和申诉；站内通知；个人历史；座位布局/导入；报表和Excel | gate/violations/notifications/reports和相应页面；周俊博复核状态机，张东岩复核数据和测试 |
++| 全组 | 架构、迁移、权限、并发、验收材料 | 队长最终整合 |
++
++## 五、关键技术方案与事务边界
++
++### 5.1 预约创建
++
++预约使用同日半开区间[start,end)。事务步骤为：认证用户；补偿到期预约；检查幂等键和请求指纹；检查开始时间、提前天数、开放窗口、禁约、座位状态、座位重叠、用户重叠；当前以同一时段单座约束落实占用上限，没有独立日次数和小时额度；在写锁内重新检查；写Reservation、ArrivalRecord、确认通知并同步座位展示状态；提交。相同幂等键返回原结果，不同指纹返回409。锁繁忙返回503并要求相同键重试。任何异常回滚全部写入。
++
++当前实现使用BEGIN IMMEDIATE、重叠查询和有效状态唯一索引。SRS BR-051要求的独立version字段是后续扩展约束：更新时必须使用id+version条件，成功后递增，影响行数为0返回409，不能取代事务和数据库约束。
++
++### 5.2 状态机
++
++| 当前 | 事件 | 条件 | 结果 |
++|---|---|---|---|
++| 无 | 创建 | 规则通过 | RESERVED |
++| RESERVED | 扫码 | 开始前15至开始后15分钟 | ACTIVE |
++| RESERVED | 取消 | >15分钟 | CANCELLED，无违规 |
++| RESERVED | 取消 | ≤15分钟 | CANCELLED，迟取消违规 |
++| RESERVED | 超窗扫尾 | 开始后超过15分钟 | EXPIRED，未到场违规 |
++| RESERVED | 维护 | 未来未开始 | ADMIN_CANCELLED，维修通知 |
++| ACTIVE | 临时离开 | 用户确认 | TEMP_LEAVE，保留30分钟 |
++| TEMP_LEAVE | 入馆 | 期限内 | ACTIVE |
++| TEMP_LEAVE | 超时 | 无入馆 | TIMED_OUT，暂离违规 |
++| ACTIVE | 结束 | 用户确认 | COMPLETED |
++| ACTIVE | 出馆 | 未声明暂离 | TIMED_OUT，离馆违规 |
++| ACTIVE/TEMP_LEAVE | 时段结束 | 未结束 | TIMED_OUT，未签退违规 |
++| 任意终态 | 重复命令 | — | 保持终态，幂等返回或409 |
++
++命令必须锁定预约、校验当前状态并使用服务端时钟。签到、取消、结束、门禁和扫尾竞争时只允许一个合法转换成功。
++
++### 5.3 违规与处罚
++
++ViolationRecord保存用户、类型、时间、预约/到达关联、周期起点、序号、归档状态、结果和折算标记。固定14天窗口内，3+2(k-1)次触发第k档k天禁约；不扣减警告。未签退每2次折算1次。申诉期限7天，批准后归档违规、解除未到期Restriction、发送通知并记审计。相同预约和类型去重，后台重跑不重复处罚。
++
++### 5.4 门禁
++
++门禁事件使用HMAC生成masked_user_key，source_system+external_id唯一。接收后计算延迟、查重、匹配用户和唯一预约。超过300秒、无法匹配或状态不一致只保存记录并进入人工核验；合法入馆恢复暂离或完成签到；暂离出馆保持保留；未声明出馆将预约转TIMED_OUT并记录违规。所有结果和通知在同事务内提交。
++
++### 5.5 后台任务
++
++reservation_worker每60秒执行未签到超时、预约结束、暂离超时、提醒和违规归档；请求查询也补做expire_due。ops_worker按配置在线备份和清理日志。任务按状态条件和事件键幂等，重复执行不会重复处罚或通知。
++
++### 5.6 管理维护
++
++座位维护、房间关闭、开放时间缩短采用相同取消模式；房间和时段调整使用admin_force_cancel，座位维护当前为本地实现，目标收拢至统一应用服务，只处理未来且未签到的预约，设置ADMIN_CANCELLED、原因和维修通知，写AuditLog；ACTIVE用户继续使用。维护、预约取消、通知和审计同事务提交。
++
++### 5.7 通知和审计
++
++Notification固定channel=in_app，事件键唯一。预约确认、签到提醒、违规、维修、暂离和门禁同步都使用稳定键。AuditLog追加记录操作人、目标、前后值、IP、结果和时间；LoginLog记录认证事件。任何用户不可查看他人通知，管理员不可查看门禁明细。
++
++## 六、数据架构
++
++### 6.1 聚合
++
++| 聚合 | 实体 | 关系 |
++|---|---|---|
++| 身份 | User、Role、Permission、AuthSession、PasswordResetToken、LoginLog | User拥有角色和会话 |
++| 资源 | StudyRoom、Seat、OpeningSchedule、CalendarDay | 房间包含座位和开放规则 |
++| 预约 | Reservation、ArrivalRecord | 预约拥有签到、暂离和结束事实 |
++| 纪律 | ViolationRecord、Restriction、Appeal | 违规产生限制，申诉关联违规 |
++| 门禁 | EntryExitRecord | 事件关联最多一条预约 |
++| 消息 | Notification | 用户收到并更新已读 |
++| 审计/配置 | AuditLog、SystemSetting | 各模块追加审计，管理员维护参数 |
++
++### 6.2 重点约束
++
++users.student_no唯一；room.name唯一；seat(room_id,code)唯一；opening_time<closing_time；reservation起止顺序正确、reservation_no和幂等键唯一、有效预约座位/开始时间唯一索引、用户和开始时间索引；notifications事件键唯一且channel只能in_app；entry_exit(source_system,external_id)唯一；审计/登录按时间索引；枚举由数据库CHECK约束保证。
++
++### 6.3 事务范围
++
++创建预约覆盖用户资格、座位冲突、预约、到达记录、通知和座位状态；取消覆盖预约、违规、通知和释放；签到覆盖预约、到达记录和座位状态；暂离/门禁/超时覆盖门禁事实、预约、违规、通知和释放；维护覆盖座位、未来预约、通知和审计；申诉覆盖结论、违规、限制、通知和审计；配置覆盖参数和审计。报表和状态展示为只读可重算查询。
++
++### 6.4 保留与隐私
++
++违规14天后归档不删除；日志默认保留180天；门禁记录只保存脱敏键、事件元数据和到期时间；密码和令牌只保存哈希/摘要；导出仅管理员可用；敏感导出的访问审计列为交付约束；不提供清空历史的万能接口。
++
++## 七、接口设计
++
++### 7.1 统一规则
++
++API使用/api前缀、Bearer会话和后端授权；写命令使用幂等键；时间带时区；401/403/404/409/422/503分别表示认证、权限、可见性、状态冲突、参数/业务错误和写锁繁忙；错误不暴露SQL和敏感身份；分页、导出范围和门禁读取均有上限。
++
++### 7.2 用户接口
++
++| 路径 | 说明 |
++|---|---|
++| POST /auth/register、/auth/login、/auth/logout、/auth/change-password、/auth/reset-password | 注册、登录、注销、改密和重置 |
++| GET /auth/me | 本人和权限 |
++| GET /rooms、/seats、/seats/{id} | 房间、开放时间、座位筛选、详情和实时状态 |
++| GET/POST /reservations | 本人历史、创建预约 |
++| PATCH /reservations/{id}/seat | 仅未签到换座 |
++| POST /reservations/{id}/check-in | QR座位校验和弹性签到 |
++| POST /reservations/{id}/temporary-leave、/return、/end、/cancel | 暂离、返回、结束和取消 |
++| GET /violations、POST/GET /appeals | 本人违规和7天内申诉 |
++| GET /notifications、POST /notifications/{id}/read | 站内消息 |
++
++### 7.3 管理与运维接口
++
++管理包含/admin/users、/admin/rooms、/admin/rooms/{id}/seats、schedules、calendar、settings、violations、appeals、reports和reports/export.xlsx。运维包含/ops/entry-exit/mock、/records、/manual-appeals、/backups、/status及日志查询。权限分别由user:manage、room:manage、settings:manage、violation:manage、appeal:manage、stats:read、data:export、entry_exit:read、system:backup、system_log:read和audit_log:read控制。
++
++## 八、前端架构
++
++Vue3单页应用使用Vue Router和集中auth状态。API客户端统一加Bearer令牌并把FastAPI错误转换为中文。用户页面包括首页、房间/座位、预约、签到、通知、违规和申诉；管理页面包括用户、房间配置、座位布局/导入/维护、报表和申诉；运维页面包括日志、门禁、备份和状态。路由守卫只隐藏页面，后端权限是最终裁决。签到优先用BarcodeDetector，无API时手输座位ID或房间+编号；二维码只编码座位标识，不包含用户数据。
++
++## 九、部署、配置和恢复
++
++开发使用Python3.11、Node20、Uvicorn和SQLite；测试每个用例使用临时SQLite并运行Alembic；演示后端默认8000、前端5173。配置统一使用STUDYROOM_前缀：DATABASE_URL、TIMEZONE、SQLITE_BUSY_TIMEOUT_MS、RESERVATION_SWEEP_INTERVAL_SECONDS、BCRYPT_ROUNDS、LOGIN_MAX_FAILURES、BACKUP_INTERVAL_SECONDS、BACKUP_DIR、BACKUP_KEEP、LOG_RETENTION_DAYS和GATE_HMAC_SECRET。非dev/test环境拒绝默认门禁密钥。
++
++备份使用sqlite3 online backup API，默认保留14份；恢复前执行完整性检查。恢复必须停机，校验备份、恢复数据库、核对迁移版本和关键表后再启动。RPO=0是SRS目标，需通过隔离故障演练测量，不以一次备份列表展示替代。
++
++## 十、可测试性和评审场景
++
++### 10.1 测试接缝
++
++时钟可替换；数据库由make_engine和依赖覆盖切换为临时SQLite；门禁由mock DTO输入；通知由数据库事件键去重；后台任务可显式调用sweep/full_sweep；权限通过require_permission替换；报表由build_report和BytesIO测试；备份使用临时文件恢复。这样不启动真实浏览器和门禁，也能验证核心规则。
++
++### 10.2 必须评审的场景
++
++1. 100个请求抢同一座位只成功一条。
++2. 幂等重放返回原预约的当前状态，不新增记录。
++3. 开始前/后15分钟签到边界和超窗1秒。
++4. 迟取消、正常取消和已签到取消拒绝。
++5. 暂离入馆恢复、超时处罚、未声明出馆处罚。
++6. 门禁重复、迟到、无法匹配和已完成预约旧事件。
++7. 维护未来预约取消、已签到继续使用、通知和审计。
++8. 3/5/7/9次处罚阶梯、未签退折算、14天归档。
++9. 用户、管理员、运维权限和双用户对象越权。
++10. 站内通知重试、在线备份、恢复完整性和客户端时间篡改。
++11. 390px视口和无BarcodeDetector手动签到。
++
++验证命令为：backend执行pytest、ruff check、ruff format --check；frontend执行npm run lint、format:check、build；全量使用python scripts/dev.py test。测试证据记录环境、提交版本、命令、输出和数据库核对。演示环境不能替代长期可用性、200并发和NTP偏差测量。
++
++## 十一、开发约束与演进安排
++
++1. 新功能必须标注SRS FR/BR/NFR/AC编号和所属模块。
++2. 改动预约、签到、暂离、门禁、违规时必须写明事务、状态转换、幂等键和回滚语义。
++3. 管理动作必须审计；禁止万能状态更新和任意设置违规次数。
++4. 新表必须有Alembic迁移、约束、权限和清理策略。
++5. 前端状态是快照，不能直接写回座位可用状态。
++6. 外部集成必须有适配器和人工核验降级。
++7. 关键事务由功能负责人之外的队员复核；CI未通过不合并。
++8. AI生成修改必须限定文件范围、保留测试证据并由人工审查。
++
++演进顺序：认证/迁移/权限 → 资源和预约 → 签到/暂离/扫尾 → 门禁 → 违规/申诉/通知/审计 → 管理资源和报表 → 备份监控与压力兼容性。若压力验证表明SQLite写锁不能满足目标，迁移PostgreSQL而保持应用服务和接口契约。
++
++## 十二、架构决策记录
++
++| ADR | 决策 | 责任人/设计日期 |
++|---|---|---|
++| ADR-01 | FastAPI + Vue3 + SQLite分层模块化单体 | 周俊博、张东岩、方梓安 / 2026-11-26 |
++| ADR-02 | SQLite外键、WAL、busy_timeout，预约使用BEGIN IMMEDIATE | 张东岩、周俊博 / 2026-11-26 |
++| ADR-03 | 半开时间区间、事务内重查、唯一约束和幂等键 | 周俊博 / 2026-11-26 |
++| ADR-04 | RESERVED/ACTIVE/TEMP_LEAVE/COMPLETED/CANCELLED/ADMIN_CANCELLED/EXPIRED/TIMED_OUT状态机 | 周俊博、方梓安 / 2026-11-26 |
++| ADR-05 | 通知仅站内，业务事件键去重 | 方梓安 / 2026-11-26 |
++| ADR-06 | 门禁HMAC脱敏，迟到/无法匹配进入人工核验 | 方梓安、张东岩 / 2026-11-26 |
++| ADR-07 | 固定14天窗口、无上限阶梯、归档不删除 | 方梓安、周俊博 / 2026-11-26 |
++| ADR-08 | 维护只取消未来预约、只通知不补偿、已签到不立即中断 | 全组 / 2026-11-26 |
++| ADR-09 | online backup、完整性检查、停机恢复 | 张东岩 / 2026-11-26 |
++| ADR-10 | BR-051版本字段作为演进约束；当前以写锁和约束保障单库并发 | 周俊博、张东岩 / 2026-11-26 |
++
++
++## 十三、架构视图与关键流程展开
++
++### 13.1 系统上下文视图
++
++```mermaid
++flowchart LR
++    U["用户：学生与教师"] --> W["Vue3浏览器前端"]
++    A["管理员"] --> W
++    O["运维人员"] --> W
++    W -->|"HTTP JSON /api + Bearer"| B["FastAPI应用"]
++    G["门禁事件源"] -->|"脱敏事件；当前模拟适配器"| B
++    B --> D[("SQLite事务数据库")]
++    B --> N["站内消息列表"]
++    B --> X["Excel报表流"]
++    B --> F["数据库备份目录"]
++    T["主机统一时间"] --> B
++```
++
++用户在资源查询界面选择日期、时间和座位，预约结果写入统一数据库；管理员管理资源和纪律；运维查看运行信息和门禁。系统不向浏览用户公开占用者姓名，不把门禁生物特征导入本系统。门禁mock路由由运维权限保护，真实设备上线需要独立机器身份适配，不能直接把运维账号令牌分发给设备。
++
++### 13.2 分层组件视图
++
++```mermaid
++flowchart TB
++    V["Vue Views / Router / auth状态"] --> C["统一Fetch API客户端"]
++    C --> H["FastAPI API / Pydantic Schemas"]
++    H --> P["deps：认证与权限"]
++    H --> R["预约应用服务"]
++    H --> A["资源与管理服务"]
++    H --> Q["查询与报表"]
++    W["后台任务"] --> R
++    G["门禁适配器"] --> R
++    R --> K["违规服务"]
++    R --> N["站内通知"]
++    A --> R
++    A --> J["审计服务"]
++    K --> N
++    R --> M["SQLAlchemy Models / 事务"]
++    K --> M
++    N --> M
++    J --> M
++    A --> M
++    Q --> M
++    M --> DB[("SQLite WAL")]
++```
++
++本图表达目标依赖方向。当前路由中已有部分直接ORM操作，属于同一部署单元内的实现方式；后续修改应逐步汇入应用服务，不能把“模块化单体”理解为现有代码已经完成严格领域隔离。数据库仍共享，事务仍本地执行，逻辑模块不各自创建数据库。
++
++### 13.3 目录与模块映射
++
++| 代码位置 | 架构职责 | 主要维护者 |
++|---|---|---|
++| backend/app/main.py | 应用组装、异常处理、中间件、任务生命周期 | 张东岩 |
++| backend/app/config.py、db.py、timeutil.py | 环境配置、数据库、统一时钟 | 张东岩 |
++| backend/app/security.py、deps.py、permissions.py | 密码、令牌、认证与授权依赖 | 张东岩 |
++| backend/app/models | 核心实体、认证/配置/日志模型和约束 | 张东岩，功能负责人协同 |
++| backend/app/schemas | API请求响应校验与业务输入结构 | 各模块负责人 |
++| backend/app/services/availability.py | 开放窗口、座位搜索、实时状态 | 周俊博 |
++| backend/app/services/reservations.py | 创建、换座、取消、签到和履约编排 | 周俊博、方梓安 |
++| backend/app/services/reservation_worker.py | 扫尾任务入口和循环重试 | 周俊博、方梓安 |
++| backend/app/services/gate.py、violations.py、notifications.py | 门禁、纪律、站内消息 | 方梓安 |
++| backend/app/services/admin_force_cancel.py | 房间关闭和开放时间变更影响处理 | 张东岩、方梓安 |
++| backend/app/services/backup.py、ops_worker.py、logs.py | 在线备份、任务调度、日志保留 | 张东岩 |
++| backend/app/api/admin_seats.py、reports.py | 座位布局/CSV导入、统计/XLSX | 方梓安 |
++| backend/migrations/versions | 0001～0008数据库演进 | 张东岩 |
++| frontend/src/views/WorkflowsView.vue、CheckInView.vue | 预约操作和扫码履约界面 | 周俊博、方梓安 |
++| frontend/src/views/AdminConfigView.vue、AdminUsersView.vue | 配置、账号角色和权限界面 | 张东岩 |
++| frontend/src/views/AdminSeatsView.vue、AdminReportsView.vue、AdminAppealsView.vue | 座位、报表、申诉管理界面 | 方梓安 |
++| frontend/src/views/AdminLogsView.vue、AdminOpsView.vue、AdminGateView.vue | 日志、备份监控、门禁工作台 | 张东岩、方梓安 |
++| scripts/dev.py、.github/workflows/ci.yml | 本地一键启动和持续集成 | 张东岩 |
++
++### 13.4 创建预约时序
++
++```mermaid
++sequenceDiagram
++    actor U as 用户
++    participant V as Vue预约页面
++    participant API as FastAPI
++    participant S as reservations
++    participant DB as SQLite
++    U->>V: 选择座位与时段并提交
++    V->>API: POST /api/reservations
++    API->>API: Bearer会话与reservation:own
++    API->>S: create(user_id, payload, key)
++    S->>DB: BEGIN IMMEDIATE
++    S->>DB: 用户复核/幂等查重/开放窗口/重叠查询
++    alt 同键且用户和指纹匹配
++        DB-->>S: 已存在预约
++        S->>DB: 提交读写事务
++        S-->>API: 原预约当前状态与重放标志
++    else 可以预约
++        S->>DB: Reservation + ArrivalRecord
++        S->>DB: Notification与座位状态同步
++        S->>DB: COMMIT
++        S-->>API: 新预约
++    else 规则冲突或数据库异常
++        S->>DB: ROLLBACK
++        S-->>API: 409 / 422 / 503
++    end
++    API-->>V: 结果或中文错误
++    V-->>U: 预约单与允许的下一步
++```
++
++事务所用业务会话与认证查询会话区分，避免把认证已开启的读事务强行升级为立即写事务。该做法与write_transaction的独立Session实现一致。持锁期间只做数据库和本地计算，不访问门禁网络或发送外部消息。
++
++### 13.5 换座事务
++
++换座只接收seat_id，不接收新的开始结束时间；ChangeSeatIn禁止多余字段。处理时先检查本人预约处于RESERVED且未超窗，再检查禁约和新座位开放窗口，排除本预约后重查座位冲突和本人冲突。成功后更新seat_id、room_id，同步原座位和新座位状态。失败则整体回滚，原座位和原预约保持。预约号和幂等请求身份不变化；旧创建请求重放返回同一预约的当前座位。
++
++连续时段使用相邻半开区间，不视为冲突。例如09:00～10:00与10:00～11:00可连续预约；09:30～10:30与09:00～10:00重叠，应拒绝。跨日期预约和无时区时间必须在输入校验阶段拒绝。
++
++### 13.6 签到与自动失效时序
++
++```mermaid
++sequenceDiagram
++    actor U as 用户
++    participant API as 签到接口
++    participant S as 预约服务
++    participant DB as SQLite
++    participant W as 后台扫尾
++    U->>API: 提交扫码座位ID
++    API->>S: 本人预约签到
++    S->>DB: 写事务+本人预约读取
++    S->>S: 服务端时间/座位一致/状态校验
++    alt 在窗口内且座位无他人使用
++        S->>DB: ACTIVE + ArrivalRecord + Seat状态
++        S->>DB: COMMIT
++        S-->>U: 签到成功
++    else 超过窗口
++        S->>DB: EXPIRED + NO_SHOW + Seat释放
++        S->>DB: COMMIT
++        S-->>U: 409并说明已失效
++    end
++    W->>S: full_sweep
++    S->>DB: 查仍为RESERVED且到期的预约
++    S->>DB: 幂等失效/通知/违规后COMMIT
++```
++
++超窗状态应先提交，再返回业务错误，不能因抛错回滚刚产生的失效事实。正常窗口包含两端，但如果预约本身已经结束，则不能继续签到；相邻预约虽不冲突，提前签到也不能占据上一位尚在使用的座位。ArrivalStatus中的EARLY/LATE仅表达到达相对开始时间，不表示窗口内早到或晚到会产生处罚。
++
++### 13.7 临时离开与结束连续使用
++
++临时离开要求ACTIVE且尚未到预约结束。系统记录temp_leave_at和WAITING，保留至“声明时间+30分钟”和预约结束两者中更早的时刻。重新入馆事件必须落在该期限内；到期释放不能被事后旧事件逆转。暂离出馆事件只记录离馆，不重启30分钟计时。
++
++结束使用必须携带confirm=true。end_use先定位本人ACTIVE/TEMP_LEAVE预约，再沿“同用户、同座位、下一段开始=当前段结束”的关系找到连续预约链。已经开始的使用段写COMPLETED和结束事实；尚未开始的后续段写CANCELLED并说明“结束连续使用释放”。同一事务内释放整个链、计算记录中的使用分钟并发送总结通知，不对用户主动提前结束加罚。
++
++暂离已经超时则不能通过结束按钮绕过超时判定。任意两段之间有时间空隙，或座位/用户不同，不纳入连续链。
++
++### 13.8 申诉和多限制
++
++申诉由用户选择具体violation_id并填写理由和证据文本，服务端按user_id复核，不信任页面传入的归属。7天内可提交，无待处理重复申诉时创建Appeal并把关联违规改为PENDING。管理员只能在未处理状态下给出approved/rejected和必填处理说明。
++
++批准后仅解除申诉关联的限制，不能把该用户所有Restriction一次性置无效；创建/换座仍查询所有当前生效限制，只要任意限制生效就拒绝。驳回保持原违规和禁约，写明理由。原始记录保留，通过Appeal及AuditLog说明修正，不删除历史事件。
++
++## 十四、数据模型详细说明
++
++### 14.1 ER关系视图
++
++```mermaid
++erDiagram
++    USERS ||--o{ USER_ROLES : has
++    ROLES ||--o{ USER_ROLES : assigned
++    ROLES ||--o{ ROLE_PERMISSIONS : grants
++    PERMISSIONS ||--o{ ROLE_PERMISSIONS : defined
++    USERS ||--o{ AUTH_SESSIONS : opens
++    USERS ||--o{ PASSWORD_RESET_TOKENS : owns
++    STUDY_ROOMS ||--o{ SEATS : contains
++    STUDY_ROOMS ||--o{ OPENING_SCHEDULES : schedules
++    USERS ||--o{ RESERVATIONS : books
++    SEATS ||--o{ RESERVATIONS : occupied
++    RESERVATIONS ||--o{ ARRIVAL_RECORDS : records
++    USERS ||--o{ VIOLATION_RECORDS : receives
++    RESERVATIONS o|--o{ VIOLATION_RECORDS : relates
++    RESTRICTIONS o|--o{ VIOLATION_RECORDS : causes
++    VIOLATION_RECORDS ||--o{ APPEALS : appealed
++    USERS ||--o{ NOTIFICATIONS : reads
++    RESERVATIONS o|--o{ ENTRY_EXIT_RECORDS : matches
++```
++
++图中ArrivalRecord使用一对多表示当前物理外键允许的基数；业务流程预期每个预约一条到达记录。区域以Seat.zone_type保存，不单独建立Zone表；暂离字段放在Reservation，不单独建暂离流水表；候补没有表。身份与角色是多对多关系，界面“用户/管理员/运维”表示权限集合，不能依赖单一角色字符串判断所有场景。
++
++### 14.2 身份和认证数据字典
++
++| 实体/字段 | 类型与约束 | 设计用途 |
++|---|---|---|
++| users.id | 整数主键 | 内部稳定关联键 |
++| student_no | String(32)，唯一非空，非空白检查 | 学号/工号身份；当前格式校验为6～20位字母数字 |
++| name、department、contact | 姓名必填，部门/联系可空 | 本人与授权管理员可见 |
++| password_hash | String(255)，非空 | bcrypt哈希，不提供读取接口 |
++| status | normal / disabled | 账号可用性，与违规禁约区分 |
++| roles、permissions | 多对多中间表 | 模块×动作权限与角色对应 |
++| auth_sessions.token_hash | String(64)，唯一 | SHA-256令牌摘要 |
++| auth_sessions.expires_at、revoked_at | 带时区时间逻辑值 | 默认12小时，注销/改密可提前撤销 |
++| password_reset_tokens | 用户、签发人、摘要、过期/使用时间 | 默认30分钟一次性，重签使旧码失效 |
++| login_logs | 用户、尝试学号、事件、成功、原因、时间、IP、客户端 | 失败也独立提交留痕，支持锁定判断 |
++
++密码至少8位且含字母和数字，编码后不能超过bcrypt的72字节限制。首次管理员由CLI创建；注册接口只发普通用户角色。改密和密码重置都撤销该用户所有会话，避免旧设备持续访问。前端令牌放localStorage是当前实现，部署需要同源HTTPS和脚本注入防护，不把这种存储方式写成HttpOnly Cookie或JWT。
++
++### 14.3 资源和开放时间数据字典
++
++| 实体 | 核心字段 | 约束与说明 |
++|---|---|---|
++| StudyRoom | name、location、floor、capacity、facilities、status、remark | 名称唯一，容量非负，open/closed |
++| Seat | room_id、code、zone_type、has_power、by_window、accessible、status、status_changed_at | 房间内编号唯一，区域quiet/discussion/exam_prep |
++| OpeningSchedule | room_id、day_type、open_time、close_time、effective_from/to、enabled | 按工作日/周末/节假日/考试周与生效日期查规则 |
++| CalendarDay | day主键、day_type、note | 特殊日期覆盖普通星期推算 |
++| SystemSetting | key主键、JSON value、updated_at、updated_by | 只存覆盖值，其余采用BusinessSettings默认值 |
++
++可用性服务优先取CalendarDay，否则按星期区分工作日/周末；取enabled且有效期覆盖的规则，裁剪到06:00～23:30，再合并重叠或相邻开放窗口。预约必须完整落在同一个合并窗口内。资源关闭或维护优先于占用展示，释放不能把maintenance/closed/disabled误改为available。
++
++六类SeatStatus为available、reserved、in_use、maintenance、closed、disabled。TEMP_LEAVE是预约状态，座位列表把它映射为in_use；本人预约页通过TEMP_LEAVE和计时显示暂离，避免重复维护两个互相矛盾的事实。座位布局采用编号和设施属性组织，不声称有当前表中不存在的持久化x/y坐标。
++
++### 14.4 预约与履约数据字典
++
++| 字段 | 用途与约束 |
++|---|---|
++| reservation_no | SR+时间+随机片段的唯一预约号，用于人工追溯 |
++| user_id、room_id、seat_id | RESTRICT外键；保留有历史的资源引用 |
++| start_time、end_time | 必须带时区输入，数据库CHECK保证start<end |
++| status | 八类状态，三种有效占用状态 |
++| cancel_type、cancel_reason、cancelled_at | normal/late/system及取消事实 |
++| expire_reason | no_show、temp_leave_timeout、period_end、left_undeclared等原因 |
++| temp_leave_at、temp_leave_state | 暂离起点和none/waiting/returned/timed_out |
++| idempotency_key、request_fingerprint | 全库唯一键及SHA-256请求内容摘要 |
++| ArrivalRecord.arrival_status | absent/on_time/late/early，到达分类而非直接处罚 |
++| arrived_at、arrival_method | 实际到达时间；qr或manual |
++| ended_at、end_method | button、auto_timeout或admin_release |
++| sync_delay_seconds | 到达事实与门禁同步延迟的辅助字段 |
++
++当前有效状态唯一索引只覆盖seat_id+start_time，不能独立阻止“开始时刻不同但区间重叠”；完整排他性必须依赖写锁内重叠查询。禁止把该索引解释成时间范围排他约束。当前没有ActiveSlotClaim时间片表，也没有Redis或分布式锁。
++
++LocalDateTime在写入前统一转为北京时间无时区值存储，读出再附Asia/Shanghai，拒绝无时区datetime。API返回带+08:00的时间，前端负责显示而不负责裁决。
++
++### 14.5 纪律、通知和门禁字典
++
++| 实体 | 字段重点 | 说明 |
++|---|---|---|
++| ViolationRecord | type、occurred_at、reservation_id、arrival_record_id、description | 原始违规与证据关联 |
++| 周期字段 | state、period_start、period_seq、archived_at、is_offset | 固定窗口、有效累计和原始未签退折算 |
++| Restriction | ban_days、warning_count、trigger_condition、start_at/end_at、status | 处罚触发事实，多个限制可并存 |
++| 解除字段 | lifted_at、lift_reason、lifted_by | 不覆盖原处罚起因 |
++| Appeal | violation_id、restriction_id、reason、evidence、deadline、reviewer、result、comment | 关联具体违规和限制；审核结果可追溯 |
++| Notification | user_id、type、content、sent_at、channel、is_read、idempotency_key | 站内投递就是入库；不含外部发送器状态 |
++| EntryExitRecord | source_system、external_id、masked_user_key、record_type、recorded_at、received_at | 来源查重、事件时间与接收时间分离 |
++| 同步字段 | sync_status、sync_delay_seconds、reservation_id、manual_note、expires_at | pending/synced/late/unmatched/manual_review |
++
++基础纪律仍是SRS三类治理事件；代码另外细分late_cancel和temp_leave_timeout，用于保留迟取消和暂离超时来源，不能因此改写成新的四级处罚体系。枚举有五种事件类型，不代表有五档固定处罚。
++
++## 十五、接口契约、权限和报表补充
++
++### 15.1 创建与重放示例
++
++请求为POST /api/reservations，Authorization从登录会话获得：
++
++```json
++{
++  "seat_id": 12,
++  "start_time": "2026-11-27T09:00:00+08:00",
++  "end_time": "2026-11-27T10:00:00+08:00",
++  "request_key": "reserve-zhou-20261127-001"
++}
++```
++
++客户端可改用Idempotency-Key请求头，优先级高于request_key；正文键会先按用户ID计算摘要。请求指纹包含用户、座位或房间区域、开始和结束时间。当前请求头键全库唯一，应用同时比对用户，另一用户复用该键返回409，不泄露原预约。
++
++首次创建返回201；头部幂等重放返回200和Idempotent-Replayed:true；正文键重放保持201兼容已有接口。无键也可以创建，但不具有跨网络重试的完整去重保证，因此用户预约页面应在一次意图的重试过程中保持同一个键。重放返回同一预约的当前状态，不是不可变的首次响应快照。
++
++换座请求PATCH /api/reservations/{id}/seat只允许：
++
++```json
++{"seat_id": 13}
++```
++
++签到请求POST /api/reservations/{id}/check-in支持二选一：
++
++```json
++{"seat_id": 13}
++```
++
++或：
++
++```json
++{"room_id": 2, "seat_code": "A03"}
++```
++
++结束请求为：
++
++```json
++{"confirm": true}
++```
++
++当前认证错误detail为含code/message的对象，预约错误detail多为字符串，Pydantic错误为列表；前端client.js兼容三种。架构统一HTTP状态语义，不虚构当前所有接口都具有request_id、rule_id和统一错误对象。
++
++### 15.2 权限矩阵落地
++
++| 能力 | 用户 | 管理员 | 运维 | 对象边界 |
++|---|---|---|---|---|
++| 公开房间和座位 | 是 | 是 | 是 | 当前实现要求登录 |
++| 本人预约/签到/暂离/结束 | 是 | 是 | 否 | user_id必须为本人 |
++| 管理用户、房间、座位和配置 | 否 | 是 | 否 | 管理员全部业务范围 |
++| 全部违规与申诉处理 | 否 | 是 | 否 | 不公开给其他用户 |
++| 本人违规/申诉/通知 | 是 | 本人 | 仅本人通知及通用会话能力 | 需区分接口实际授权差异 |
++| 统计/XLSX | 否 | 是 | 否 | 不含门禁明细 |
++| 业务审计日志 | 否 | 是 | 是 | 只读 |
++| 登录日志/运行监控 | 否 | 否 | 是 | 只读 |
++| 门禁明细/模拟接收 | 否 | 否 | 是 | 脱敏、限定用途 |
++| 在线备份 | 否 | 否 | 是 | system:backup |
++| 恢复 | 否 | 否 | 服务器CLI操作 | 停机执行 |
++
++PERMISSIONS是代码中的权限映射权威，迁移0003写入角色权限快照，测试校验两者一致。更改角色在下次后端请求读取User.roles后生效；当前require_permission按角色名判断，并没有把Role.enabled作为完整权限关闭开关。对象归属必须由每个查询再过滤，不能因拥有模块权限而自动获得全量数据。
++
++### 15.3 座位CSV导入
++
++前端读取CSV文本并提交SeatImportIn.content，最大2,000,000字符；后端解析每行、校验编号、区域、布尔设施字段和状态，然后在BEGIN IMMEDIATE内批量写入，同一CSV内编号重复或任一行不合法则拒绝导入；已有编号更新、新编号新增，写入失败整体回滚。导入不是上传任意数据库文件，不接受跨房间修改其他资源。操作审计记录导入行为和数量。导出XLSX属于报表能力，与CSV导入格式分开。
++
++### 15.4 报表统计口径
++
++报表JSON和Excel共用build_report，日期输入含首尾日期，内部换成北京时间[start日00:00,end次日00:00)；默认最近30天，按接口上限拒绝过长范围。
++
++| 指标 | 当前代码计算口径 | 使用解释 |
++|---|---|---|
++| booked_hours | ACTIVE、TEMP_LEAVE、COMPLETED、TIMED_OUT预约在范围内的计划时长之和 | 不是ArrivalRecord精确实坐时长 |
++| available_hours | 当前开放房间、当前非维护/关闭/禁用座位数×查询日期有效开放时长 | 没有历史资源状态快照 |
++| rate | booked_hours / available_hours，分母0时为0 | 反映实现口径下的计划使用比率 |
++| reservation_count | 与查询区间相交的全部状态预约数 | 包含取消记录 |
++| booking_peaks | 按预约开始日期和小时统计记录数 | 不是每分钟实际人数 |
++| violation_trends | 按违规发生日期和类型统计记录数 | 原始记录数，不等于有效警告累计 |
++
++Excel包含“利用率概览”“预约高峰”“违规趋势”三个工作表，保留日期和定义、冻结表头并设置列宽。不能把当前报表写成真实人流分析、历史库存重建或精确扣除暂离时长的统计系统。若需要实坐小时，必须在同一需求口径下使用ArrivalRecord与暂离事件，不直接更换报表定义。
++
++## 十六、实现一致性、风险处置与交付判据
++
++### 16.1 设计与现有实现差异
++
++以下内容是明确的架构整改约束，有责任人和验证出口，不作为悬置业务问题，也不宣称已完成代码修正。
++
++| 编号 | 核验事实 | 设计处置 | 负责人/验证 |
++|---|---|---|---|
++| GAP-A01 | 无独立version列，预约靠SQLite写锁与唯一索引 | 保留当前正确性机制，补version条件更新满足BR-051 | 周俊博、张东岩；旧版本更新409 |
++| GAP-A02 | BusinessSettings有max_active_reservations，但核心create主要检查本人时段重叠 | 按SRS最终“同一时段单座、相邻可连续”口径解释；不能宣称已实现独立日次数/小时额度 | 周俊博；并发同人、相邻和非重叠测试 |
++| GAP-A03 | 签到API允许无请求体，门禁入馆也可将RESERVED变ACTIVE | 正式用户路径采用QR/编号校验；无体兼容和门禁到达需受控，不应作为不受限远程签到 | 周俊博、方梓安；窗口与本人座位负向用例 |
++| GAP-A04 | /return可由本人手动恢复 | 正式返回以门禁为依据；兼容入口限制为补偿场景并留痕 | 方梓安；无门禁直接恢复测试 |
++| GAP-A05 | expire_due严格大于窗口，full_sweep使用小于等于阈值 | 统一闭区间边界，截止整秒签到与扫描不能因入口不同相互矛盾 | 周俊博、方梓安；截止整秒双入口竞争 |
++| GAP-A06 | _record_violation与record_violation是两条路径，前者主要记事实，未完整复用阶梯和违规通知 | 预约迟取消/请求补偿失效统一汇入discipline服务，确保不同入口处罚一致 | 周俊博、方梓安；迟取消第3次和两种超时路径 |
++| GAP-A07 | 当前站内通知直接flush，与业务同事务，无Outbox/重试队列 | 正常以同库提交保证可查；写通知失败当前会回滚业务，若要满足SRS通知失败不阻塞需增加持久待补通知机制 | 方梓安；注入通知失败、恢复和去重 |
++| GAP-A08 | 当前设置表只有当前值，无PolicyVersion或预约规则快照 | 不能承诺旧预约保留旧签到参数；规则变更须受控，并补快照后验证历史重现 | 张东岩、周俊博；变更前后旧预约测试 |
++| GAP-A09 | 门禁expires_at已保存，但日志清理只删AuditLog/LoginLog | 补受控门禁到期清理与访问审计；不把字段存在说成已自动清理 | 方梓安、张东岩；到期与权限审计 |
++| GAP-A10 | 门禁读取和报表导出代码没有完整写入专用访问审计 | 增加相应审计，保证敏感读取/导出可追踪 | 方梓安；访问后日志对账 |
++| GAP-A11 | 审计无修改接口但服务可清理180天以前日志，文件管理员仍可改SQLite | 不将追加式应用审计写成密码学不可篡改；定期备份、保留期控制和主机权限共同保护 | 张东岩；日志清理和备份校验 |
++| GAP-A12 | 默认定时备份关闭，备份是周期快照 | 当前不保证整机/磁盘损毁RPO=0；保留目标，增加持久化故障边界和备份恢复实测 | 张东岩；隔离故障逐笔对账 |
++| GAP-A13 | ArrivalRecord无reservation_id唯一约束；暂离只保存当前一轮起点 | 业务保证单记录并评估唯一约束；重复暂离完整历史靠事件/审计扩展 | 张东岩、方梓安；重复记录和多轮暂离 |
++| GAP-A14 | 多个管理路径直接操作ORM，维护取消主要过滤未来RESERVED | 收拢到统一应用服务，按BR-060/061/062逐项验证进行中、未来和永久停用语义 | 张东岩、方梓安；维护/停用/删除矩阵 |
++
++### 16.2 可靠性与故障边界
++
++SQLite WAL和本地事务解决的是同一数据库文件的并发和事务恢复，不能自动提供跨机器高可用。预约扫描与后端共进程，进程停止时扫描也停止；重启后full_sweep补扫到期数据。60秒是调度间隔，不是“任何情况下60秒内必定释放”的性能保证，锁等待和任务耗时还需计入。服务中断导致用户无法签到的争议进入人工申诉，不能通过伪造客户端时间修复历史。
++
++备份轮换按份数而非天数，14份不等于14天；实际覆盖时长取决于备份频率。CLI restore先保存当前库，再校验指定备份并覆盖目标库，不提供在线HTTP恢复接口。恢复后核验预约、到达、违规、限制、通知和审计关联，避免只检查“能登录”就宣布恢复成功。
++
++可用性按监控总时段与不可用时段计算；P95按真实请求耗时排序，不用平均数替代；200并发应同时包含读取与写入比例、身份、数据规模、锁超时和重试数，不能把100个抢座正确性测试当作200并发性能验收。
++
++### 16.3 演进影响评估
++
++| 变化 | 受影响模块 | 保持的契约 |
++|---|---|---|
++| 改变签到窗口参数 | BusinessSettings、设置服务、预约输出和边界测试 | 本人、座位一致、状态机和服务端时间 |
++| 新增设施筛选 | Seat字段、Alembic、PublicSeat、查询、前端筛选 | 预约事务仍重查实际可用性 |
++| 接真实门禁 | gate适配器、机器认证、DTO映射、隐私审计 | source+event去重、迟到降级、状态匹配 |
++| SQLite换PostgreSQL | db、迁移、锁实现、数据库专属索引和并发测试 | 半开区间、幂等、状态机、HTTP契约 |
++| 独立报表进程 | 只读数据接入、报表任务和授权 | 不写业务事实、指标定义一致 |
++| 外部通知渠道进入新范围 | 新渠道适配、持久发送任务、重试 | 本期站内可查与业务提交不依赖外部网络 |
++
++### 16.4 交付检查表
++
++- 需求范围使用SRS最终HD决策，候补、黑名单、教师特权和补偿没有混入设计。
++- 三名成员的模块职责、共同接口和复核责任明确，队长负责需求统筹，张东岩侧重测试整合。
++- 架构图、状态表、数据表、接口和权限矩阵使用同一套实体与状态名称。
++- 预约并发、幂等、取消、签到、暂离、门禁和处罚都有事务边界与失败语义。
++- 当前已有机制与目标约束分开表述，未编造压测、会议、教师审核或生产接入证据。
++- 数据库迁移、权限、回归、备份恢复和移动兼容均有可执行验证入口。
++- 所有已识别实现差异有确定责任人和验证出口，按16.1表纳入开发与集成工作。
++
++
++
++### 16.5 质量验证责任与交付记录
++
++| SRS指标 | 架构支持 | 实测证据要求 | 负责人 |
++|---|---|---|---|
++| NFR-001 月度可用性≥99.5% | 健康入口、进程守护、后台失败重试和补扫 | 连续月度探测、故障起止及停机统计 | 张东岩 |
++| NFR-002 P95≤2秒 | 简化部署、本地事务、索引、短写事务 | 独立压测记录请求分布、P50/P95/P99、吞吐及错误率 | 张东岩、周俊博 |
++| NFR-003 ≥200并发 | WAL读写并行、锁等待与可重试结果 | 隔离身份和资源逐步加压；区分在线、在途请求和写并发 | 张东岩 |
++| NFR-004 超售0 | 事务内资源/用户重叠复核、唯一约束 | 并发前后数据库核对，包含部分重叠与相邻时段 | 周俊博 |
++| NFR-005 自适应哈希 | bcrypt默认成本12、无明文密码字段 | 哈希前缀与成本检查、日志敏感信息检查 | 张东岩 |
++| NFR-006 时间偏差≤1秒 | 服务端统一时区、时钟接缝 | 主机NTP状态和相对可信基准的误差记录 | 张东岩 |
++| NFR-007 关键参数可配置 | BusinessSettings白名单及设置表 | 逐参数读写和行为验证，区分被固定的暂离30分钟与可调项 | 张东岩、各功能负责人 |
++| NFR-008 关键操作留痕 | AuditLog与LoginLog | 状态、角色、维护、参数、申诉、导出和门禁访问逐笔对账 | 全组 |
++| NFR-009 核心路径≤3步 | 默认时段选座提交、扫码界面 | 以已登录用户实际业务动作计数，单列首次授权摄像头 | 周俊博、方梓安 |
++| NFR-010 浏览器兼容 | 响应式Vue页面和编号输入回退 | Chrome/Edge/移动Safari等测试记录及小屏溢出检查 | 方梓安 |
++| NFR-011 非授权访问0 | 后端角色与对象归属双重校验 | 角色矩阵、双用户ID替换、导出/门禁越权 | 张东岩、方梓安 |
++| NFR-012 RPO=0 | 事务、WAL和一致快照提供基础能力 | 定义进程故障/磁盘故障边界，记录故障前后已确认事务对账；当前周期备份不保证该目标 | 张东岩 |
++
++当前metrics.py保存进程内请求数、状态码分类、平均耗时和最大耗时，不保存分位直方图；多进程计数各自独立，重启会清零。因此P95和月度可用率需要独立采样与持久监控，不能从现有avg_ms直接推导。性能验收使用独立测试库和隔离用户，不向实际使用中的系统施压。
++
++### 16.6 精确运维接口和恢复步骤
++
++日志查询为GET /api/ops/audit-logs和GET /api/ops/login-logs，按时间、操作者/学号和类型过滤，页大小上限200。不是一个可以任意操作日志的通用接口。门禁GET /api/ops/entry-exit/records上限500，Notification列表上限100；预约历史和部分资源列表当前仍无统一分页，容量扩大时必须补分页，避免把“全列表返回”当作已完成分页设计。
++
++备份恢复的操作步骤由张东岩维护，周俊博复核恢复后预约一致性，方梓安复核违规、通知与门禁关联：
++
++1. 运维创建在线备份并登记名称、大小、时间和所对应的应用版本。
++2. 排定恢复窗口，停止HTTP业务入口及后台扫尾、备份和清理任务。
++3. CLI执行恢复前先对当前库再备份；指定文件只能取备份目录内的文件名。
++4. restore_backup验证备份integrity_check，释放ORM连接，通过SQLite backup API覆盖目标数据库。
++5. 核对Alembic版本，只有应用发布确需升级时才执行相应迁移，不盲目改变历史备份结构。
++6. 检查用户角色、资源数、预约/到达记录关系、重叠有效预约、限制时段、通知事件键和审计连续性。
++7. 启动后端，执行到期补扫，核验health、登录、查询、测试预约及备份列表，登记恢复结果。
++
++恢复属于CLI和服务器权限流程，没有网页“在线恢复”按钮；当前恢复CLI也没有自动追加业务AuditLog，因此恢复记录需由运维保留，自动恢复审计列入完善项。恢复前自动备份可能触发保留份数轮换，运维要保留本次选定文件，避免目标旧备份被轮换删除。
++
++
++## 附录A：术语表
++
++| 术语 | 含义 |
++|---|---|
++| 有效预约 | RESERVED、ACTIVE、TEMP_LEAVE三种占用状态 |
++| 半开区间 | 包含开始、不包含结束的时间区间 |
++| 幂等键 | 标识一次业务意图，重复请求返回原结果 |
++| 预约失效 | 超过签到窗口仍未签到的终态 |
++| 超时结束 | 未签退、暂离超时或未声明离馆后的终态 |
++| 处罚阶梯 | 第k档阈值3+2(k-1)，禁约k天 |
++| 脱敏门禁键 | 由密钥和学号计算的HMAC摘要 |
++| 审计日志 | 追加记录操作者、目标、前后值、时间和结果 |
++| ADR | 架构决策记录 |
++
++## 附录B：主要参考文件
++
++- 附件/02 需求阶段/SRS.md
++- backend/app/main.py、db.py、config.py
++- backend/app/models/entities.py、auth.py、config.py、logs.py
++- backend/app/services/reservations.py、availability.py、gate.py、violations.py、notifications.py、backup.py
++- backend/app/api/auth.py、reservations.py、admin_*.py、reports.py、ops_*.py
++- frontend/src/router/index.js、frontend/src/views
++- .github/workflows/ci.yml
++- backend/tests
++
++## 附录C：风险控制
++
++| 风险 | 控制措施 | 负责人 |
++|---|---|---|
++| SQLite写锁瓶颈 | 压力测试、缩短事务、busy_timeout，必要时迁移PostgreSQL | 张东岩 |
++| 当前无独立version字段 | 保留写锁/约束；后续增加version条件更新和回归测试 | 周俊博 |
++| 门禁协议或授权变化 | 适配器、HMAC脱敏、人工核验、运维只读 | 方梓安 |
++| BarcodeDetector兼容性 | 二维码+可见编号、手动输入回退 | 方梓安 |
++| 长期指标缺数据 | 运行指标、隔离压力、月度可用性统计 | 张东岩 |
++| 管理操作争议 | 事务通知、审计、无补偿规则、申诉流程 | 全组 |
++
++**报告编制：全网呼叫奶家人团队**  
++**周俊博｜张东岩｜方梓安**
+ 
+-### ADR-LOCAL-003：Bearer 会话令牌与权限双层检查
+ 
+-- 状态：待团队评审与安全复核。
+-- 背景：服务端使用登录会话和 Bearer 令牌；密码使用 bcrypt 哈希。前端把令牌保存在 localStorage。后端权限依赖检查角色，涉及本人数据的接口另按 user_id 隔离；前端路由权限只用于界面导航。
+-- 比较：保留 Bearer 令牌方案，或采用服务端 Cookie 会话。当前方案便于 JSON 客户端调用；Cookie 方案可调整浏览器令牌暴露方式但需配置 CSRF 与 Cookie 属性。
+-- 候选决定：当前阶段继续保留实现，但必须由后端独立强制授权；不得依赖前端路由作为安全边界。
+-- 理由与代价：与现有 API 客户端匹配；localStorage 中令牌对 XSS 防护有依赖，部署需评估 HTTPS、内容安全策略和令牌生命周期。
+-- 验证：未登录、过期/撤销令牌、无权限角色、跨用户对象访问、禁用账户、密码重置后会话及前端存储风险检查。
+-- 确认/复核：未记录；需要另一成员进行安全复核。
+-- 重新评估条件：威胁模型、部署域名/跨域策略或课程安全要求改变。
+ 
+-## 决策变更
+ 
+-确认后修改 ADR 时新增替代记录，链接旧 ADR，并保留原记录。不得把代码现状改写为“人工已确认”，也不得删除不利的验证结果。
+diff --git "a/docs/\350\275\257\344\273\266\346\236\266\346\236\204\350\256\276\350\256\241\346\226\271\346\241\210_\345\237\272\347\272\277\347\211\210.md" "b/docs/\350\275\257\344\273\266\346\236\266\346\236\204\350\256\276\350\256\241\346\226\271\346\241\210_\345\237\272\347\272\277\347\211\210.md"
+index a995deb..67f9d39 100644
+--- "a/docs/\350\275\257\344\273\266\346\236\266\346\236\204\350\256\276\350\256\241\346\226\271\346\241\210_\345\237\272\347\272\277\347\211\210.md"
++++ "b/docs/\350\275\257\344\273\266\346\236\266\346\236\204\350\256\276\350\256\241\346\226\271\346\241\210_\345\237\272\347\272\277\347\211\210.md"
+@@ -1,123 +1,590 @@
+-# 软件架构设计方案（基线候选版）
++# 智能自习室管理预约系统软件架构设计方案（基线版）
+ 
+-更新日期：2026-11-12
+-状态：依据代码整理的 as-built 架构候选，待团队评审；不是原始架构讨论稿，也未记录人工批准。原始需求规格和架构讨论稿未在仓库中找到，收到后应保留原稿并建立差异追踪。
++| 项目 | 内容 |
++|---|---|
++| 基线标识 | ARCH-BL-1.0 |
++| 文档版本 | v1.0 |
++| 基线日期 | 2026-11-26 |
++| 编制团队 | 全网呼叫奶家人 |
++| 队长／基线维护人 | 周俊博 |
++| 团队成员 | 周俊博、张东岩、方梓安 |
++| 文档状态 | 架构设计基线，附实现差异与验证边界 |
++| 编制依据 | SRS半定稿、已有架构确认与决策记录、本次反向梳理的讨论稿及源码检查 |
++| 代码参照 | HEAD：671ca454a8fd4a69e0c7f619a5f540d277b930c0；另含2026-11-26本地工作区，不能仅以HEAD代表全部输入 |
+ 
+-## 1. 目标与范围
++## 1. 基线说明与适用边界
+ 
+-本文描述仓库当前实现的模块边界、主要数据流、存储与安全约束，为后续接口对齐和阶段任务提供共同起点。业务规则是否正确仍应以项目组确认的需求和 Issue 验收条件为准。
++### 1.1 基线目的
+ 
+-当前实现覆盖账号会话与权限、自习室和座位配置、预约及生命周期、违规申诉与站内通知、管理报表、操作/登录日志、系统监控和 SQLite 备份、脱敏门禁模拟事件。
++本基线固定智能自习室管理预约系统的总体架构、模块职责、数据与事务约束、接口边界、权限、部署和质量验证要求，作为后续接口设计、测试准备、缺口处理及课程交付的共同依据。
+ 
+-## 2. 技术组成
++项目已完成主要功能开发，本文件在现有系统基础上补齐设计基线。它与[架构讨论稿](软件架构设计方案_讨论稿.md)共同反映本次梳理过程，不代表开发前已经形成同名文件，也不倒写分阶段开发历史。旧基线候选文档中“未找到需求资料”等过时描述不再沿用。
+ 
+-| 部分 | 当前实现 |
+-| --- | --- |
+-| Web 前端 | Vue 3、Vue Router、Vite；本地开发服务器默认 5173。 |
+-| API 服务 | Python 3.11+、FastAPI、Pydantic；HTTP API 统一在 /api 前缀下。 |
+-| 数据访问 | SQLAlchemy 2；Alembic 管理 schema 迁移。 |
+-| 数据库 | SQLite 文件库；连接开启外键约束、WAL 和 busy_timeout。 |
+-| 认证与权限 | bcrypt 密码哈希、随机 Bearer 会话令牌；角色映射到服务端权限矩阵。 |
+-| 报表/运维 | openpyxl 生成 XLSX；SQLite online backup API 创建一致性备份；进程内计数器收集请求指标。 |
+-| 开发工具 | scripts/dev.py 使用 Python 标准库串联环境准备、启动和质量检查。 |
++基线采用已有需求与决策支持的确定方案，人员及职责采用团队本次提供的分工。文档编制由队长周俊博在本次协作中授权；既有业务决定和ADR仍以对应来源为依据，不据此虚构三名成员另行开会、逐项签字或完成交叉审查。
+ 
+-版本下限和运行命令以根目录 README.md、backend/pyproject.toml 及 frontend/package.json 为准。
++### 1.2 设计、实现与验证三种状态
+ 
+-## 3. 逻辑架构
++| 状态 | 本文含义 | 表述要求 |
++|---|---|---|
++| 基线设计约束 | 后续实现与验证应遵循的规则 | 使用“采用”“应”“必须”；与需求发生冲突时登记变更 |
++| 当前实现 | 静态源码及配置中已经发现的机制 | 使用“当前代码”“已定义”；不自动推定运行成功或验收通过 |
++| 验证结果 | 有真实执行与原始记录支持的结论 | 本轮未运行系统或测试，不新增“通过”结论 |
+ 
+-~~~mermaid
++本基线固定设计方向，同时保留第12章差异；**架构基线形成不等于需求全部满足或系统已经验收**。未落实的约束不因写入基线而成为已完成功能。
++
++### 1.3 权威输入及版本定位
++
++| 输入 | 作用 | 使用规则 |
++|---|---|---|
++| [软件需求规格说明书](软件需求规格说明书.md)，简称SRS | 业务范围、规则、用例、权限和质量指标 | 保留原文，不通过本文隐式修改需求 |
++| [架构确认与决策记录](架构确认与决策记录.md) | ADR-01～ADR-10及架构约束来源 | 沿用已有编号，不删除原Q/ADR，不追加无确认依据的“已接受”决策 |
++| [软件架构设计方案_讨论稿](软件架构设计方案_讨论稿.md) | 候选方案比较及DISC-01～DISC-10讨论索引 | 本文固定有依据的方案，保留未解决差异，不宣称所有DISC已关闭 |
++| [教师操作指引](架构设计后确认与分阶段实现操作指引_学生版.md) | 基线、接口、测试和证据的组织要求 | 按真实过程补齐，不补造历史材料 |
++| 源码、模型、迁移和配置 | 当前实现事实 | ORM/迁移不等于运行库结构已核验；依赖声明不等于环境安装清单 |
++| [GitHub Issues](https://github.com/dorian0326/study-room/issues?q=is%3Aissue) | 已有任务规划 | 沿用已有任务，关闭状态不代替测试和验收 |
++
++其他旧文档不作为未经核实的结论来源。本文没有修改SRS、确认记录、讨论稿、代码、数据库或Issue；工作区中原有未提交修改应随实际提交单独登记。
++
++## 2. 范围与确定的架构方案
++
++### 2.1 系统边界
++
++本期系统覆盖三类角色：用户（学生与教师合并）、管理员、运维。
++
++- 用户：资源查询、座位状态、创建预约、换座、取消、扫码签到、临时离开、结束使用、预约历史、违规申诉和站内通知。
++- 管理员：用户与权限、房间与座位、开放时间与校历、业务参数、违规与申诉、统计报表及Excel导出。
++- 运维：系统与登录日志、授权范围内审计、门禁记录、备份、运行监控及服务器端恢复。
++
++候补和自动转正已由HD-41移出本期；统一身份认证实际对接、收费及硬件采购等既有非目标不纳入架构实施范围。门禁事件接入属于本期需求，模拟实现与真实对接分别验收。
++
++### 2.2 固定的技术与结构
++
++| 基线项 | 确定方案 | 依据与实现边界 |
++|---|---|---|
++| 总体形态 | 浏览器／服务器、前后端分离，后端按业务职责组织的分层单体 | ADR-01；单一后端部署，共享数据库 |
++| 前端 | Vue3、Vue Router、Vite，统一Fetch客户端 | `frontend/package.json`及`frontend/src/` |
++| 后端 | Python≥3.11、FastAPI、Pydantic、Uvicorn | `backend/pyproject.toml`及应用入口 |
++| 数据访问 | SQLAlchemy 2.x ORM、本地事务、Alembic迁移 | 无已实现的独立仓储层承诺 |
++| 数据库 | SQLite文件库，外键、WAL与忙等待 | ADR-02；写容量需通过隔离测试核验 |
++| 身份认证 | bcrypt密码哈希、随机Bearer会话令牌、摘要存库 | 服务器端会话；不描述为JWT |
++| 一致性 | 本地事务、区间重叠检查、唯一约束、业务幂等；保留SRS乐观锁设计要求 | ADR-02/03/10；版本条件更新尚未落实 |
++| 站内通知 | 同库保存通知、事件键去重、本人查询和已读 | ADR-05；不增加外部短信邮件依赖 |
++| 门禁 | 脱敏事件适配、来源去重、延迟判断和人工核验 | ADR-06；真实轮询、设备身份与授权仍需落实 |
++| 报表 | 后端查询聚合，openpyxl生成XLSX | 管理员授权；不声称已有PDF导出 |
++| 后台任务 | Web生命周期内运行预约与运维协程 | 课程部署按单后端进程约束；多进程需另验 |
++| 恢复 | SQLite online backup一致快照、完整性检查、停服CLI恢复 | ADR-09；不代表周期备份达到RPO=0 |
++
++本基线不引入微服务、分布式锁、Redis或消息队列。讨论稿比较的路由主导单体和微服务不作为本期实施方案；只有明确的容量、发布或可靠性证据触发时再评估架构变更。
++
++## 3. 架构视图与依赖规则
++
++### 3.1 系统上下文
++
++```mermaid
+ flowchart LR
+-    Browser["浏览器 / Vue 3"] -->|"/api 请求"| Proxy["Vite 开发代理"]
+-    Proxy --> FastAPI["FastAPI 路由"]
+-    FastAPI --> Deps["认证 / 权限 / 请求会话"]
+-    Deps --> API["API 处理层"]
+-    API --> Services["业务服务层"]
+-    Services --> ORM["SQLAlchemy 模型与事务"]
+-    ORM --> SQLite["SQLite 文件库"]
+-    FastAPI --> Middleware["CORS / 请求指标"]
+-    Worker["预约生命周期后台任务"] --> Services
+-    Ops["scripts/dev.py / Alembic / pytest"] -. "开发、迁移与验证" .-> FastAPI
+-~~~
++    U[用户] --> V[Vue3浏览器前端]
++    A[管理员] --> V
++    O[运维] --> V
++    V -->|HTTP JSON /api + Bearer| B[FastAPI应用]
++    G[图书馆门禁事件源] -.->|真实连接待落实；当前模拟接收| B
++    T[服务器时钟] --> B
++    B --> D[(SQLite)]
++    B --> F[受控备份目录]
++    B --> E[Excel导出响应]
++```
++
++门禁源与本系统之间传输脱敏事件，不引入人脸图像、特征模板或原始卡号。通知通过数据库与浏览器列表完成站内呈现。服务器时钟是时间裁决来源；浏览器时间不参与资格、处罚或超时决定。
++
++### 3.2 组件与分层
++
++```mermaid
++flowchart TB
++    UI[Vue Views / Router] --> CLIENT[Fetch客户端 / auth状态]
++    CLIENT --> API[API路由 / Pydantic Schemas]
++    API --> IAM[认证 / 权限依赖]
++    API --> APP[业务服务与用例编排]
++    API -->|当前部分路由直接访问ORM| ORM[SQLAlchemy模型]
++    WORKER[预约 / 运维任务] --> APP
++    APP --> ORM
++    APP --> INFRA[时钟 / 配置 / 审计 / 备份]
++    ORM --> DB[(共享SQLite数据库)]
++```
++
++API、Schemas、Services、Models和基础设施是当前主要分层。部分管理路由和门禁服务直接操作共享实体，本基线明确其用例责任与事务约束，不将其描述为已实现严格领域隔离。
++
++后续改动必须遵守以下依赖规则：
++
++1. HTTP层负责输入、认证授权、状态码及响应转换；业务规则在相关服务或明确的用例编排入口集中维护。
++2. 跨模块状态变化由一个用例事务协调；被调用的通知、审计等辅助函数不得擅自提前提交核心事务。
++3. 预约状态与占用规则归预约履约模块；门禁和管理流程不得形成与之冲突的第二套状态规则。
++4. 纪律累计、折算和限制计算归纪律服务；调用方不能各自计算处罚。
++5. 报表只读聚合；通知只记录和呈现结果，不能反向决定预约事实。
++6. 统一从服务端时钟取值；数据库结构演进通过迁移，不绕过迁移手改生产表结构。
++7. 现有直接ORM访问与目标职责边界不一致时按任务评估，不为满足文档图示发起整体重构。
++
++### 3.3 部署视图
++
++```mermaid
++flowchart LR
++    B[浏览器] --> WEB[静态前端入口]
++    WEB -->|/api 路由| API[单进程FastAPI / Uvicorn]
++    API --> R[预约后台协程]
++    API --> O[运维后台协程：按配置启用]
++    API --> DB[(本地持久SQLite文件与WAL)]
++    API --> BK[受控备份目录]
++    CLI[停服运维CLI] -.-> DB
++    CLI -.-> BK
++```
++
++此图规定课程部署的逻辑边界，不代表实际服务器已经部署静态入口、代理或HTTPS。本地联调用Vite 5173代理到后端8000；正式部署应明确静态资源与`/api`的同源路由和访问来源。当前CORS配置允许本地5173，实际部署需核对访问路径。
++
++数据库和备份应置于持久、受控目录，禁止暴露为静态下载路径。后端使用单进程是本基线的部署约束；扩为多进程或多主机前，必须重新验证后台任务去重、指标汇总和数据库文件访问方式。
++
++## 4. 模块划分、数据职责与人员分工
++
++### 4.1 模块契约
++
++下表代码路径除另行说明外，均相对项目根目录。
++
++| 模块 | 职责／主要数据 | 实现入口 | 对外边界 |
++|---|---|---|---|
++| 身份与权限 | 用户、角色权限、登录、会话、改密与重置；User/Role/Permission/AuthSession | `backend/app/api/auth.py`、`api/admin_users.py`、`services/auth.py`、`deps.py`、`permissions.py` | 提供可信身份和权限，行级归属仍由业务查询验证 |
++| 资源与配置 | 房间、座位、开放时段、校历、业务参数；StudyRoom/Seat/OpeningSchedule/CalendarDay/SystemSetting | `backend/app/services/availability.py`、`api/admin_config.py`、`api/admin_seats.py`、`services/settings.py` | 查询给出指定时段状态；管理变更必须处理预约影响 |
++| 预约与履约 | 创建、换座、取消、扫码、暂离、结束、超时；Reservation/ArrivalRecord | `backend/app/services/reservations.py`、`api/reservations.py`、`services/reservation_worker.py` | 维护占用不变量与合法状态转换 |
++| 门禁接入 | 脱敏用户匹配、事件去重、延迟识别与人工核验；EntryExitRecord | `backend/app/services/gate.py`、`api/gate.py` | 按需求范围提供入出馆证据，不自行扩展签到方式 |
++| 纪律与申诉 | 违规、周期归档、阶梯限制、审核；ViolationRecord/Restriction/Appeal | `backend/app/services/violations.py`、`api/admin_violations.py` | 原始事实保留，限制变更可追溯 |
++| 通知与历史 | 预约/签到/违规/维护/暂离通知、历史和已读；Notification | `backend/app/services/notifications.py`、`api/reservations.py` | 本人范围，业务事件去重 |
++| 管理与统计 | 资源维护、CSV导入、申诉管理、利用率与趋势、XLSX | `backend/app/api/admin_seats.py`、`api/reports.py`、`services/admin_force_cancel.py` | 授权操作；统计不直接修改业务事实 |
++| 运维与审计 | 日志、健康、请求指标、备份恢复；AuditLog/LoginLog/备份文件 | `backend/app/api/ops_logs.py`、`api/ops_system.py`、`services/backup.py`、`metrics.py`、`cli.py` | 运维授权、停服恢复、保留操作记录 |
++| 基础设施 | 配置、时区、会话、事务和迁移 | `backend/app/db.py`、`config.py`、`timeutil.py`、`models/`、`backend/migrations/` | 提供技术能力，业务参数含义由需求定义 |
++
++同一行缩写为`api/…`、`services/…`的路径均以`backend/app/`为前缀。逻辑职责不等同数据库物理隔离；当前所有模块共享同一库。
++
++### 4.2 团队责任
++
++| 成员 | 负责范围 | 架构与验证责任 |
++|---|---|---|
++| 周俊博（队长） | 需求统筹；房间和座位搜索、详情与实时状态；创建、冲突、并发幂等、换座、取消、扫码及未签释放 | 维护基线和需求追溯；预约状态与并发不变量；整合差异处理 |
++| 张东岩 | 脚手架和CI、模型与数据字典、注册登录密码、角色权限、日志备份监控、房间开放时间和参数配置；较多测试整合 | 数据约束、运行环境、权限安全、备份恢复及测试证据组织 |
++| 方梓安 | 结束与暂离、门禁、违规处罚申诉、通知、个人历史、座位布局导入维护、统计Excel | 履约与门禁联动、纪律周期、维护一致性和报表口径 |
++
++交叉复核安排：张东岩复核预约事务与数据库约束；周俊博复核履约、门禁及违规的需求一致性；方梓安复核管理配置和运维事件对预约、通知的影响。该安排不代表相应审查已经完成。
++
++## 5. 数据架构与不变量
++
++### 5.1 数据分组
++
++| 数据域 | 主要对象 | 关键关系和保存原则 |
++|---|---|---|
++| 身份 | User、Role、Permission、AuthSession、PasswordResetToken | 用户与角色多对多；密码哈希、令牌摘要；不输出秘密字段 |
++| 资源 | StudyRoom、Seat、OpeningSchedule、CalendarDay | 房间含座位及开放规则；区域为座位属性，无独立区域服务 |
++| 预约 | Reservation、ArrivalRecord | 预约关联用户和座位；到达与结束事实独立保存 |
++| 纪律 | ViolationRecord、Restriction、Appeal | 违规关联预约、限制及申诉；归档不删除 |
++| 门禁 | EntryExitRecord | 事件来源唯一键；发生与接收时间分开保存；可关联预约 |
++| 通知 | Notification | 用户范围、类型、内容、事件键及已读 |
++| 运维配置 | AuditLog、LoginLog、SystemSetting | 业务与认证留痕；参数修改可追溯 |
++
++### 5.2 核心关系图
++
++```mermaid
++erDiagram
++    USERS ||--o{ USER_ROLES : assigned
++    ROLES ||--o{ USER_ROLES : includes
++    USERS ||--o{ AUTH_SESSIONS : opens
++    STUDY_ROOMS ||--o{ SEATS : contains
++    STUDY_ROOMS ||--o{ OPENING_SCHEDULES : schedules
++    USERS ||--o{ RESERVATIONS : books
++    SEATS ||--o{ RESERVATIONS : receives
++    RESERVATIONS ||--o{ ARRIVAL_RECORDS : records
++    USERS ||--o{ VIOLATION_RECORDS : receives
++    VIOLATION_RECORDS ||--o{ APPEALS : appealed
++    RESTRICTIONS o|--o{ VIOLATION_RECORDS : relates
++    USERS ||--o{ NOTIFICATIONS : receives
++    RESERVATIONS o|--o{ ENTRY_EXIT_RECORDS : matches
++```
++
++该图是核心关系摘要，不替代完整物理数据字典。到达记录业务上通常每预约一条，但当前外键没有唯一约束，物理关系按一对多表达；不能将业务预期写成数据库已经保证一对一。
++
++### 5.3 必须保持的不变量
++
++1. 同座位重叠时段至多一条有效预约，同用户重叠时段至多占用一个座位。
++2. 有效占用状态为`RESERVED`、`ACTIVE`、`TEMP_LEAVE`；其他终态不继续占用对应预约区间。
++3. 预约使用半开区间`[start,end)`，开始早于结束；相邻区间可衔接，交叉区间必须拒绝。
++4. 冲突判断采用`existing.start < new.end AND existing.end > new.start`，并限定有效状态。
++5. 当前`seat_id + start_time`部分唯一索引只兜底同起点冲突，不能代替完整区间检查。
++6. 幂等键相同但用户或请求指纹不同必须拒绝，不返回其他用户预约；相同意图重试不得新增重复预约或通知。
++7. 预约号唯一，房间内座位编号唯一；用户、角色、资源关联与枚举范围受模型约束。
++8. `Seat.status`不独自决定未来可用性，必须结合查询时段、预约、房间和开放规则；暂离以预约状态表达，座位显示映射为使用中。
++9. 维护、关闭和停用优先于释放后的普通可用展示，不能释放预约时把维护座位误改为空闲。
++10. 限制、违规和审计保留历史；单项申诉通过不能无依据解除其他有效限制。
++
++### 5.4 时间、隐私与数据保留
++
++业务统一使用带时区的Asia/Shanghai时间。当前`LocalDateTime`在写库前转换为北京时间无时区值，读出再附时区；输入拒绝无时区datetime。不能把SQLite描述为原生持久化带时区时间。
++
++门禁保存HMAC脱敏用户键及必要元数据，不保存人脸特征、原始卡号；真实接入的授权及保留依据按SRS HD-30核对。当前门禁记录到期时间沿用日志保留配置、默认180天，该默认值不能代替学校规定或完整清理验证。违规周期默认14天，到期归档不删除；日志默认180天；备份默认保留14份。
++
++## 6. 关键事务、并发与幂等
++
++### 6.1 事务策略
++
++核心预约写入使用独立业务Session，在事务开始时执行`BEGIN IMMEDIATE`，取得SQLite写锁后检查再写入。认证依赖的读会话与该事务区分，避免升级已有读事务产生竞态或误提交。
++
++SQLite启用外键、WAL和默认5000毫秒忙等待。WAL改善读写并行，不改变主要写入串行化的事实。锁忙、冲突和参数失败应返回可解释结果；客户端不得遇到任意错误便无键重试。
++
++SRS BR-051指定版本号/时间戳乐观锁，该设计要求保留。后续落实时必须明确受保护实体、版本来源、条件更新、递增与冲突响应；**单条预约的版本号不能独自防止两个新建预约互相重叠**，仍需区间检查和事务兜底。当前尚无独立版本条件更新，不标为已满足BR-051。
++
++### 6.2 用例事务范围
++
++| 用例 | 同一用例事务中的事实 | 原子性与失败要求 |
++|---|---|---|
++| 创建 | 用户资格、到期补扫、冲突检查、预约、到达记录、确认通知、座位同步 | 任一核心写失败整体回滚，不残留半成品 |
++| 换座 | 本人状态、新座位检查、预约关联、原新座位同步 | 失败保留原座位与原预约时间 |
++| 取消 | 取消状态、释放、取消通知、适用迟取消违规 | 正常取消不记违规；已取消不再触发未到场 |
++| 签到 | 身份/座位/窗口检查、到达事实、ACTIVE状态与显示同步 | 超窗失效若已形成，应先提交事实再返回错误 |
++| 暂离／门禁／超时 | 事件、预约状态、到达结束事实、适用违规、通知与释放 | 重复或迟到事件不得复活终态或重复处罚 |
++| 资源维护 | 资源状态、未来受影响预约强制取消、通知与审计 | 已签到者不立即中断，取消不加用户违规 |
++| 申诉审核 | 处理结果、违规状态、关联限制、通知和审计 | 不能仅返回审核成功而遗漏关联变化 |
++
++表中明确用例涉及的事实与当前同库事务组织。通知失败需要单独区分：SRS UC-009异常流程要求取消仍生效、通知进入重试；当前通知直接flush，与取消同事务，写失败可能回滚取消，不能把当前原子写法认定满足该异常要求。基线保留“业务取消成功、通知可持久补偿”的需求约束，具体待补通知机制另行设计，当前没有已实现的Outbox或重试队列。各入口是否完整实现、审计是否覆盖全部路径，需要对应测试与审查。在线备份文件与数据库审计不属于同一原子事务。
++
++### 6.3 创建与幂等时序
++
++```mermaid
++sequenceDiagram
++    actor U as 用户
++    participant A as API
++    participant S as 预约服务
++    participant D as SQLite
++    U->>A: 创建请求与幂等键
++    A->>A: 会话 权限 请求校验
++    A->>S: user_id、时段、座位或区域、key
++    S->>D: BEGIN IMMEDIATE
++    S->>D: 到期补扫和同键查询
++    alt 同用户同键同指纹
++        D-->>S: 原预约当前状态
++        S->>D: COMMIT
++        S-->>A: 重放结果
++    else 可以创建
++        S->>D: 检查开放、资格、本人及座位区间冲突
++        S->>D: 写预约 到达记录 通知 座位状态
++        S->>D: COMMIT
++        S-->>A: 创建成功
++    else 内容冲突、规则失败或数据库错误
++        S->>D: ROLLBACK
++        S-->>A: 明确失败
++    end
++    A-->>U: HTTP响应
++```
++
++当前请求头`Idempotency-Key`优先，正文`request_key`其次；正文键与用户ID组合后计算摘要。头部同键重放为200，正文同键重放保留201兼容行为，响应设置`Idempotent-Replayed`。指纹包含用户、座位或区域选择和起止时间；重放返回同一预约当前值。
++
++基线要求客户端对同一创建意图及其网络重试保持稳定键，新意图换键。当前后端允许两种键均不传，不宣称所有创建已强制去重；这一差距保留在实现检查中。错误码统一设计须保留当前兼容行为，改变响应语义时先同步调用方。
++
++## 7. 状态机与跨模块业务规则
++
++### 7.1 预约状态定义
++
++| 状态 | 含义 | 是否有效占用 |
++|---|---|---|
++| `RESERVED` | 已预约、尚未签到 | 是 |
++| `ACTIVE` | 已签到 | 是 |
++| `TEMP_LEAVE` | 已声明暂离、等待有效返回或超时 | 是 |
++| `COMPLETED` | 已结束使用 | 否 |
++| `CANCELLED` | 用户取消或连续使用释放的未开始段 | 否 |
++| `ADMIN_CANCELLED` | 管理员强制取消 | 否 |
++| `EXPIRED` | 超窗未签到失效 | 否 |
++| `TIMED_OUT` | 未签退、暂离超时或未声明离馆导致超时结束 | 否 |
++
++采用已有ADR-04与代码枚举的八状态表示。座位六状态为可用、已预约、使用中、维护中、关闭、停用；SRS历史状态命名和数量残留不通过本文删除，映射差异在第12章保留。
++
++### 7.2 关键转换与裁决
++
++| 原状态 | 命令／事件 | 设计约束与结果 |
++|---|---|---|
++| 无 | 创建 | 通过开放、时间、资格、本人及座位冲突检查后为RESERVED |
++| RESERVED | 换座 | 仅变更座位，不改日期时段，重新校验并保留预约身份 |
++| RESERVED | 开始前取消 | >15分钟不违规；≤15分钟记迟取消；均转CANCELLED；开始时刻边界差异见第12章 |
++| RESERVED | 扫码／编号回退签到 | 本人、座位匹配、窗口内且无他人使用，转ACTIVE |
++| RESERVED | 超窗仍未签到 | EXPIRED，释放并记录未到场 |
++| 未来RESERVED | 维护 | ADMIN_CANCELLED，维修通知，无补偿与用户违规 |
++| ACTIVE | 临时离开 | TEMP_LEAVE，记录声明时间，默认保留30分钟且不超过预约结束 |
++| TEMP_LEAVE | 有效重新入馆记录 | 依据事件时间判定返回，转ACTIVE |
++| TEMP_LEAVE | 超时或时段结束 | TIMED_OUT，按相应规则释放、通知和记违规 |
++| ACTIVE | 未声明而出馆 | TIMED_OUT，释放并记未声明离馆违规 |
++| ACTIVE／TEMP_LEAVE | 确认结束 | 已开始段COMPLETED，连续未开始段按用例释放 |
++| 终态 | 迟到／重复事件 | 不恢复有效占用；按契约返回当前结果或冲突 |
++
++签到窗口默认开始前15分钟至开始后15分钟，两端包含，但已经结束的预约不继续允许签到。开始前可提前签到不代表允许占据上一名仍在使用的座位。窗口内早到、晚到的到达分类不直接构成处罚。
++
++### 7.3 扫码、门禁与返回证据
++
++按SRS HD-43，签到以扫码为规定方式，损坏时允许输入座位编号作为回退；回退仍须验证本人、座位与时间。门禁按HD-15用于暂离返回及出馆证据，不在本基线新增“门禁可代替扫码”的业务许可。
++
++当前代码允许空正文签到、入馆事件直接使未签到预约ACTIVE，并提供不依赖入馆记录的主动返回接口。这些行为如实列为实现差异；本文不通过描述代码而批准其替代需求。若拟作为门禁故障下的降级措施，需明确触发、留痕与权限依据，另记录实际决定。
++
++### 7.4 门禁处理与异常降级
++
++门禁事件由来源系统及事件号去重，分别记录发生时间与接收时间，按脱敏键匹配用户与预约。超过300秒的延迟事件不自动改变预约；无法匹配身份、时间或状态时保存事件并提示人工核验。重复事件不得重复处罚或通知。
++
++目标接入按SRS HD-52采用30秒HTTP轮询，最大可接受同步延迟按NFR-013为5分钟。当前只确认模拟事件接收与迟到分支，未实现或未核验真实轮询、外部连续失败检测和完整不可用降级；不得因已有“late”分支而宣称门禁可用性已满足。
++
++真实接入必须明确机器身份、密钥配置、事件编号与时间口径、授权保留、重试及恢复后的事件顺序。禁止直接把人工运维账号令牌作为已批准的设备认证方案。
++
++### 7.5 违规、限制与申诉
++
++处罚采用固定14天周期，起点按首次违规记录；周期内警告不扣减，达到3、5、7、9次分别禁约1、2、3、4天，继续按第k档阈值`3+2(k−1)`、禁约k天推进。未签退按默认每2次折算一次警告；原始事件和折算标记均保留。到期归档而不删除原始违规。
++
++迟取消、暂离超时等代码事件细分保留来源，不改写为新的分级处罚体系。禁约影响创建和换座，不阻止用户取消已有预约；取消成功后不再对同一预约追加未到场处罚。
++
++用户提交具体违规申诉，服务器核验归属、期限和重复待处理状态。当前管理员处理结果为批准或驳回；批准时归档对应违规、解除关联有效限制、通知并写审计。SRS若要求其他处理能力，需另行核对，不能把现有二选一响应直接认定覆盖全部处理语义。多限制并存时仍检查所有有效限制。
++
++### 7.6 管理维护与结束连续使用
++
++维护只处理受影响的未来未签到预约，强制取消、通知、无补偿、不计用户违规；已签到者不立即中断。房间关闭、时段缩短和座位维护应具有一致规则，但当前房间/时段使用`admin_force_cancel`、座位维护有独立实现，需分别验证。
++
++结束使用要求显式确认。当前沿同用户、同座位、相邻起止时刻查连续预约链：已开始的段完成，尚未开始的后续段取消释放；不同座位或有时间空隙不合并。使用时长、释放通知与违规互斥需实际检查，不能以有确认按钮代替全链路验收。
++
++## 8. 接口、前端与安全设计
++
++### 8.1 接口契约原则
++
++统一使用`/api`前缀，时间以带时区格式传输，认证使用Bearer会话。关键写接口应明确状态、对象归属、请求键、失败是否改变数据以及重复请求结果。GET与POST等方法不能代替业务契约，同路径不同方法分别授权。
++
++代表接口如下，精确字段和异常示例由后续接口文档细化：
++
++| 接口组 | 已核查路径示例 | 核心契约 |
++|---|---|---|
++| 身份 | `POST /api/auth/login`、`POST /api/auth/logout`、`GET /api/auth/me` | 令牌签发/撤销、账号状态与失败日志 |
++| 查询 | `GET /api/rooms`、`GET /api/seats`、`GET /api/seats/{seat_id}` | 时段、开放、资源状态及脱敏 |
++| 预约 | `POST /api/reservations`、`PATCH /api/reservations/{rid}/seat` | 资格、排他、幂等及仅改座位 |
++| 履约 | `POST /api/reservations/{id}/check-in`、`…/temporary-leave`、`…/return`、`…/end`、`…/cancel` | 动作分别校验状态与时间；当前偏差见第12章 |
++| 用户数据 | `GET /api/reservations`、`POST /api/appeals`、`GET /api/notifications` | 本人范围及状态过滤 |
++| 管理 | `/api/admin/rooms`、`/api/admin/settings`、`/api/admin/appeals` | 按方法分别校验权限、事务、通知与审计 |
++| 报表 | `GET /api/admin/reports`、`GET /api/admin/reports/export.xlsx` | 统计与导出权限、时间口径 |
++| 门禁 | `POST /api/ops/entry-exit/mock`、`GET /api/ops/entry-exit/records` | 模拟边界、来源去重、隐私 |
++| 运维 | `GET/POST /api/ops/backups`、`GET /api/ops/status`、`GET /api/health` | 备份与状态授权；恢复为停服CLI |
++
++`{id}`及省略前缀只用于展示动作，实际参数名以路由为准。当前错误`detail`可能为字符串、对象或校验列表，前端兼容三种；不虚构统一业务错误码、请求追踪字段或全部接口自动重试能力。部分查询列表尚无统一分页，后续容量扩展需明确分页、排序和上限。
++
++### 8.2 权限与敏感数据
++
++| 能力 | 用户 | 管理员 | 运维 |
++|---|---|---|---|
++| 房间座位公开信息 | 可 | 可 | 可 |
++| 本人预约履约 | 可 | 按reservation:own可 | 单独运维角色不可 |
++| 资源与参数管理 | 不可 | 按对应权限可 | 不可 |
++| 违规／申诉管理、统计与导出 | 不可 | 按对应权限可 | 不可 |
++| 审计日志 | 不可 | 可 | 可 |
++| 登录／系统状态与日志 | 不可 | 单独管理员角色无该权限 | 可 |
++| 门禁记录与备份 | 不可 | 单独管理员角色不可 | 可 |
++
++角色允许组合，权限按角色集合计算；表格针对单独角色。后端`permissions.py`与认证依赖实施模块权限，业务查询还必须过滤本人对象。前端菜单、按钮和路由守卫不能作为后端授权替代。
++
++密码使用bcrypt，令牌保存摘要，改密/重置应撤销已有会话。公开接口不输出密码、令牌摘要和门禁原始身份。敏感查询、导出及运维读取需满足审计要求，当前是否完整覆盖仍待对账。
++
++### 8.3 前端边界
++
++`frontend/src/views/`按功能组织，Vue Router控制导航，`api/client.js`统一Fetch与错误提示，`auth.js`管理认证状态。当前令牌位于`localStorage`，不描述为HttpOnly Cookie；部署应采用可信同源入口并控制脚本注入风险。
++
++扫码页面需要摄像头能力，缺少浏览器支持时使用可见座位编号回退；回退不降低服务器身份与座位验证。实时状态指服务端计算后的查询结果，不声称已部署WebSocket或推送。移动端布局和核心路径步数必须实际走查。
++
++## 9. 配置、运维、恢复与可观测性
++
++### 9.1 关键配置基线
++
++| 配置项 | 代码默认值／现状 | 运维约束 |
++|---|---|---|
++| 环境变量前缀 | `STUDYROOM_` | 配置覆盖及运行环境需登记 |
++| 数据库 | `sqlite:///./data/study_room.db` | 相对后端启动工作目录；确认实际绝对路径 |
++| 业务时区 | `Asia/Shanghai` | 同时核验主机时间源，时区不证明已校时 |
++| SQLite忙等待 | 5000毫秒 | 不视为性能目标或无限重试 |
++| 预约扫尾 | 60秒；0关闭 | 请求只补做部分检查，不能代替全部后台任务 |
++| 备份／日志清理间隔 | 均默认0，关闭 | 启用前登记周期、目录、权限与故障处理 |
++| 日志保留 | 默认180天 | 对照需求与学校规则，不混同违规统计周期 |
++| 备份目录／份数 | `./data/backups`／14份 | 保留目录权限，防止恢复目标被轮换删除 |
++| 门禁密钥 | 开发配置存在默认值 | 非dev/test环境必须独立配置，否则拒绝启动 |
++
++业务参数由`SystemSetting`覆盖默认值，按允许字段更新并记审计。代码存在本期固定上限，关键参数100%可配置仍需清单核验；参数变更对已有预约的生效时间与历史规则不应由各调用方自行猜测。
++
++### 9.2 后台任务与故障处理
++
++FastAPI lifespan启动预约后台任务，配置启用时再启动备份和日志清理任务。预约任务异常记录后继续下一轮，启动可补扫；状态条件、事件键和写事务用于重复处理控制。单进程重启、长时间停机、补扫与用户命令竞争均应验证。
++
++后台60秒扫描不保证每个截止时刻立即落库，不能把定时器间隔等同无延迟业务承诺。多进程会各自启动任务、持有指标；扩容前需实际验证重复任务与锁等待。
++
++### 9.3 恢复流程
++
++恢复由张东岩负责，周俊博核对预约一致性，方梓安核对违规、限制、通知与门禁关联：
++
++1. 登记应用版本、迁移版本、备份名称与恢复目的，保全选定备份，避免轮换删除。
++2. 停止HTTP入口和预约、备份、清理后台任务；CLI的覆盖确认并不能自动保证服务已停。
++3. 对当前库留存备份；检查目标备份完整性及版本兼容。
++4. 使用现有CLI恢复能力。当前`restore`要求显式覆盖参数，并在恢复前创建一份当前备份。
++5. 核对用户权限、资源、预约/到达关联、重叠占用、限制、通知键及审计连续性。
++6. 重新启动、执行到期补扫，检查健康、登录、查询和测试业务；保留恢复前后对账与结果。
++
++创建在线备份得到一致快照；恢复前执行完整性校验。当前CLI恢复未自动形成完整业务审计记录，应保留独立运维记录，不能声称所有恢复动作已自动审计。
++
++### 9.4 指标与故障模型
++
++当前进程内指标只有请求量、状态码分类、平均和最大耗时，重启清零，无P95直方图或长期持久化。P95须独立采样，月度可用率须持续监控。
++
++WAL及事务机制主要支撑数据库事务一致性，不能直接保证主机介质损坏后零丢失。RPO=0保留为需求目标，按进程崩溃、主机故障、介质丢失分别说明故障边界和恢复证据；周期快照不足以单独达标。
++
++## 10. 质量属性与验证基线
++
++### 10.1 验收目标及证据
++
++| SRS项 | 固定目标 | 必需证据 | 当前结论 |
++|---|---|---|---|
++| NFR-001 | 月度可用性≥99.5% | 连续监控、故障起止及月度统计 | 本轮未验证 |
++| NFR-002 | P95≤2秒 | 固定请求分布、独立负载记录、原始响应样本 | 本轮未压测；平均值不能替代 |
++| NFR-003 | ≥200并发 | 先定义在线用户和请求/写入并发，逐步加压并记录错误率 | 本轮未验证 |
++| NFR-004 | 超售0 | 真实多连接竞争、数据库终态与失败后重试对账 | 未以源码代替结果 |
++| NFR-005 | bcrypt等自适应哈希 | 源码核查及脱敏数据库抽样 | 代码使用bcrypt，运行库未抽样 |
++| NFR-006 | 时间偏差≤1秒 | 可信基准、校时状态、边界测试 | 统一时区已见代码，偏差未测 |
++| NFR-007/008 | 关键参数100%可配置、关键操作100%留痕 | 参数与业务/审计动作清单、变更回归、逐项对账 | 覆盖未证明 |
++| NFR-009/010 | 核心路径≤3步、主流移动浏览器可用 | 明确步数定义、真实设备与浏览器矩阵 | 本轮未走查 |
++| NFR-011/014 | 敏感越权0、用途及访问审计满足需求 | 三角色、双用户、字段/对象级检查与授权材料 | 权限代码存在，完整目标未验证 |
++| NFR-012 | RPO=0 | 隔离故障模型、故障前确认事务与恢复后逐笔对账 | 周期快照存在能力差距 |
++| NFR-013 | 门禁延迟≤5分钟及需求规定的降级 | 真实轮询、超时/迟到注入、恢复处理记录 | 当前为模拟接收，未真实联调 |
++
++数值沿用SRS，不在测试后选择有利口径，不以课程演示替代长期监控或生产容量结论。
++
++### 10.2 关键不变量测试清单
++
++| 场景 | 验证预期 |
++|---|---|
++| 多人抢同座同区间、不同起点但交叉区间 | 使用同一文件型SQLite、多个独立连接；最终有效预约最多一条；检查冲突及锁忙可重试结果 |
++| 同用户不同座位同时预约 | 同时段不得形成两条有效占用，不能只验证座位唯一索引 |
++| 同键同载荷、不同载荷、跨用户复用 | 重放同一预约；不同意图明确冲突，不泄露他人结果 |
++| 写入中途异常 | 预约、到达、通知与座位状态无部分提交 |
++| 取消15分钟两侧及开始时刻 | 与需求口径分别对账；取消与未到场处罚互斥 |
++| 签到窗口两端及外侧、扫码错座、空正文 | 窗口和归属正确；空正文现有差异单列，不能按实现反推验收预期 |
++| 门禁重复、迟到、乱序和直接返回 | 不重复处罚、不复活终态；证据不足路径列明差异 |
++| 暂离截止、时段结束、后台重启竞争 | 最终单一合法状态，释放、通知及违规一致 |
++| 维护三类入口并发创建 | 无维护后新占用；未来受影响预约取消，已签到不中断 |
++| 阶梯、14天边界、未签退折算和单项申诉 | 周期与限制正确，其他有效限制保持 |
++| 角色与双用户替换ID | 未授权管理和他人数据访问被拒绝；门禁明细管理员不可读 |
++| 备份恢复及运行回归 | 完整性检查后逐笔对账，不以存在备份文件作为恢复通过 |
++
++已有测试文件作为测试准备资产复用；`backend/tests/units/`包含未提交文件，目录名不能替代测试层级判定。并发不变量必须用真实数据库多连接验证，Mock或顺序调用不足以支撑并发结论。
++
++### 10.3 CI与证据管理
++
++当前CI配置包含后端ruff检查、格式检查和pytest；前端Vitest、lint、格式检查和构建。这里只确认配置存在，本轮未执行这些命令，也未查验最新远端流水线状态。
++
++每次实际验证保留代码版本及工作区差异、环境、命令、合成数据、预期来源、原始输出、终态及交叉复核。证据使用现有`docs/evidence/`组织，具体路径随实际执行登记；本文不预写不存在的结果文件，也不更改已有任务或证据目录。
++
++## 11. ADR、需求与已有任务追溯
++
++### 11.1 决策纳入范围
++
++| 已有ADR | 基线采用内容 | 附带约束 |
++|---|---|---|
++| ADR-01 | FastAPI＋Vue3＋SQLite分层模块化单体 | 保留现有分层程度，不虚构独立服务或仓储 |
++| ADR-02 | 外键、WAL、busy_timeout及立即写事务 | 并发正确性与容量须分别验证 |
++| ADR-03 | 半开区间、事务内重查、唯一约束及幂等 | 索引不是区间排他约束，无键请求能力差距保留 |
++| ADR-04 | 八状态预约模型 | 需求历史命名与实现映射另列 |
++| ADR-05 | 站内通知与事件键去重 | 入库不代表用户已阅读 |
++| ADR-06 | HMAC脱敏与迟到/无法匹配人工核验 | 不证明真实轮询、授权与设备接入 |
++| ADR-07 | 固定14天、无上限阶梯、归档不删除 | 首次事件、折算与周期边界需测试 |
++| ADR-08 | 维护只取消未来预约、无补偿、不打断已签到 | 三类入口分别核查 |
++| ADR-09 | 在线备份、完整性检查与停机恢复 | RPO=0缺口保留 |
++| ADR-10 | 版本字段与条件更新作为演进约束 | 不替代或废止SRS BR-051 |
+ 
+-该图描述开发代码结构。仓库资料不足以证明生产部署的代理拓扑、进程数量、数据库卷配置或真实门禁网络连接。
++本表引用原记录，不另造签署或替代关系；ADR描述与SRS存在冲突时按第12章登记，不能只因编号为ADR便覆盖需求。
+ 
+-## 4. 模块边界与责任
++### 11.2 业务与任务对应
+ 
+-| 模块 | 路径 | 主要职责 |
+-| --- | --- | --- |
+-| 路由与 HTTP 校验 | backend/app/api | 将请求映射到业务函数，执行认证依赖，返回状态码和响应模式。 |
+-| 请求/响应结构 | backend/app/schemas | 校验 API 输入和字段范围，定义公开输出字段。 |
+-| 业务服务 | backend/app/services | 实现预约、认证、违规、通知、门禁事件、备份、审计和参数处理。 |
+-| 模型与迁移 | backend/app/models、backend/migrations | 持久化实体、枚举、约束和数据库演进。 |
+-| 身份/权限 | backend/app/deps.py、permissions.py、security.py | 令牌解析、账户状态检查、角色权限判断和安全工具。 |
+-| 页面与路由 | frontend/src/views、router | 展示用户流程和管理员页面；前端权限用于导航控制。 |
+-| API 客户端 | frontend/src/api、auth.js | 请求 /api、附带 Bearer 令牌、统一处理非 2xx 响应。 |
+-| 本地开发 | scripts/dev.py | 准备虚拟环境/依赖、迁移、并行启动服务及执行检查。 |
++| 业务／需求范围 | 主要实现位置（`backend/app/`下） | 既有Issue |
++|---|---|---|
++| 基础栈、模型与迁移 | `main.py`、`db.py`、`models/`；迁移位于`backend/migrations/` | [#4](https://github.com/dorian0326/study-room/issues/4)、[#5](https://github.com/dorian0326/study-room/issues/5) |
++| FR-001～007身份权限 | `api/auth.py`、`services/auth.py`、`permissions.py` | [#6](https://github.com/dorian0326/study-room/issues/6)、[#7](https://github.com/dorian0326/study-room/issues/7) |
++| 日志、备份与监控 | `api/ops_logs.py`、`api/ops_system.py`、`services/backup.py` | [#8](https://github.com/dorian0326/study-room/issues/8)、[#9](https://github.com/dorian0326/study-room/issues/9) |
++| FR-010～013查询与状态 | `services/availability.py`、`api/reservations.py` | [#10](https://github.com/dorian0326/study-room/issues/10)、[#11](https://github.com/dorian0326/study-room/issues/11) |
++| FR-020～024、BR-050～052 | `services/reservations.py`、`schemas/reservations.py` | [#12](https://github.com/dorian0326/study-room/issues/12)、[#13](https://github.com/dorian0326/study-room/issues/13)、[#14](https://github.com/dorian0326/study-room/issues/14)、[#15](https://github.com/dorian0326/study-room/issues/15) |
++| 签到、结束与暂离 | `services/reservations.py`、`services/reservation_worker.py` | [#16](https://github.com/dorian0326/study-room/issues/16)、[#17](https://github.com/dorian0326/study-room/issues/17) |
++| 门禁、违规与申诉 | `services/gate.py`、`services/violations.py`、`api/admin_violations.py` | [#18](https://github.com/dorian0326/study-room/issues/18)、[#19](https://github.com/dorian0326/study-room/issues/19) |
++| 通知与历史 | `services/notifications.py`、`api/reservations.py` | [#20](https://github.com/dorian0326/study-room/issues/20)、[#21](https://github.com/dorian0326/study-room/issues/21) |
++| 资源配置与报表 | `api/admin_config.py`、`api/admin_seats.py`、`api/reports.py` | [#22](https://github.com/dorian0326/study-room/issues/22)、[#23](https://github.com/dorian0326/study-room/issues/23)、[#24](https://github.com/dorian0326/study-room/issues/24) |
++| 补缺与限制 | 相关服务、前端及质量检查 | [#36](https://github.com/dorian0326/study-room/issues/36)、[#37](https://github.com/dorian0326/study-room/issues/37)、[#38](https://github.com/dorian0326/study-room/issues/38) |
+ 
+-模块边界原则：API 层负责 HTTP 契约；跨接口复用的业务状态变化放在 services；数据库一致性依赖明确的事务范围和 schema 约束。新增跨模块字段或状态前，提供方、调用方和测试责任人应共同确认。
++任务状态沿用讨论稿整理时的GitHub查询，不在本轮声称重新查询。历史Issue的需求编号与描述可能过时，关联以业务主题核对。尤其#38的门禁“缺少五分钟延迟判定”不再等同当前源码现状，当前已见该分支；历史关闭状态不作为当前正确性证据。本次不重复建立任务卡。
+ 
+-## 5. 核心数据对象
++## 12. 基线保留的实现差异与未决边界
+ 
+-- User、Role、Permission、AuthSession：账号、角色权限及登录会话。
+-- StudyRoom、Seat、OpeningSchedule、CalendarDay：自习室、座位、开放安排和特殊日期。
+-- Reservation、ArrivalRecord：预约生命周期与到达/结束事实。
+-- ViolationRecord、Restriction、Appeal：违规、限制措施和申诉。
+-- Notification：站内通知，支持业务幂等键。
+-- AuditLog、LoginLog：管理操作和认证事件追溯。
+-- EntryExitRecord：脱敏门禁事件，按来源与外部事件 ID 去重。
++沿用讨论稿DISC编号，作为差异索引；不新增或改号原Q/ADR。
+ 
+-完整字段、外键、枚举和索引以 backend/app/models 为准；数据库演进以 Alembic 迁移为准。代码文档还引用需求数据字典编号，但相应原始需求材料当前未检入本仓库。
++| 对应事项 | 当前差异／证据边界 | 本基线处置与关闭条件 | 责任人 |
++|---|---|---|---|
++| DISC-01 乐观锁 | BR-051要求版本检查，当前模型无独立版本条件更新 | 保留需求；形成明确版本对象与并发方案并验证，或有正式需求变更依据后再更新基线 | 周俊博、张东岩 |
++| DISC-02 门禁采集 | HD-52规定30秒轮询，当前为mock接收；真实接口与完整不可用监测未核实 | 保留真实接入目标；模拟结果注明范围，真实采集、延迟与恢复另验 | 方梓安、张东岩 |
++| DISC-03 暂离返回 | 主动return无需重新入馆记录 | 规范仍以有效入馆证据判返；实现修正或有明确降级决定与留痕依据后关闭 | 方梓安、周俊博 |
++| DISC-04 签到方式 | 空正文签到及门禁入馆直接ACTIVE与HD-43口径不同 | 规范按扫码/编号回退；额外方式不默认批准，需对齐契约并验证 | 周俊博、方梓安 |
++| DISC-05 RPO | 周期快照不能支撑任意故障RPO=0 | 保留目标，明确故障模型与保障方案；故障前后逐笔对账，不以备份列表关闭 | 张东岩 |
++| DISC-06 取消语义 | SRS主流程允许临近开始取消并记违规，验收标准有拒绝旧文；代码开始时刻及之后拒绝 | 保留两处来源；后续按HD-20/25和明确边界整理勘误，本次不改SRS | 周俊博 |
++| DISC-07 状态映射 | 历史状态命名/数量残留；代码8预约、6座位，暂离在预约层 | 基线采用清晰映射表达，保留来源差异；逐项对齐状态表、接口与页面后关闭 | 周俊博、方梓安 |
++| DISC-08 参数与审计 | 参数可配置、审计存在，但100%覆盖及门禁读取/导出/恢复留痕未证明 | 逐动作、参数、数据范围对账；不能只凭日志表存在关闭 | 张东岩、方梓安 |
++| DISC-09 后台与部署 | 默认60秒、备份清理关闭、多进程重复任务未测 | 固定单进程部署约束；验证停机补扫、实际启用周期与恢复竞争 | 张东岩、周俊博 |
++| DISC-10 质量证据 | 容量、P95、月度可用率及可信校时本轮未测 | 固定指标与口径，实际采样/压测/监控后附证据 | 张东岩牵头，全组协同 |
+ 
+-## 6. 关键运行机制
++此外，无幂等键请求、到达记录缺少一对一数据库约束、接口错误结构及列表分页现状，在本基线相关章节明确，不因未另设DISC编号而视为完成。申诉处理能力与SRS更完整的处理表述仍需核对，不将代码返回类型直接当作最终需求。
+ 
+-### 6.1 认证与授权
++差异分三类管理：已知需求与实现不同、需求内部存在歧义、缺少验证证据。前两类先处理依据与契约，第三类补实际检查，不能只运行现有测试便宣布所有问题关闭。
+ 
+-前端登录后保存 Bearer token 并通过 Authorization 请求头发送；后端查询会话、检查到期/撤销与账户状态。权限由后端依赖验证；本人预约、通知、违规等对象还必须在查询或更新条件中按 user_id 限定。前端的路由守卫不构成服务端安全控制。
++### 12.1 原确认记录中其他整改约束
+ 
+-密码采用 bcrypt 哈希。生产/共享环境须通过配置提供部署专用门禁 HMAC 密钥，并评估 HTTPS、令牌生命周期、前端令牌存储、CORS 和安全响应头；仓库代码状态不等于部署安全验收。
++[架构确认与决策记录](架构确认与决策记录.md) §16.1已有GAP-A01～GAP-A14，本基线沿用其编号和约束，不另行宣布关闭。其中GAP-A01～04、A12～14已分别关联乐观锁、额度语义、签到返回、恢复、到达关系与维护边界；其余高风险事项补充如下。
+ 
+-### 6.2 预约事务与状态处理
++| 原编号 | 源码核查与已有记录 | 基线约束与验证出口 | 责任人 |
++|---|---|---|---|
++| GAP-A05 | 请求补扫以严格超过签到截止判失效；full_sweep使用小于等于截止阈值，整秒边界不同 | 设计按签到窗口两端包含；截止整秒并发执行签到、请求补扫和后台扫尾，最终不因入口不同误拒 | 周俊博、方梓安 |
++| GAP-A06 | 预约内`_record_violation`与纪律`record_violation`并存；前者记事实及审计，未完整触发阶梯限制和违规通知 | 不得宣称迟取消与所有未签到入口均已统一处罚；构造第3次迟取消及两条失效路径对账限制和通知 | 周俊博、方梓安 |
++| GAP-A07 | 通知同事务直接flush，无持久待补或重试队列；SRS UC-009要求通知失败不阻塞取消 | 保留取消生效及通知补偿要求，不能把现有同事务回滚视为符合；注入通知失败并检查取消及补发去重 | 方梓安 |
++| GAP-A08 | 设置表保存当前值，无PolicyVersion或预约规则快照 | 不承诺旧预约自动沿用历史参数；参数变更受控，规则快照方案与变更前后行为需验证 | 张东岩、周俊博 |
++| GAP-A09／A10 | 门禁保存expires_at，但日志清理仅删除AuditLog/LoginLog；门禁读取与报表导出未见完整专用访问审计 | 不将到期字段等同自动删除；补查到期清理、读取与导出审计，以及管理员门禁拒绝访问 | 方梓安、张东岩 |
++| GAP-A11 | 审计无普通修改接口，但到期日志可清理，主机文件权限仍可影响SQLite | 不宣称审计密码学不可篡改；保留清理依据、主机权限与备份对账 | 张东岩 |
+ 
+-预约请求先校验带时区的时间、粒度、开放时段、座位及账户条件；重叠检查、插入预约、创建签到占位记录和确认通知由 SQLite BEGIN IMMEDIATE 写事务保护。时间区间按半开区间比较。数据库对同座位同开始时间的活跃预约另有部分唯一索引。
++GAP-A02另明确：当前创建主要执行本人时段重叠检查，虽然参数模型含max_active_reservations，不能据此声称实现独立日次数或小时额度。以“同一时段单座、相邻可连续”核对本期业务；若要求其他额度，先处理需求与参数含义。
+ 
+-FastAPI lifespan 按配置启动预约后台 worker：先执行一次预约扫尾，随后默认每 60 秒执行一次；可设为 0 关闭后台扫描，请求仍会按需补做超时检查。定时备份和日志清理分别由配置控制。状态更新、违规和通知尽量在单个事务内提交，业务事件键帮助避免重复副作用。
++上述检查属于静态差异确认，不是已运行复现。差异修正、补测和关闭结果仍须用真实任务与证据记录。
+ 
+-这些机制表达当前实现，不证明业务阈值、并发容量或生产运行调度已验收。需见 [架构确认与决策记录](./架构确认与决策记录.md) 和 [阶段测试计划](./分阶段实现与测试计划.md)。
++## 13. 基线使用、变更与后续准入
+ 
+-### 6.3 数据隔离与隐私
++### 13.1 可直接使用的基线范围
+ 
+-访问控制按模块/动作检查，并在本人数据查询中增加对象所有权条件。用户资料响应由 Pydantic 输出模式筛选字段。门禁事件只接受脱敏 keyed hash，不接受人脸/卡号字段；当前路由是 mock 接口，不代表接入真实校园系统。日志、测试数据和证据不得包含真实凭证或不必要个人数据。
++总体技术栈、分层单体、共享本地事务、半开区间、角色权限、站内通知、脱敏门禁、纪律周期、维护无补偿和停服恢复，按SRS及已有ADR作为后续设计与审查依据。
+ 
+-## 7. 本地部署与配置
++当前可继续准备接口、测试数据、用例和隔离环境；涉及DISC事项的符合性结论必须保留限制。尤其不能提前宣布乐观锁已实现、真实门禁已接通、主动返回符合门禁证据规则、RPO=0或性能目标已达成。
+ 
+-开发环境由根目录 scripts/dev.py 协助：
++### 13.2 变更规则
+ 
+-- setup 检查 Python/Node 版本、安装后端开发依赖、执行 Alembic 迁移和 npm ci。
+-- dev 启动 Uvicorn 后端 8000 及 Vite 前端；前端代理依赖该后端端口。
+-- test 串行执行 Ruff、pytest、前端 lint/format 检查和生产构建。
++任何影响业务规则、共享接口、状态集合、数据约束、技术依赖或部署形态的变更，应记录：原因、涉及需求/Q/ADR、接口与迁移影响、测试影响、实际决定、实施结果和回归证据。替代既有ADR时新增关联记录，不覆盖原结论；本文修改版本和变更说明保持可追溯。
+ 
+-服务端配置前缀为 STUDYROOM_，也可读取 backend/.env。数据库默认路径位于 backend/data。部署环境需管理密钥、数据卷、日志、备份目录和恢复停机窗口。演示账号脚本仅供本地开发。
++周俊博维护基线，相关模块负责人处理影响，另一成员交叉复核。Git提交后可登记真实提交号，不预造尚不存在的哈希或评审记录。本轮覆盖旧候选文件的变化通过Git差异保留，未改动其他文档来制造“已同步”状态。
+ 
+-README 对历史 CodeArts/ECS 使用情况的描述是项目背景信息，当前仓库没有提供本次部署版本的运行、监控、备份恢复或真实外部服务验收证据。
++### 13.3 相关材料衔接
+ 
+-## 8. 架构限制与待确认
++- 接口与关键设计：以本基线的权限、状态、事务和幂等规则为约束，后续细化字段、错误、边界和失败副作用；已有同名文档需核验后再使用。
++- 分阶段实现与测试：按当前实际完成度安排验证、差距修正和回归，复用现有Issue；不得宣称历史上已经按新计划完成开发。
++- 审查与验收：记录实际参与人、版本、环境、命令和结论；没有运行的项目保留未执行，外部模拟不得写成真实校园联调通过。
+ 
+-1. 当前仓库未固定完整的需求主版本和原始架构讨论稿；历史交付记录含上游需求引用及部分用户确认。新接口、阶段顺序和测试预期仍应由团队依据当前 Issue 和需求版本复核。
+-2. 数据库为 SQLite 文件库，写入串行化特征、并发目标、部署拓扑和恢复目标值尚未形成经确认的验收门槛。
+-3. 门禁只有 mock 流程，校园服务身份映射、签名协议、网络重试和真实联调环境尚未纳入可验证基线。扫码签到会校验二维码座位载荷/座位编号，未扫码请求仍支持 MANUAL 方式；真实到场验证能力见 docs/limitations.md。
+-4. 学号校验规则在代码注释中标记为待确认；未签退合并参数由违规服务读取，默认两次合并为一次警告，可配置范围为 1–10，基础行为由 test_br093_no_checkout_merge 覆盖。该实现是否符合正式业务需求仍待确认。预约服务当前将提前预约限制为一天，且允许小于 30 分钟的短时段；应与现行需求核对。
+-5. 报表的利用率分子/分母、违规处罚阈值、临时离开规则等现有实现值需与正式业务规则逐项核对。
+-6. ADR-LOCAL-001 至 003 均为候选讨论，不表示项目组已接受这些技术选择。
++## 附录A：核查与实施入口
+ 
+-## 9. 评审记录
++| 类别 | 路径 |
++|---|---|
++| 需求与决策 | [SRS](软件需求规格说明书.md)、[确认与决策记录](架构确认与决策记录.md)、[讨论稿](软件架构设计方案_讨论稿.md) |
++| 后端入口与配置 | [main.py](../backend/app/main.py)、[config.py](../backend/app/config.py)、[db.py](../backend/app/db.py)、[timeutil.py](../backend/app/timeutil.py) |
++| 数据结构 | [模型目录](../backend/app/models/)、[枚举](../backend/app/models/enums.py)、[迁移](../backend/migrations/versions/) |
++| 核心服务 | [预约](../backend/app/services/reservations.py)、[可用性](../backend/app/services/availability.py)、[门禁](../backend/app/services/gate.py)、[违规](../backend/app/services/violations.py)、[维护](../backend/app/services/admin_force_cancel.py)、[通知](../backend/app/services/notifications.py) |
++| 安全运维 | [权限](../backend/app/permissions.py)、[备份](../backend/app/services/backup.py)、[CLI](../backend/app/cli.py)、[指标](../backend/app/metrics.py) |
++| 前端与依赖 | [前端源码](../frontend/src/)、[Vite](../frontend/vite.config.js)、[前端依赖](../frontend/package.json)、[后端依赖](../backend/pyproject.toml) |
++| 自动检查与方法 | [CI配置](../.github/workflows/ci.yml)、[教师指引](架构设计后确认与分阶段实现操作指引_学生版.md)、[GitHub Issues](https://github.com/dorian0326/study-room/issues?q=is%3Aissue) |
+ 
+-| 项目 | 记录 |
+-| --- | --- |
+-| 架构负责人/业务确认人 | 待项目组填写真实姓名与角色 |
+-| 交叉审查人 | 待项目组指定，与主要编辑人不同 |
+-| 确认依据 | 待补充任务书、需求版本、Issue 或教学模拟说明 |
+-| 评审日期/结论 | 待评审 |
+-| 代码基线 | 9592c0b（本次文档创建时同步到的 origin/main；PR 分支提交后由维护人更新） |
+-| 关联 Q/ADR | Q-LOCAL-001 至 006；ADR-LOCAL-001 至 003 |
++## 附录B：本次版本记录
+ 
+-通过评审后更新本表和基线索引；未评审前不要把文档标题中的“基线候选版”改成“已确认基线”。
++| 日期 | 版本 | 变化及验证边界 |
++|---|---|---|
++| 2026-11-26 | ARCH-BL-1.0 | 以半定稿、反向讨论稿和代码重写旧候选版，固定架构、职责、事务、状态、接口、安全、部署和质量要求；保留DISC差异。本轮只做文档与静态核查，不新增自动测试、人工验收或真实联调通过结论。 |

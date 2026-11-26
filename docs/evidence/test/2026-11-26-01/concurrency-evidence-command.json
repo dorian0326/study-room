@@ -1,0 +1,23 @@
+{
+  "name": "concurrency-evidence",
+  "command": [
+    "C:/Users/zjb/AppData/Local/Temp/studyroom-test-evidence-20261126/venv/Scripts/python.exe",
+    "-m",
+    "pytest",
+    "-vv",
+    "--tb=short",
+    "-p",
+    "evidence_pytest_plugin",
+    "tests/test_reservations.py::test_100_competing_users_only_one_reservation",
+    "tests/test_reservations.py::test_concurrent_retries_return_same_id",
+    "--junitxml=D:/DATA/university/3_1/Software Engineering/11.26/study-room/docs/evidence/test/2026-11-26-full-suite/concurrency-junit.xml",
+    "-o",
+    "cache_dir=C:/Users/zjb/AppData/Local/Temp/studyroom-test-evidence-20261126/pytest-cache"
+  ],
+  "cwd": "C:\\Users\\zjb\\AppData\\Local\\Temp\\studyroom-test-evidence-20261126\\checkout\\backend",
+  "start": "2026-11-26T19:20:05.286636+08:00",
+  "end": "2026-11-26T19:20:10.744350+08:00",
+  "elapsed_seconds": 5.458,
+  "exit_code": 0,
+  "log": "concurrency-evidence.log"
+}

@@ -1,0 +1,25 @@
+{
+  "checked_files": 201,
+  "original_source_and_tests_unchanged": true,
+  "changed_existing_documents": [
+    {
+      "path": "docs/接口与关键设计说明书.md",
+      "before_sha256": "f7ade064a628b527021546a103e3217aba84b941c842b430b127743d203d13de",
+      "after_sha256": "100331feedece9cb2afa6775a97451d14544068c084e9f529bd03136d9fb35ac",
+      "category": "existing-document-edited-during-run"
+    },
+    {
+      "path": "docs/软件架构设计方案_基线版.md",
+      "before_sha256": "ac3ae66a459e606be2438c99addbe34cd40d646e901657dd0005012cf66be4db",
+      "after_sha256": "8d4dbab710c021a5b55347c0496d9bdf6aaa6933344c6a7077aef0f526a3ce6c",
+      "category": "existing-document-edited-during-run"
+    },
+    {
+      "path": "docs/软件架构设计方案_讨论稿.md",
+      "before_sha256": "5a9438f423195df32cb4482cade3c04d7f3095ce328c7743c0bb6051cd5aa110",
+      "after_sha256": "f7c291ebfd57274cd2e433ab342868cada58361b613c9b2f6d6b664326f17b8d",
+      "category": "existing-document-edited-during-run"
+    }
+  ],
+  "note": "These changes were observed in the shared workspace, not produced by the test/document generation scripts; do not overwrite. Tests use the before-run isolated snapshot."
+}

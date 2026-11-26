@@ -1,0 +1,5434 @@
+{
+  "exit_code": 1,
+  "cases": [
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_001_overlapping_slot_conflicts_and_adjacent_slot_succeeds",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 116,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.22085150000202702
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.087043999999878
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.001936500000738306
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_001_idempotency_key_replays_same_reservation",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 127,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1442758999983198
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.06541199999992386
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.001614000000699889
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_002_unauthenticated_requests_are_rejected",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 141,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10699620000013965
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.03772450000178651
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0010393999982625246
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_002_missing_permission_returns_403",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 148,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.21069749999878695
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.026608500000293134
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0013087000006635208
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_002_other_users_reservation_is_invisible",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 161,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.13710770000034245
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.08225999999922351
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.001717299997835653
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_003_invalid_times_are_rejected[2026-11-02T05:59:00+08:00-2026-11-02T08:00:00+08:00]",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 194,
+      "parameters": {
+        "start": "'2026-11-02T05:59:00+08:00'",
+        "end": "'2026-11-02T08:00:00+08:00'"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.145176400001219
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.04318810000040685
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.005414399998699082
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_003_invalid_times_are_rejected[2026-11-02T22:00:00+08:00-2026-11-02T23:31:00+08:00]",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 194,
+      "parameters": {
+        "start": "'2026-11-02T22:00:00+08:00'",
+        "end": "'2026-11-02T23:31:00+08:00'"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.14279089999763528
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.03890039999896544
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004649599999538623
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_003_invalid_times_are_rejected[2026-11-02T23:00:00+08:00-2026-11-03T01:00:00+08:00]",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 194,
+      "parameters": {
+        "start": "'2026-11-02T23:00:00+08:00'",
+        "end": "'2026-11-03T01:00:00+08:00'"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.15451589999793214
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.034050600002956344
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0032585999979346525
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_003_invalid_times_are_rejected[2026-11-01T09:00:00+08:00-2026-11-01T10:00:00+08:00]",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 194,
+      "parameters": {
+        "start": "'2026-11-01T09:00:00+08:00'",
+        "end": "'2026-11-01T10:00:00+08:00'"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.14772140000059153
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.03614210000159801
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0035520000019459985
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_003_invalid_times_are_rejected[2026-11-02T09:00:00+08:00-2026-11-02T09:00:00+08:00]",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 194,
+      "parameters": {
+        "start": "'2026-11-02T09:00:00+08:00'",
+        "end": "'2026-11-02T09:00:00+08:00'"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.13887350000004517
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.031118599999899743
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.001269499996851664
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_003_invalid_times_are_rejected[2026-11-02T09:00:00-2026-11-02T10:00:00]",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 194,
+      "parameters": {
+        "start": "'2026-11-02T09:00:00'",
+        "end": "'2026-11-02T10:00:00'"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1364915000012843
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.03135200000178884
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0013078000010864343
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_003_short_but_valid_interval_is_allowed",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 213,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.14654220000011264
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.045963700002175756
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0017626000008021947
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_004_temp_leave_timeout_releases_once_with_one_violation",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 221,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.156743200001074
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.21145359999718494
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004769299997860799
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_005_cancel_boundary_records_late_violation[16-False]",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 251,
+      "parameters": {
+        "minutes": "16",
+        "late": "False"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.16251049999846146
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.05708819999927073
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004223599997203564
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_005_cancel_boundary_records_late_violation[15-True]",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 251,
+      "parameters": {
+        "minutes": "15",
+        "late": "True"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.13981129999956465
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0616269000020111
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0014639000000897795
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_005_cancel_boundary_records_late_violation[1-True]",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 251,
+      "parameters": {
+        "minutes": "1",
+        "late": "True"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1425013999978546
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.06547320000026957
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0017264999987673946
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_005_restricted_user_may_cancel_but_not_book",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 270,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.14146400000026915
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.08120319999943604
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004348900001787115
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_005_appeal_is_owner_only_and_within_deadline",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 296,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1388397000009718
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.051359200002480065
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0013937000003352296
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_005_approved_appeal_lifts_restriction_and_notifies",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 338,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.29723350000131177
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.10486870000022464
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0022207000001799315
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_006_maintenance_cancels_pending_but_not_active",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 380,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.306498099998862
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.16472889999931795
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.001861000000644708
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_007_only_admin_can_change_config_and_invalid_input_is_noop",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 421,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.16447250000055647
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.06550179999976535
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004827299999305978
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_008_report_json_and_xlsx_share_the_same_scope",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 456,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.13531309999962104
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.33006770000065444
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004468900002393639
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_009_backup_requires_ops_role",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 516,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.12415060000057565
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.09730240000135382
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0015460000031453092
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_009_backup_rotation_restore_and_status",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 537,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.12197320000268519
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0873981000004278
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.001886699999886332
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_010_duplicate_gate_event_is_not_counted_twice",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 586,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.15439239999977872
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.05965289999949164
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.001941300000908086
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_010_delayed_and_unmatched_events_need_manual_review",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 617,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.16078120000020135
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0632980000009411
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0016672000019752886
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_acceptance_cases.py::test_case_010_entry_after_temp_leave_window_is_not_applied",
+      "file": "tests\\test_acceptance_cases.py",
+      "line": 656,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.16196649999983492
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.07980880000104662
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004411999998410465
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_admin_config.py::test_non_admin_forbidden",
+      "file": "tests\\test_admin_config.py",
+      "line": 27,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.11893400000190013
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.06391309999889927
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0035184999978810083
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_admin_config.py::test_room_crud_and_close",
+      "file": "tests\\test_admin_config.py",
+      "line": 36,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1285965999995824
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.06815559999813559
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004790300001332071
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_admin_config.py::test_room_with_seats_cannot_be_deleted",
+      "file": "tests\\test_admin_config.py",
+      "line": 57,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.13068610000118497
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0340171999996528
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.003922899999452056
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_admin_config.py::test_opening_schedules",
+      "file": "tests\\test_admin_config.py",
+      "line": 66,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.12602519999927608
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0846443000009458
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004734199999802513
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_admin_config.py::test_calendar_days",
+      "file": "tests\\test_admin_config.py",
+      "line": 94,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1246062999998685
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.04205829999773414
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004653699998016236
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_admin_config.py::test_business_settings",
+      "file": "tests\\test_admin_config.py",
+      "line": 105,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.3083695000022999
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.06141360000037821
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.001459300001442898
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_assigned_workflows.py::test_reservation_idempotency_ownership_and_user_limit",
+      "file": "tests\\test_assigned_workflows.py",
+      "line": 80,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.13316919999851962
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.14174199999979464
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0016829999985930044
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_assigned_workflows.py::test_temporary_leave_timeout_creates_one_violation",
+      "file": "tests\\test_assigned_workflows.py",
+      "line": 139,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1301845999987563
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.12277299999914248
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.001825200000894256
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_assigned_workflows.py::test_late_cancellation_records_violation_and_notice",
+      "file": "tests\\test_assigned_workflows.py",
+      "line": 170,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.13017349999790895
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.10593810000136727
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0014750000009371433
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_assigned_workflows.py::test_late_gate_event_is_linked_not_applied_and_notifies_user",
+      "file": "tests\\test_assigned_workflows.py",
+      "line": 199,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.12908600000082515
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.09483019999970566
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004335099998570513
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_assigned_workflows.py::test_gate_entry_cannot_reactivate_completed_reservation",
+      "file": "tests\\test_assigned_workflows.py",
+      "line": 243,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1393367999990005
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.09549189999961527
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0018089000004692934
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_assigned_workflows.py::test_approved_appeal_lifts_restriction_and_notifies_user",
+      "file": "tests\\test_assigned_workflows.py",
+      "line": 277,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.12790160000076867
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0930000000007567
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.002621999999973923
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_assigned_workflows.py::test_maintenance_cancels_pending_reservation_and_notifies",
+      "file": "tests\\test_assigned_workflows.py",
+      "line": 332,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.2382571000016469
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.3804479000027641
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00544860000081826
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_assigned_workflows.py::test_full_seat_update_to_maintenance_also_cancels_bookings",
+      "file": "tests\\test_assigned_workflows.py",
+      "line": 360,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.3827017999974487
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.10653309999906924
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.003995999999460764
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_assigned_workflows.py::test_report_endpoint_returns_supply_hours_and_excel",
+      "file": "tests\\test_assigned_workflows.py",
+      "line": 386,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1385112999996636
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.09694809999928111
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.001690100001724204
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_assigned_workflows.py::test_gate_exit_while_active_without_leave_times_out_with_violation",
+      "file": "tests\\test_assigned_workflows.py",
+      "line": 430,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.12994479999906616
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.10522510000009788
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.002365000000281725
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_assigned_workflows.py::test_gate_exit_during_temp_leave_keeps_seat_and_entry_resumes",
+      "file": "tests\\test_assigned_workflows.py",
+      "line": 461,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1514720999985002
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.12573930000144173
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.001801099999283906
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_assigned_workflows.py::test_gate_entry_after_temp_leave_window_is_not_applied",
+      "file": "tests\\test_assigned_workflows.py",
+      "line": 512,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.13508029999866267
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.11456850000104168
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.001854099999036407
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_assigned_workflows.py::test_current_scope_excludes_cancelled_future_reservation",
+      "file": "tests\\test_assigned_workflows.py",
+      "line": 538,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.13762599999972736
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.11199320000014268
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0039863000019977335
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_assigned_workflows.py::test_default_gate_secret_rejected_outside_dev",
+      "file": "tests\\test_assigned_workflows.py",
+      "line": 553,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.00018479999926057644
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0037398999993456528
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0001458000006095972
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_auth.py::test_register_then_login_and_me",
+      "file": "tests\\test_auth.py",
+      "line": 18,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.11283650000041234
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.028696400000626454
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0013618999983009417
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_auth.py::test_password_is_stored_hashed",
+      "file": "tests\\test_auth.py",
+      "line": 31,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.11795919999713078
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.014796500003285473
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0016998999999486841
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_auth.py::test_register_rejects_duplicate_and_bad_input",
+      "file": "tests\\test_auth.py",
+      "line": 38,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10820679999960703
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.028868699999293312
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004332399999839254
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_auth.py::test_login_failures_have_clear_messages",
+      "file": "tests\\test_auth.py",
+      "line": 55,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10908149999886518
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.021431299999676412
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00137660000109463
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_auth.py::test_login_lockout_after_failures",
+      "file": "tests\\test_auth.py",
+      "line": 68,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.37391760000173235
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.03702029999840306
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0013168000004952773
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_auth.py::test_disabled_account_cannot_login",
+      "file": "tests\\test_auth.py",
+      "line": 84,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.12238669999715057
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.017588800001249183
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0015892000010353513
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_auth.py::test_logout_revokes_token",
+      "file": "tests\\test_auth.py",
+      "line": 90,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1157167000019399
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.030467600001429673
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0015855000019655563
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_auth.py::test_unauthenticated_and_expired",
+      "file": "tests\\test_auth.py",
+      "line": 97,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.11083850000068196
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.032172900002478855
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0038703000027453527
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_auth.py::test_change_password",
+      "file": "tests\\test_auth.py",
+      "line": 107,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.11021480000272277
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.04962809999778983
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.001450199997634627
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_auth.py::test_reset_password_with_code",
+      "file": "tests\\test_auth.py",
+      "line": 127,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.11826980000114418
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0375023999986297
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0012712000025203452
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_auth.py::test_reset_code_expires_and_reissue_invalidates_old",
+      "file": "tests\\test_auth.py",
+      "line": 142,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1115271999988181
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.023508000002038898
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.001622800002223812
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_backup_monitoring.py::test_backup_api_ops_only",
+      "file": "tests\\test_backup_monitoring.py",
+      "line": 18,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.11324090000198339
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0888643999969645
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0016464000000269152
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_backup_monitoring.py::test_backup_rotation_and_restore",
+      "file": "tests\\test_backup_monitoring.py",
+      "line": 33,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10985389999768813
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.05150329999742098
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0003952000006393064
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_backup_monitoring.py::test_status",
+      "file": "tests\\test_backup_monitoring.py",
+      "line": 53,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10841119999895454
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0603785000021162
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004126100000576116
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_case_traceability.py::test_every_registered_case_has_at_least_one_test",
+      "file": "tests\\test_case_traceability.py",
+      "line": 19,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.00014480000027106144
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00038390000190702267
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 9.620000128052197e-05
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_case_traceability.py::test_plan_document_lists_every_registered_case",
+      "file": "tests\\test_case_traceability.py",
+      "line": 26,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.00011939999967580661
+        },
+        {
+          "phase": "call",
+          "outcome": "failed",
+          "duration_seconds": 0.0011908000014955178,
+          "longrepr": "tests\\test_case_traceability.py:30: in test_plan_document_lists_every_registered_case\n    assert missing == []\nE   AssertionError: assert ['TC-LOCAL-001', 'TC-LOCAL-002', 'TC-LOCAL-003', 'TC-LOCAL-004', 'TC-LOCAL-005', 'TC-LOCAL-006', 'TC-LOCAL-007', 'TC-LOCAL-008', 'TC-LOCAL-009', 'TC-LOCAL-010'] == []\nE     \nE     Left contains 10 more items, first extra item: 'TC-LOCAL-001'\nE     \nE     Full diff: (-: missing in left side, +: extra in left side)\nE     - []\nE     + [\nE     +     'TC-LOCAL-001',\nE     +     'TC-LOCAL-002',\nE     +     'TC-LOCAL-003',\nE     +     'TC-LOCAL-004',\nE     +     'TC-LOCAL-005',\nE     +     'TC-LOCAL-006',\nE     +     'TC-LOCAL-007',\nE     +     'TC-LOCAL-008',\nE     +     'TC-LOCAL-009',\nE     +     'TC-LOCAL-010',\nE     + ]"
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00015129999883356504
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_gaps.py::test_br093_no_checkout_merge",
+      "file": "tests\\test_gaps.py",
+      "line": 62,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10983349999878556
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.018678899999940768
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00045709999903920107
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_gaps.py::test_temp_leave_timeout_type",
+      "file": "tests\\test_gaps.py",
+      "line": 114,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.12460680000003777
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.022008599997207057
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0006007000010868069
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_gaps.py::test_archive_expired_violations",
+      "file": "tests\\test_gaps.py",
+      "line": 144,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.11794030000237399
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.013450300000840798
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00047530000301776454
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_gaps.py::test_zone_auto_assign",
+      "file": "tests\\test_gaps.py",
+      "line": 167,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.4050113000012061
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.08615199999985634
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0037040999995952006
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_gaps.py::test_facility_filters",
+      "file": "tests\\test_gaps.py",
+      "line": 188,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.11802940000052331
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.07625170000028447
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.002100999998219777
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_gaps.py::test_close_room_cancels_reservations",
+      "file": "tests\\test_gaps.py",
+      "line": 210,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1351859999995213
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.11060640000141575
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0019122000012430362
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_gaps.py::test_schedule_change_cancels_conflicting",
+      "file": "tests\\test_gaps.py",
+      "line": 239,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.11548459999903571
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.10649039999771048
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0047493999991274904
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_health.py::test_health_ok",
+      "file": "tests\\test_health.py",
+      "line": 10,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.00013300000136950985
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.014789500000915723
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00029070000164210796
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_health.py::test_server_time_is_utc_plus_8",
+      "file": "tests\\test_health.py",
+      "line": 19,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0001922999981616158
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00024329999723704532
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.000167199999850709
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_health.py::test_sqlite_pragmas_enabled",
+      "file": "tests\\test_health.py",
+      "line": 25,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.00019430000247666612
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0005839000004925765
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00010119999933522195
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_logs.py::test_login_events_are_logged",
+      "file": "tests\\test_logs.py",
+      "line": 18,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.11662020000221673
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.03855180000027758
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.001441500000510132
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_logs.py::test_login_logs_only_for_ops",
+      "file": "tests\\test_logs.py",
+      "line": 35,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10923079999702168
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.07954070000050706
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004290000000764849
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_logs.py::test_audit_logs_query_filters",
+      "file": "tests\\test_logs.py",
+      "line": 55,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.11125950000132434
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.12360999999873457
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004033999997773208
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_logs.py::test_purge_expired_logs",
+      "file": "tests\\test_logs.py",
+      "line": 82,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10428909999973257
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00702860000092187
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00039110000216169283
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_mock_data.py::test_seed_is_idempotent_and_reset_rebuilds",
+      "file": "tests\\test_mock_data.py",
+      "line": 42,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.7565725999993447
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.6223669999999402
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.000684200000250712
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_mock_data.py::test_counts_and_states",
+      "file": "tests\\test_mock_data.py",
+      "line": 51,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.9901011000001745
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.004614000001311069
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0041959000009228475
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_mock_data.py::test_no_overlaps_and_within_opening_hours",
+      "file": "tests\\test_mock_data.py",
+      "line": 78,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.7463406000024406
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.12519249999968451
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0005596999981207773
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_mock_data.py::test_sweeper_finds_nothing_due",
+      "file": "tests\\test_mock_data.py",
+      "line": 110,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.7383005000010598
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.006505400000605732
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004083099996933015
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_mock_data.py::test_demo_accounts_can_log_in",
+      "file": "tests\\test_mock_data.py",
+      "line": 118,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.7450564999999187
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.12608530000215978
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0014477000004262663
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_mock_data.py::test_refuses_outside_dev",
+      "file": "tests\\test_mock_data.py",
+      "line": 127,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10649870000270312
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0003265999985160306
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0002446000034979079
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_mock_data.py::test_dev_script_prepare_db",
+      "file": "tests\\test_mock_data.py",
+      "line": 140,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.000139899999339832
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.006172100002004299
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00015720000010333024
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_mock_data.py::test_dev_script_flags",
+      "file": "tests\\test_mock_data.py",
+      "line": 160,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 9.180000051856041e-05
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.006513199998153141
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00013530000069295056
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_models.py::test_all_tables_created",
+      "file": "tests\\test_models.py",
+      "line": 76,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.11333490000106394
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.002101300000504125
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0003682999995362479
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_models.py::test_migration_rerunnable_and_reversible",
+      "file": "tests\\test_models.py",
+      "line": 83,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10425390000091284
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.23903479999717092
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00015109999731066637
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_models.py::test_migration_matches_models",
+      "file": "tests\\test_models.py",
+      "line": 96,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10205969999879017
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.06017019999853801
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00015809999968041666
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_models.py::test_roles_seeded",
+      "file": "tests\\test_models.py",
+      "line": 101,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10116320000088308
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0022509000009449665
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.000393000002077315
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_models.py::test_student_no_unique",
+      "file": "tests\\test_models.py",
+      "line": 109,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.11322549999749754
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0038540999994438607
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.000780400001531234
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_models.py::test_foreign_keys_enforced",
+      "file": "tests\\test_models.py",
+      "line": 117,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10782800000015413
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.002635600001667626
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00036589999945135787
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_models.py::test_seat_code_unique_within_room",
+      "file": "tests\\test_models.py",
+      "line": 123,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.42179310000210535
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.004298599997127894
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00040660000013303943
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_models.py::test_enum_check_constraint",
+      "file": "tests\\test_models.py",
+      "line": 130,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10300879999704193
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0019448999992164318
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0003696999992826022
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_models.py::test_invalid_enum_rejected_by_orm",
+      "file": "tests\\test_models.py",
+      "line": 140,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 8.740000339457765e-05
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00011329999688314274
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 8.000000161700882e-05
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_models.py::test_reservation_time_order",
+      "file": "tests\\test_models.py",
+      "line": 145,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10681750000003376
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.005632199998217402
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00034900000173365697
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_models.py::test_one_active_reservation_per_seat_slot",
+      "file": "tests\\test_models.py",
+      "line": 156,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10091869999814662
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.016952099998889025
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0028115999994042795
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_models.py::test_entry_exit_dedup",
+      "file": "tests\\test_models.py",
+      "line": 176,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1067222000019683
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.003915900000720285
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.000419699998019496
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_models.py::test_datetime_stored_as_utc8",
+      "file": "tests\\test_models.py",
+      "line": 194,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10788120000142953
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.008154300001478987
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00048329999845009297
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_models.py::test_naive_datetime_rejected",
+      "file": "tests\\test_models.py",
+      "line": 208,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10596970000187866
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.005174699999770382
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00034749999758787453
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_models.py::test_transaction_rolls_back_all_changes_on_error",
+      "file": "tests\\test_models.py",
+      "line": 219,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1069705999980215
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.007900799999333685
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0005122000002302229
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_models.py::test_transaction_rolls_back_on_constraint_violation",
+      "file": "tests\\test_models.py",
+      "line": 231,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10864330000185873
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.004752600001665996
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.000396399998862762
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_models.py::test_transaction_commits_on_success",
+      "file": "tests\\test_models.py",
+      "line": 241,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.3402849999984028
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.004471600001124898
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0004183000019111205
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_models.py::test_immediate_transaction_takes_write_lock",
+      "file": "tests\\test_models.py",
+      "line": 248,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.11848439999812399
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.1662864999998419
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0005491999982041307
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_permissions.py::test_db_permission_matrix_matches_code",
+      "file": "tests\\test_permissions.py",
+      "line": 11,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10787509999863687
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.008311600002343766
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00035320000097271986
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_permissions.py::test_me_lists_permissions",
+      "file": "tests\\test_permissions.py",
+      "line": 22,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10661560000153258
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0236549000001105
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0014351999998325482
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_permissions.py::test_only_admin_can_manage_users",
+      "file": "tests\\test_permissions.py",
+      "line": 29,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10874870000043302
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.058680400001321686
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0012888000019302126
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_permissions.py::test_admin_promotes_user_and_change_is_logged",
+      "file": "tests\\test_permissions.py",
+      "line": 39,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.11130130000310601
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.38797409999824595
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004155700000410434
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_permissions.py::test_admin_cannot_demote_or_disable_self",
+      "file": "tests\\test_permissions.py",
+      "line": 59,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10395240000070771
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.035886900001059985
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0013886000015190803
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_permissions.py::test_disable_account_logs_out_and_blocks_login",
+      "file": "tests\\test_permissions.py",
+      "line": 69,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.11456929999985732
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.06738319999931264
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0015839000006963033
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_permissions.py::test_admin_issues_reset_code",
+      "file": "tests\\test_permissions.py",
+      "line": 85,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.12290020000000368
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.05462059999990743
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0013926999999966938
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_permissions.py::test_cli_create_admin",
+      "file": "tests\\test_permissions.py",
+      "line": 101,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.11147490000075777
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.031662100001994986
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0015166000011959113
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_room_search_detail_and_interval_states",
+      "file": "tests\\test_reservations.py",
+      "line": 94,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.14824529999896185
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.09506320000218693
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0016464000000269152
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_search_invalid_inputs[date=2026-11-02]",
+      "file": "tests\\test_reservations.py",
+      "line": 137,
+      "parameters": {
+        "query": "'date=2026-11-02'"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1426327000008314
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.030274400000052992
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0017813000013120472
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_search_invalid_inputs[start_time=09:00&end_time=10:00]",
+      "file": "tests\\test_reservations.py",
+      "line": 137,
+      "parameters": {
+        "query": "'start_time=09:00&end_time=10:00'"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1402933999997913
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.03634629999942263
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.001333399999566609
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_search_invalid_inputs[date=2026-11-02&start_time=23:00&end_time=01:00]",
+      "file": "tests\\test_reservations.py",
+      "line": 137,
+      "parameters": {
+        "query": "'date=2026-11-02&start_time=23:00&end_time=01:00'"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.13655730000027688
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.03518180000173743
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.003905900000972906
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_search_invalid_inputs[zone_type=unknown]",
+      "file": "tests\\test_reservations.py",
+      "line": 137,
+      "parameters": {
+        "query": "'zone_type=unknown'"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1322851000004448
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.03442139999970095
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.003761399999348214
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_calendar_priority_effective_dates_and_closed_room",
+      "file": "tests\\test_reservations.py",
+      "line": 150,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.13496289999966393
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.06625410000197007
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004397500000777654
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_create_rejects_invalid_times[2026-11-02T05:59:00+08:00-2026-11-02T08:00:00+08:00]",
+      "file": "tests\\test_reservations.py",
+      "line": 170,
+      "parameters": {
+        "start": "'2026-11-02T05:59:00+08:00'",
+        "end": "'2026-11-02T08:00:00+08:00'"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.44796380000116187
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.03957269999955315
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.003944300002331147
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_create_rejects_invalid_times[2026-11-02T22:00:00+08:00-2026-11-02T23:31:00+08:00]",
+      "file": "tests\\test_reservations.py",
+      "line": 170,
+      "parameters": {
+        "start": "'2026-11-02T22:00:00+08:00'",
+        "end": "'2026-11-02T23:31:00+08:00'"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1396883000015805
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.03985069999907864
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0016938999979174696
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_create_rejects_invalid_times[2026-11-02T23:00:00+08:00-2026-11-03T01:00:00+08:00]",
+      "file": "tests\\test_reservations.py",
+      "line": 170,
+      "parameters": {
+        "start": "'2026-11-02T23:00:00+08:00'",
+        "end": "'2026-11-03T01:00:00+08:00'"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.15964299999905052
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.032153500000276836
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0014513999994960614
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_create_rejects_invalid_times[2026-11-04T09:00:00+08:00-2026-11-04T10:00:00+08:00]",
+      "file": "tests\\test_reservations.py",
+      "line": 170,
+      "parameters": {
+        "start": "'2026-11-04T09:00:00+08:00'",
+        "end": "'2026-11-04T10:00:00+08:00'"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1387853999985964
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.03469969999787281
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0021271000005071983
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_create_rejects_invalid_times[2026-11-02T09:00:00+08:00-2026-11-02T09:00:00+08:00]",
+      "file": "tests\\test_reservations.py",
+      "line": 170,
+      "parameters": {
+        "start": "'2026-11-02T09:00:00+08:00'",
+        "end": "'2026-11-02T09:00:00+08:00'"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.16042830000151298
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.03271839999797521
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0013470000012603123
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_create_rejects_invalid_times[2026-11-02T09:00:00-2026-11-02T10:00:00]",
+      "file": "tests\\test_reservations.py",
+      "line": 170,
+      "parameters": {
+        "start": "'2026-11-02T09:00:00'",
+        "end": "'2026-11-02T10:00:00'"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.14819209999768646
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.03355819999706
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0015172000021266285
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_today_tomorrow_short_duration_and_full_opening_day",
+      "file": "tests\\test_reservations.py",
+      "line": 187,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.13450080000257003
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.06173219999982393
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004277399999409681
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_overlap_person_overlap_adjacent_and_utc_conversion",
+      "file": "tests\\test_reservations.py",
+      "line": 196,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.14739499999996042
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.07718729999760399
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00395829999979469
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_idempotency_key_required_and_scoped_to_payload_and_user",
+      "file": "tests\\test_reservations.py",
+      "line": 208,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.14088129999800003
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.10966059999918798
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0016375000013795216
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_change_seat_rechecks_conflicts_and_preserves_original_on_failure",
+      "file": "tests\\test_reservations.py",
+      "line": 236,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.13942999999926542
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.44136300000172923
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0053740000003017485
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_cancel_exact_boundary_and_no_show_mutual_exclusion[16-False]",
+      "file": "tests\\test_reservations.py",
+      "line": 255,
+      "parameters": {
+        "minutes": "16",
+        "late": "False"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.13830800000141608
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.06989230000181124
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004045600002427818
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_cancel_exact_boundary_and_no_show_mutual_exclusion[15-True]",
+      "file": "tests\\test_reservations.py",
+      "line": 255,
+      "parameters": {
+        "minutes": "15",
+        "late": "True"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.13511889999790583
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.06987510000180919
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0014936000006855465
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_cancel_exact_boundary_and_no_show_mutual_exclusion[1-True]",
+      "file": "tests\\test_reservations.py",
+      "line": 255,
+      "parameters": {
+        "minutes": "1",
+        "late": "True"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.14617050000015297
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.07243870000093011
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0016189000016311184
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_restricted_user_can_cancel_but_cannot_create_or_change",
+      "file": "tests\\test_reservations.py",
+      "line": 276,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.14256480000040028
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.07911500000045635
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.004318299997976283
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_checkin_early_boundary[44-59-False]",
+      "file": "tests\\test_reservations.py",
+      "line": 302,
+      "parameters": {
+        "minute": "44",
+        "second": "59",
+        "success": "False"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.13910540000142646
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.055197199999383884
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0049569000002520625
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_checkin_early_boundary[45-0-True]",
+      "file": "tests\\test_reservations.py",
+      "line": 302,
+      "parameters": {
+        "minute": "45",
+        "second": "0",
+        "success": "True"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1400154000002658
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.056488599999283906
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0017544999973324593
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_checkin_late_boundary_no_penalty_inside_window[0-0-True]",
+      "file": "tests\\test_reservations.py",
+      "line": 312,
+      "parameters": {
+        "minute": "0",
+        "microsecond": "0",
+        "success": "True"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1389460999998846
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.06746710000152234
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0020688000004156493
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_checkin_late_boundary_no_penalty_inside_window[15-0-True]",
+      "file": "tests\\test_reservations.py",
+      "line": 312,
+      "parameters": {
+        "minute": "15",
+        "microsecond": "0",
+        "success": "True"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.14571340000111377
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.07241849999991246
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.005214700002397876
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_checkin_late_boundary_no_penalty_inside_window[15-1-False]",
+      "file": "tests\\test_reservations.py",
+      "line": 312,
+      "parameters": {
+        "minute": "15",
+        "microsecond": "1",
+        "success": "False"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.4457957000013266
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.06753209999806131
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0038390000008803327
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_checkin_late_boundary_no_penalty_inside_window[16-0-False]",
+      "file": "tests\\test_reservations.py",
+      "line": 312,
+      "parameters": {
+        "minute": "16",
+        "microsecond": "0",
+        "success": "False"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1428113999972993
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.06194820000018808
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00160659999892232
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_checkin_identity_seat_repeat_and_state_transitions",
+      "file": "tests\\test_reservations.py",
+      "line": 332,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.14911769999889657
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.10650029999669641
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.001575599999341648
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_unattended_expiry_worker_and_dedup",
+      "file": "tests\\test_reservations.py",
+      "line": 353,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1378432999990764
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.04246259999854374
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00428720000127214
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_lazy_expiry_and_maintenance_preserved",
+      "file": "tests\\test_reservations.py",
+      "line": 382,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1414160999993328
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.06680099999721278
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.005087500001536682
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_owner_privacy_and_ops_permissions",
+      "file": "tests\\test_reservations.py",
+      "line": 393,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1419030000033672
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.09873809999771765
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0016880999974091537
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_cancel_audit_failure_rolls_back_violation_and_release",
+      "file": "tests\\test_reservations.py",
+      "line": 414,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.1366374999997788
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.07261500000095111
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.002101100002619205
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_100_competing_users_only_one_reservation",
+      "file": "tests\\test_reservations.py",
+      "line": 431,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.10922879999998258
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 1.4690910999997868
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.003908599999704165
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_concurrent_retries_return_same_id",
+      "file": "tests\\test_reservations.py",
+      "line": 462,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.13802379999833647
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.7853942999972787
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.002138399999239482
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_write_lock_error_is_retryable_and_same_key_can_recover",
+      "file": "tests\\test_reservations.py",
+      "line": 476,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.49493120000261115
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.14107090000106837
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.002198300000600284
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_units.py::test_password_policy_rejects_short_or_single_class",
+      "file": "tests\\test_units.py",
+      "line": 18,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0002719999974942766
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0001232999966305215
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00014039999950909987
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_units.py::test_student_no_pattern",
+      "file": "tests\\test_units.py",
+      "line": 26,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 8.35999999253545e-05
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 9.380000119563192e-05
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 8.499999967170879e-05
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_units.py::test_password_hash_verifies_and_hides_plaintext",
+      "file": "tests\\test_units.py",
+      "line": 34,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 8.849999721860513e-05
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.002813099999912083
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00011799999992945231
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_units.py::test_token_digest_is_stable_and_not_the_token",
+      "file": "tests\\test_units.py",
+      "line": 42,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 8.850000085658394e-05
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00018939999790745787
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 9.15000018721912e-05
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_units.py::test_permission_projection_matches_role_matrix",
+      "file": "tests\\test_units.py",
+      "line": 49,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0002666000000317581
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00012090000018361025
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 8.170000000973232e-05
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_units.py::test_now_is_shanghai_aware",
+      "file": "tests\\test_units.py",
+      "line": 61,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.00011550000272109173
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00011489999815239571
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00011910000102943741
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_units.py::test_gate_user_key_does_not_expose_student_no",
+      "file": "tests\\test_units.py",
+      "line": 67,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 8.099999831756577e-05
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00010280000060447492
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 8.029999662539922e-05
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_classifies_fifteen_minute_boundary[901-False]",
+      "file": "tests\\units\\test_cancel_reservation.py",
+      "line": 12,
+      "parameters": {
+        "seconds": "901",
+        "late": "False"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0016066999996837694
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0003766000008909032
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0001809999994293321
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_classifies_fifteen_minute_boundary[900-True]",
+      "file": "tests\\units\\test_cancel_reservation.py",
+      "line": 12,
+      "parameters": {
+        "seconds": "900",
+        "late": "True"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0013039000004937407
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.000311100000544684
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00014229999942472205
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_classifies_fifteen_minute_boundary[899-True]",
+      "file": "tests\\units\\test_cancel_reservation.py",
+      "line": 12,
+      "parameters": {
+        "seconds": "899",
+        "late": "True"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0010600999994494487
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0003071999999519903
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00013979999857838266
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_cancel_reservation.py::test_repeated_cancel_does_not_repeat_violation_or_notification",
+      "file": "tests\\units\\test_cancel_reservation.py",
+      "line": 33,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0009551000002829824
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0002913000025728252
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00012369999967631884
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_rejects_non_reserved_booking[ACTIVE]",
+      "file": "tests\\units\\test_cancel_reservation.py",
+      "line": 46,
+      "parameters": {
+        "status": "<ReservationStatus.ACTIVE: 'ACTIVE'>"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0010164999985136092
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0001706000002741348
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00013059999764664099
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_rejects_non_reserved_booking[EXPIRED]",
+      "file": "tests\\units\\test_cancel_reservation.py",
+      "line": 46,
+      "parameters": {
+        "status": "<ReservationStatus.EXPIRED: 'EXPIRED'>"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0009594000002834946
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0001781999999366235
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00014409999857889488
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_rejects_started_booking[0]",
+      "file": "tests\\units\\test_cancel_reservation.py",
+      "line": 55,
+      "parameters": {
+        "seconds": "0"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0009868999986792915
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00017080000179703347
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00012630000128410757
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_rejects_started_booking[-1]",
+      "file": "tests\\units\\test_cancel_reservation.py",
+      "line": 55,
+      "parameters": {
+        "seconds": "-1"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0017623000021558255
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00018369999816059135
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00015500000154133886
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_change_seat.py::test_change_seat_preserves_reservation_times",
+      "file": "tests\\units\\test_change_seat.py",
+      "line": 15,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0011016999997082166
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0003406000032555312
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00013649999891640618
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_change_seat.py::test_only_reserved_booking_can_change[ACTIVE]",
+      "file": "tests\\units\\test_change_seat.py",
+      "line": 30,
+      "parameters": {
+        "status": "<ReservationStatus.ACTIVE: 'ACTIVE'>"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0010262999967380892
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00017880000086734071
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00013580000086221844
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_change_seat.py::test_only_reserved_booking_can_change[CANCELLED]",
+      "file": "tests\\units\\test_change_seat.py",
+      "line": 30,
+      "parameters": {
+        "status": "<ReservationStatus.CANCELLED: 'CANCELLED'>"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0010216999980912078
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0001950999976543244
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.000130899999930989
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_change_seat.py::test_overdue_booking_cannot_change",
+      "file": "tests\\units\\test_change_seat.py",
+      "line": 39,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0009630000022298191
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0002520000016374979
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00013530000069295056
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_change_seat.py::test_conflicting_target_preserves_original_seat",
+      "file": "tests\\units\\test_change_seat.py",
+      "line": 46,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0010192999980063178
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00021740000011050142
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0001267000006919261
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_change_seat.py::test_change_request_rejects_time_modification",
+      "file": "tests\\units\\test_change_seat.py",
+      "line": 55,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0001187999987450894
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00011029999950551428
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 9.540000246488489e-05
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_qr_checkin_within_window[-900-early-False]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 15,
+      "parameters": {
+        "offset": "-900",
+        "arrival_status": "<ArrivalStatus.EARLY: 'early'>",
+        "use_code": "False"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0011330000015732367
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0005044000026828144
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00014569999984814785
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_qr_checkin_within_window[-900-early-True]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 15,
+      "parameters": {
+        "offset": "-900",
+        "arrival_status": "<ArrivalStatus.EARLY: 'early'>",
+        "use_code": "True"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0016785000007075723
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0004374999989522621
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00013860000035492703
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_qr_checkin_within_window[0-on_time-False]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 15,
+      "parameters": {
+        "offset": "0",
+        "arrival_status": "<ArrivalStatus.ON_TIME: 'on_time'>",
+        "use_code": "False"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0010591999998723622
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00043449999793665484
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00014290000035543926
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_qr_checkin_within_window[0-on_time-True]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 15,
+      "parameters": {
+        "offset": "0",
+        "arrival_status": "<ArrivalStatus.ON_TIME: 'on_time'>",
+        "use_code": "True"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.001276700000744313
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0004698999982792884
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00014430000010179356
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_qr_checkin_within_window[900-late-False]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 15,
+      "parameters": {
+        "offset": "900",
+        "arrival_status": "<ArrivalStatus.LATE: 'late'>",
+        "use_code": "False"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0010947999980999157
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00043110000115120783
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00013659999967785552
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_qr_checkin_within_window[900-late-True]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 15,
+      "parameters": {
+        "offset": "900",
+        "arrival_status": "<ArrivalStatus.LATE: 'late'>",
+        "use_code": "True"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0011061000004701782
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0004723999991256278
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00014350000128615648
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_qr_seat_must_match_booking",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 37,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0009940999989339616
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00018479999926057644
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0001263999984075781
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_checkin_before_window_fails",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 44,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0009524999986751936
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0001996000028157141
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00011970000196015462
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_repeated_qr_checkin_is_idempotent",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 51,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.000954699997237185
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0001747999995131977
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0001233000002685003
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_no_show_grace_boundary[900-False]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 57,
+      "parameters": {
+        "offset": "900",
+        "expected": "False"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.00036410000029718503
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 9.409999984200113e-05
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00011180000001331791
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_no_show_grace_boundary[901-True]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 57,
+      "parameters": {
+        "offset": "901",
+        "expected": "True"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0003389000012248289
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 9.000000136438757e-05
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00010309999925084412
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_booking_end_is_overdue_even_within_grace",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 62,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0002538999979151413
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 8.919999891077168e-05
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 9.560000034980476e-05
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_late_checkin_expires_booking",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 67,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0009672999985923525
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00028449999808799475
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0001202000021294225
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_expiry_records_no_show_and_releases_seat",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 77,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.001582999997481238
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0004554999977699481
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00013760000001639128
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_expiry_preserves_maintenance_status",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 91,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0007981999988260213
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00017430000298190862
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0001159999992523808
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_expiry_sweep_processes_candidates[0]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 98,
+      "parameters": {
+        "count": "0"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0008272000013676006
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0003271999994467478
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00012939999942318536
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_expiry_sweep_processes_candidates[2]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 98,
+      "parameters": {
+        "count": "2"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0008411999988311436
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0003828999979305081
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00012970000170753337
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_concurrency_idempotency.py::test_same_key_and_payload_replays_without_writing",
+      "file": "tests\\units\\test_concurrency_idempotency.py",
+      "line": 14,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0009709999976621475
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0008434000010311138
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00013320000289240852
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_concurrency_idempotency.py::test_key_cannot_be_reused_for_different_request[True-False]",
+      "file": "tests\\units\\test_concurrency_idempotency.py",
+      "line": 32,
+      "parameters": {
+        "other_user": "True",
+        "other_payload": "False"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0010337000021536369
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0007475999991584104
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00014659999942523427
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_concurrency_idempotency.py::test_key_cannot_be_reused_for_different_request[False-True]",
+      "file": "tests\\units\\test_concurrency_idempotency.py",
+      "line": 32,
+      "parameters": {
+        "other_user": "False",
+        "other_payload": "True"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0010927000002993736
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0008266000004368834
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00014860000010230578
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_concurrency_idempotency.py::test_write_transaction_requests_immediate_lock",
+      "file": "tests\\units\\test_concurrency_idempotency.py",
+      "line": 48,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0006212000007508323
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00023409999994328246
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00011319999975967221
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_concurrency_idempotency.py::test_write_errors_become_booking_errors[failure0-503]",
+      "file": "tests\\units\\test_concurrency_idempotency.py",
+      "line": 63,
+      "parameters": {
+        "failure": "OperationalError('(builtins.Exception) database is locked')",
+        "code": "503"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.00108620000173687
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.004193100001430139
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00015870000061113387
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_concurrency_idempotency.py::test_write_errors_become_booking_errors[failure1-503]",
+      "file": "tests\\units\\test_concurrency_idempotency.py",
+      "line": 63,
+      "parameters": {
+        "failure": "OperationalError('(builtins.Exception) database is busy')",
+        "code": "503"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0007626000005984679
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00023630000214325264
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00011269999959040433
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_concurrency_idempotency.py::test_write_errors_become_booking_errors[failure2-409]",
+      "file": "tests\\units\\test_concurrency_idempotency.py",
+      "line": 63,
+      "parameters": {
+        "failure": "IntegrityError('(builtins.Exception) unique constraint')",
+        "code": "409"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0006964999993215315
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00022360000002663583
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00011549999908311293
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_concurrency_idempotency.py::test_unrelated_database_error_is_preserved",
+      "file": "tests\\units\\test_concurrency_idempotency.py",
+      "line": 79,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0005845999985467643
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00024680000205989927
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00011019999874406494
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_create_saves_booking_and_arrival",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 14,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0010217999988526572
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0007516000005125534
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00014089999967836775
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_create_rejects_past_or_too_distant_start[offset0]",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 32,
+      "parameters": {
+        "offset": "datetime.timedelta(days=-1, seconds=86340)"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0010022999995271675
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00026369999977760017
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00013170000238460489
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_create_rejects_past_or_too_distant_start[offset1]",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 32,
+      "parameters": {
+        "offset": "datetime.timedelta(days=2)"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0009700999980850611
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00027749999935622327
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00013240000043879263
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_slot_rejects_closed_hours_or_conflicts[False-False-False-422]",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 42,
+      "parameters": {
+        "covered": "False",
+        "overlaps": "False",
+        "own_conflict": "False",
+        "code": "422"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0013728999983868562
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00016829999731271528
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0001678000007814262
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_slot_rejects_closed_hours_or_conflicts[True-True-False-409]",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 42,
+      "parameters": {
+        "covered": "True",
+        "overlaps": "True",
+        "own_conflict": "False",
+        "code": "409"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0010333999998692889
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.000207500001124572
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00015750000238767825
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_slot_rejects_closed_hours_or_conflicts[True-False-True-409]",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 42,
+      "parameters": {
+        "covered": "True",
+        "overlaps": "False",
+        "own_conflict": "True",
+        "code": "409"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0011985000019194558
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00040070000250125304
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0006804000004194677
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_slot_ignores_the_booking_being_modified",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 57,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0008393999996769708
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.000352399998519104
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00012449999849195592
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_invalid_time_range_is_rejected[0]",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 63,
+      "parameters": {
+        "minutes": "0"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.00020199999926262535
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00014170000213198364
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 9.309999950346537e-05
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_invalid_time_range_is_rejected[-1]",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 63,
+      "parameters": {
+        "minutes": "-1"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.00016210000103455968
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00011999999696854502
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 9.540000246488489e-05
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_invalid_time_range_is_rejected[1440]",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 63,
+      "parameters": {
+        "minutes": "1440"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0001596000001882203
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00010860000111279078
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 9.470000077271834e-05
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_valid_slot_passes",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 69,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0008965999986685347
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00035120000029564835
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00012109999806853011
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_defect_cancel_notification_failure.py::test_srs_uc009_notification_failure_must_not_rollback_cancel",
+      "file": "tests\\units\\test_defect_cancel_notification_failure.py",
+      "line": 13,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0010428999994473998
+        },
+        {
+          "phase": "call",
+          "outcome": "failed",
+          "duration_seconds": 0.0004659000005631242,
+          "longrepr": "tests\\units\\test_defect_cancel_notification_failure.py:23: in test_srs_uc009_notification_failure_must_not_rollback_cancel\n    result = service.cancel(session, booking.user_id, booking.id)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\napp\\services\\reservations.py:425: in cancel\n    create_notification(\nD:\\develop\\anaconda3\\Lib\\unittest\\mock.py:1169: in __call__\n    return self._mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nD:\\develop\\anaconda3\\Lib\\unittest\\mock.py:1173: in _mock_call\n    return self._execute_mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nD:\\develop\\anaconda3\\Lib\\unittest\\mock.py:1228: in _execute_mock_call\n    raise effect\nE   RuntimeError: 模拟站内通知创建失败\n\nDuring handling of the above exception, another exception occurred:\ntests\\units\\test_defect_cancel_notification_failure.py:28: in test_srs_uc009_notification_failure_must_not_rollback_cancel\n    pytest.fail(\nE   Failed: 违反 SRS UC-009 异常流程 E1 / EX-06：通知失败应保持取消生效，实际通知异常向外传播，取消事务已 rollback，未 commit"
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00023240000155055895
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_defect_checkin_boundary.py::test_srs_ac02_sweep_must_keep_exact_checkin_deadline",
+      "file": "tests\\units\\test_defect_checkin_boundary.py",
+      "line": 14,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.00091469999824767
+        },
+        {
+          "phase": "call",
+          "outcome": "failed",
+          "duration_seconds": 0.0014380000029632356,
+          "longrepr": "tests\\units\\test_defect_checkin_boundary.py:36: in test_srs_ac02_sweep_must_keep_exact_checkin_deadline\n    assert selected_as_no_show is False, (\nE   AssertionError: 违反 SRS AC-02 / BR-020：开始后恰好 15 分钟仍应允许签到，但后台未到扫描的真实查询已将该预约纳入失效候选\nE   assert True is False"
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00021379999816417694
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_defect_no_show_notification.py::test_srs_ac03_no_show_expiry_must_notify_user",
+      "file": "tests\\units\\test_defect_no_show_notification.py",
+      "line": 17,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0010384000015619677
+        },
+        {
+          "phase": "call",
+          "outcome": "failed",
+          "duration_seconds": 0.0009401999996043742,
+          "longrepr": "tests\\units\\test_defect_no_show_notification.py:47: in test_srs_ac03_no_show_expiry_must_notify_user\n    assert any(item.user_id == booking.user_id for item in notices), (\nE   AssertionError: 违反 SRS AC-03：超窗未签到预约已失效、座位已释放并记录违规，但没有给用户 7 创建站内通知（实际通知数=0）\nE   assert False\nE    +  where False = any(<generator object test_srs_ac03_no_show_expiry_must_notify_user.<locals>.<genexpr> at 0x000001B9082672A0>)"
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00019219999740016647
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_defect_no_show_penalty.py::test_srs_br095_no_show_must_apply_penalty_tier[3-1]",
+      "file": "tests\\units\\test_defect_no_show_penalty.py",
+      "line": 15,
+      "parameters": {
+        "warning_count": "3",
+        "ban_days": "1"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0011455999992904253
+        },
+        {
+          "phase": "call",
+          "outcome": "failed",
+          "duration_seconds": 0.0009962000003724825,
+          "longrepr": "tests\\units\\test_defect_no_show_penalty.py:37: in test_srs_br095_no_show_must_apply_penalty_tier\n    assert len(bans) == 1, (\nE   AssertionError: 违反 SRS BR-095 / AC-09：未到违规累计第 3 次，应禁约 1 天，实际创建禁约记录 0 条\nE   assert 0 == 1\nE    +  where 0 = len([])"
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0002752999971562531
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_defect_no_show_penalty.py::test_srs_br095_no_show_must_apply_penalty_tier[5-2]",
+      "file": "tests\\units\\test_defect_no_show_penalty.py",
+      "line": 15,
+      "parameters": {
+        "warning_count": "5",
+        "ban_days": "2"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0010703999978431966
+        },
+        {
+          "phase": "call",
+          "outcome": "failed",
+          "duration_seconds": 0.0011349000014888588,
+          "longrepr": "tests\\units\\test_defect_no_show_penalty.py:37: in test_srs_br095_no_show_must_apply_penalty_tier\n    assert len(bans) == 1, (\nE   AssertionError: 违反 SRS BR-095 / AC-09：未到违规累计第 5 次，应禁约 2 天，实际创建禁约记录 0 条\nE   assert 0 == 1\nE    +  where 0 = len([])"
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00020950000180164352
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_defect_no_show_penalty.py::test_srs_br095_no_show_must_apply_penalty_tier[7-3]",
+      "file": "tests\\units\\test_defect_no_show_penalty.py",
+      "line": 15,
+      "parameters": {
+        "warning_count": "7",
+        "ban_days": "3"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.001055200002156198
+        },
+        {
+          "phase": "call",
+          "outcome": "failed",
+          "duration_seconds": 0.0009548000016366132,
+          "longrepr": "tests\\units\\test_defect_no_show_penalty.py:37: in test_srs_br095_no_show_must_apply_penalty_tier\n    assert len(bans) == 1, (\nE   AssertionError: 违反 SRS BR-095 / AC-09：未到违规累计第 7 次，应禁约 3 天，实际创建禁约记录 0 条\nE   assert 0 == 1\nE    +  where 0 = len([])"
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00019579999934649095
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_room_search.py::test_room_list_contains_room_information",
+      "file": "tests\\units\\test_room_search.py",
+      "line": 11,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0008404000000155065
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00022869999884278513
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00013799999942420982
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_room_search.py::test_empty_room_list",
+      "file": "tests\\units\\test_room_search.py",
+      "line": 26,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0007913000008556992
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00016139999934239313
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00012760000026901253
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_room_search.py::test_search_unknown_room_fails",
+      "file": "tests\\units\\test_room_search.py",
+      "line": 30,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.000616100001934683
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.000287499999103602
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00010470000052009709
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_room_search.py::test_search_available_only[False-expected0]",
+      "file": "tests\\units\\test_room_search.py",
+      "line": 38,
+      "parameters": {
+        "available_only": "False",
+        "expected": "[11, 12]"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0008219000010285527
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00024200000189011917
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0001283999990846496
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_room_search.py::test_search_available_only[True-expected1]",
+      "file": "tests\\units\\test_room_search.py",
+      "line": 38,
+      "parameters": {
+        "available_only": "True",
+        "expected": "[11]"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0008798999988357536
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00022850000095786527
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0001081000009435229
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_room_search.py::test_search_passes_room_zone_and_facility_filters[True]",
+      "file": "tests\\units\\test_room_search.py",
+      "line": 56,
+      "parameters": {
+        "flag": "True"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0007409999998344574
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0020432000019354746
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00014309999824035913
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_room_search.py::test_search_passes_room_zone_and_facility_filters[False]",
+      "file": "tests\\units\\test_room_search.py",
+      "line": 56,
+      "parameters": {
+        "flag": "False"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0007956999979796819
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0017998000002990011
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0001405000002705492
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_blocked_seat_keeps_status[maintenance]",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 11,
+      "parameters": {
+        "status": "<SeatStatus.MAINTENANCE: 'maintenance'>"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0007798000006005168
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00010610000026645139
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00010340000153519213
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_blocked_seat_keeps_status[closed]",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 11,
+      "parameters": {
+        "status": "<SeatStatus.CLOSED: 'closed'>"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0006897999992361292
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 9.330000102636404e-05
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 9.370000043418258e-05
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_blocked_seat_keeps_status[disabled]",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 11,
+      "parameters": {
+        "status": "<SeatStatus.DISABLED: 'disabled'>"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0010628999989421573
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00010180000026593916
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 9.870000212686136e-05
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_closed_room_or_outside_opening_hours[False-True]",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 18,
+      "parameters": {
+        "room_open": "False",
+        "covered": "True"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0007469999982276931
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00011280000035185367
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0001109000004362315
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_closed_room_or_outside_opening_hours[True-False]",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 18,
+      "parameters": {
+        "room_open": "True",
+        "covered": "False"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0006925000016053673
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 9.349999891128391e-05
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00010230000043520704
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_current_booking_determines_status[None-available]",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 27,
+      "parameters": {
+        "status": "None",
+        "expected": "<SeatStatus.AVAILABLE: 'available'>"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0007626000005984679
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00024230000053648837
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00011110000195913017
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_current_booking_determines_status[RESERVED-reserved]",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 27,
+      "parameters": {
+        "status": "<ReservationStatus.RESERVED: 'RESERVED'>",
+        "expected": "<SeatStatus.RESERVED: 'reserved'>"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.000758400001359405
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00023799999689799733
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00011180000001331791
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_current_booking_determines_status[ACTIVE-in_use]",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 27,
+      "parameters": {
+        "status": "<ReservationStatus.ACTIVE: 'ACTIVE'>",
+        "expected": "<SeatStatus.IN_USE: 'in_use'>"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0007885000013629906
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.0002114000017172657
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00011129999984405003
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_current_booking_determines_status[TEMP_LEAVE-in_use]",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 27,
+      "parameters": {
+        "status": "<ReservationStatus.TEMP_LEAVE: 'TEMP_LEAVE'>",
+        "expected": "<SeatStatus.IN_USE: 'in_use'>"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0007681999995838851
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00021070000002509914
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0001224999978148844
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_future_booking_does_not_occupy_seat_now",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 46,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0007065999998303596
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00020930000027874485
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00010479999764356762
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_detail_contains_facilities_and_qr_payload",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 52,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0006493000000773463
+        },
+        {
+          "phase": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.00011249999806750566
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00031540000054519624
+        }
+      ]
+    }
+  ]
+}

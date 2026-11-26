@@ -1,0 +1,23 @@
+{
+  "name": "backend-tests",
+  "command": [
+    "C:/Users/zjb/AppData/Local/Temp/studyroom-test-evidence-20261126/venv/Scripts/python.exe",
+    "-m",
+    "pytest",
+    "-vv",
+    "--tb=short",
+    "-p",
+    "evidence_pytest_plugin",
+    "--junitxml=D:/DATA/university/3_1/Software Engineering/11.26/study-room/docs/evidence/test/2026-11-26-full-suite/backend-junit.xml",
+    "-o",
+    "junit_family=xunit2",
+    "-o",
+    "cache_dir=C:/Users/zjb/AppData/Local/Temp/studyroom-test-evidence-20261126/pytest-cache"
+  ],
+  "cwd": "C:\\Users\\zjb\\AppData\\Local\\Temp\\studyroom-test-evidence-20261126\\checkout\\backend",
+  "start": "2026-11-26T19:18:44.896885+08:00",
+  "end": "2026-11-26T19:19:35.258528+08:00",
+  "elapsed_seconds": 50.362,
+  "exit_code": 0,
+  "log": "backend-tests.log"
+}

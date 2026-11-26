@@ -1,0 +1,763 @@
+{
+  "exit_code": 1,
+  "cases": [
+    {
+      "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_classifies_fifteen_minute_boundary[901-False]",
+      "file": "tests\\units\\test_cancel_reservation.py",
+      "line": 12,
+      "parameters": {
+        "seconds": "901",
+        "late": "False"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_classifies_fifteen_minute_boundary[900-True]",
+      "file": "tests\\units\\test_cancel_reservation.py",
+      "line": 12,
+      "parameters": {
+        "seconds": "900",
+        "late": "True"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_classifies_fifteen_minute_boundary[899-True]",
+      "file": "tests\\units\\test_cancel_reservation.py",
+      "line": 12,
+      "parameters": {
+        "seconds": "899",
+        "late": "True"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_cancel_reservation.py::test_repeated_cancel_does_not_repeat_violation_or_notification",
+      "file": "tests\\units\\test_cancel_reservation.py",
+      "line": 33,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_rejects_non_reserved_booking[ACTIVE]",
+      "file": "tests\\units\\test_cancel_reservation.py",
+      "line": 46,
+      "parameters": {
+        "status": "<ReservationStatus.ACTIVE: 'ACTIVE'>"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_rejects_non_reserved_booking[EXPIRED]",
+      "file": "tests\\units\\test_cancel_reservation.py",
+      "line": 46,
+      "parameters": {
+        "status": "<ReservationStatus.EXPIRED: 'EXPIRED'>"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_rejects_started_booking[0]",
+      "file": "tests\\units\\test_cancel_reservation.py",
+      "line": 55,
+      "parameters": {
+        "seconds": "0"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_rejects_started_booking[-1]",
+      "file": "tests\\units\\test_cancel_reservation.py",
+      "line": 55,
+      "parameters": {
+        "seconds": "-1"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_change_seat.py::test_change_seat_preserves_reservation_times",
+      "file": "tests\\units\\test_change_seat.py",
+      "line": 15,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_change_seat.py::test_only_reserved_booking_can_change[ACTIVE]",
+      "file": "tests\\units\\test_change_seat.py",
+      "line": 30,
+      "parameters": {
+        "status": "<ReservationStatus.ACTIVE: 'ACTIVE'>"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_change_seat.py::test_only_reserved_booking_can_change[CANCELLED]",
+      "file": "tests\\units\\test_change_seat.py",
+      "line": 30,
+      "parameters": {
+        "status": "<ReservationStatus.CANCELLED: 'CANCELLED'>"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_change_seat.py::test_overdue_booking_cannot_change",
+      "file": "tests\\units\\test_change_seat.py",
+      "line": 39,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_change_seat.py::test_conflicting_target_preserves_original_seat",
+      "file": "tests\\units\\test_change_seat.py",
+      "line": 46,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_change_seat.py::test_change_request_rejects_time_modification",
+      "file": "tests\\units\\test_change_seat.py",
+      "line": 55,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_qr_checkin_within_window[-900-early-False]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 15,
+      "parameters": {
+        "offset": "-900",
+        "arrival_status": "<ArrivalStatus.EARLY: 'early'>",
+        "use_code": "False"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_qr_checkin_within_window[-900-early-True]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 15,
+      "parameters": {
+        "offset": "-900",
+        "arrival_status": "<ArrivalStatus.EARLY: 'early'>",
+        "use_code": "True"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_qr_checkin_within_window[0-on_time-False]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 15,
+      "parameters": {
+        "offset": "0",
+        "arrival_status": "<ArrivalStatus.ON_TIME: 'on_time'>",
+        "use_code": "False"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_qr_checkin_within_window[0-on_time-True]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 15,
+      "parameters": {
+        "offset": "0",
+        "arrival_status": "<ArrivalStatus.ON_TIME: 'on_time'>",
+        "use_code": "True"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_qr_checkin_within_window[900-late-False]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 15,
+      "parameters": {
+        "offset": "900",
+        "arrival_status": "<ArrivalStatus.LATE: 'late'>",
+        "use_code": "False"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_qr_checkin_within_window[900-late-True]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 15,
+      "parameters": {
+        "offset": "900",
+        "arrival_status": "<ArrivalStatus.LATE: 'late'>",
+        "use_code": "True"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_qr_seat_must_match_booking",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 37,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_checkin_before_window_fails",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 44,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_repeated_qr_checkin_is_idempotent",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 51,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_no_show_grace_boundary[900-False]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 57,
+      "parameters": {
+        "offset": "900",
+        "expected": "False"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_no_show_grace_boundary[901-True]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 57,
+      "parameters": {
+        "offset": "901",
+        "expected": "True"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_booking_end_is_overdue_even_within_grace",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 62,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_late_checkin_expires_booking",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 67,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_expiry_records_no_show_and_releases_seat",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 77,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_expiry_preserves_maintenance_status",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 91,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_expiry_sweep_processes_candidates[0]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 98,
+      "parameters": {
+        "count": "0"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_checkin_expiry.py::test_expiry_sweep_processes_candidates[2]",
+      "file": "tests\\units\\test_checkin_expiry.py",
+      "line": 98,
+      "parameters": {
+        "count": "2"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_concurrency_idempotency.py::test_same_key_and_payload_replays_without_writing",
+      "file": "tests\\units\\test_concurrency_idempotency.py",
+      "line": 14,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_concurrency_idempotency.py::test_key_cannot_be_reused_for_different_request[True-False]",
+      "file": "tests\\units\\test_concurrency_idempotency.py",
+      "line": 32,
+      "parameters": {
+        "other_user": "True",
+        "other_payload": "False"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_concurrency_idempotency.py::test_key_cannot_be_reused_for_different_request[False-True]",
+      "file": "tests\\units\\test_concurrency_idempotency.py",
+      "line": 32,
+      "parameters": {
+        "other_user": "False",
+        "other_payload": "True"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_concurrency_idempotency.py::test_write_transaction_requests_immediate_lock",
+      "file": "tests\\units\\test_concurrency_idempotency.py",
+      "line": 48,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_concurrency_idempotency.py::test_write_errors_become_booking_errors[failure0-503]",
+      "file": "tests\\units\\test_concurrency_idempotency.py",
+      "line": 63,
+      "parameters": {
+        "failure": "OperationalError('(builtins.Exception) database is locked')",
+        "code": "503"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_concurrency_idempotency.py::test_write_errors_become_booking_errors[failure1-503]",
+      "file": "tests\\units\\test_concurrency_idempotency.py",
+      "line": 63,
+      "parameters": {
+        "failure": "OperationalError('(builtins.Exception) database is busy')",
+        "code": "503"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_concurrency_idempotency.py::test_write_errors_become_booking_errors[failure2-409]",
+      "file": "tests\\units\\test_concurrency_idempotency.py",
+      "line": 63,
+      "parameters": {
+        "failure": "IntegrityError('(builtins.Exception) unique constraint')",
+        "code": "409"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_concurrency_idempotency.py::test_unrelated_database_error_is_preserved",
+      "file": "tests\\units\\test_concurrency_idempotency.py",
+      "line": 79,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_create_saves_booking_and_arrival",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 14,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_create_rejects_past_or_too_distant_start[offset0]",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 32,
+      "parameters": {
+        "offset": "datetime.timedelta(days=-1, seconds=86340)"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_create_rejects_past_or_too_distant_start[offset1]",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 32,
+      "parameters": {
+        "offset": "datetime.timedelta(days=2)"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_slot_rejects_closed_hours_or_conflicts[False-False-False-422]",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 42,
+      "parameters": {
+        "covered": "False",
+        "overlaps": "False",
+        "own_conflict": "False",
+        "code": "422"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_slot_rejects_closed_hours_or_conflicts[True-True-False-409]",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 42,
+      "parameters": {
+        "covered": "True",
+        "overlaps": "True",
+        "own_conflict": "False",
+        "code": "409"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_slot_rejects_closed_hours_or_conflicts[True-False-True-409]",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 42,
+      "parameters": {
+        "covered": "True",
+        "overlaps": "False",
+        "own_conflict": "True",
+        "code": "409"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_slot_ignores_the_booking_being_modified",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 57,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_invalid_time_range_is_rejected[0]",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 63,
+      "parameters": {
+        "minutes": "0"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_invalid_time_range_is_rejected[-1]",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 63,
+      "parameters": {
+        "minutes": "-1"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_invalid_time_range_is_rejected[1440]",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 63,
+      "parameters": {
+        "minutes": "1440"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_create_reservation.py::test_valid_slot_passes",
+      "file": "tests\\units\\test_create_reservation.py",
+      "line": 69,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_defect_cancel_notification_failure.py::test_srs_uc009_notification_failure_must_not_rollback_cancel",
+      "file": "tests\\units\\test_defect_cancel_notification_failure.py",
+      "line": 13,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.025461900000664173
+        },
+        {
+          "phase": "call",
+          "outcome": "failed",
+          "duration_seconds": 0.0008157000011124182,
+          "longrepr": "tests\\units\\test_defect_cancel_notification_failure.py:23: in test_srs_uc009_notification_failure_must_not_rollback_cancel\n    result = service.cancel(session, booking.user_id, booking.id)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\napp\\services\\reservations.py:425: in cancel\n    create_notification(\nD:\\develop\\anaconda3\\Lib\\unittest\\mock.py:1169: in __call__\n    return self._mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nD:\\develop\\anaconda3\\Lib\\unittest\\mock.py:1173: in _mock_call\n    return self._execute_mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nD:\\develop\\anaconda3\\Lib\\unittest\\mock.py:1228: in _execute_mock_call\n    raise effect\nE   RuntimeError: 模拟站内通知创建失败\n\nDuring handling of the above exception, another exception occurred:\ntests\\units\\test_defect_cancel_notification_failure.py:28: in test_srs_uc009_notification_failure_must_not_rollback_cancel\n    pytest.fail(\nE   Failed: 违反 SRS UC-009 异常流程 E1 / EX-06：通知失败应保持取消生效，实际通知异常向外传播，取消事务已 rollback，未 commit"
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00037040000097476877
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_defect_checkin_boundary.py::test_srs_ac02_sweep_must_keep_exact_checkin_deadline",
+      "file": "tests\\units\\test_defect_checkin_boundary.py",
+      "line": 14,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.001202999999804888
+        },
+        {
+          "phase": "call",
+          "outcome": "failed",
+          "duration_seconds": 0.0025027000010595657,
+          "longrepr": "tests\\units\\test_defect_checkin_boundary.py:36: in test_srs_ac02_sweep_must_keep_exact_checkin_deadline\n    assert selected_as_no_show is False, (\nE   AssertionError: 违反 SRS AC-02 / BR-020：开始后恰好 15 分钟仍应允许签到，但后台未到扫描的真实查询已将该预约纳入失效候选\nE   assert True is False"
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00021570000171777792
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_defect_no_show_notification.py::test_srs_ac03_no_show_expiry_must_notify_user",
+      "file": "tests\\units\\test_defect_no_show_notification.py",
+      "line": 17,
+      "parameters": {},
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.001439700001355959
+        },
+        {
+          "phase": "call",
+          "outcome": "failed",
+          "duration_seconds": 0.0015237000006891321,
+          "longrepr": "tests\\units\\test_defect_no_show_notification.py:47: in test_srs_ac03_no_show_expiry_must_notify_user\n    assert any(item.user_id == booking.user_id for item in notices), (\nE   AssertionError: 违反 SRS AC-03：超窗未签到预约已失效、座位已释放并记录违规，但没有给用户 7 创建站内通知（实际通知数=0）\nE   assert False\nE    +  where False = any(<generator object test_srs_ac03_no_show_expiry_must_notify_user.<locals>.<genexpr> at 0x0000024F21872F60>)"
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0003113999991910532
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_defect_no_show_penalty.py::test_srs_br095_no_show_must_apply_penalty_tier[3-1]",
+      "file": "tests\\units\\test_defect_no_show_penalty.py",
+      "line": 15,
+      "parameters": {
+        "warning_count": "3",
+        "ban_days": "1"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0016180999991775025
+        },
+        {
+          "phase": "call",
+          "outcome": "failed",
+          "duration_seconds": 0.001427200000762241,
+          "longrepr": "tests\\units\\test_defect_no_show_penalty.py:37: in test_srs_br095_no_show_must_apply_penalty_tier\n    assert len(bans) == 1, (\nE   AssertionError: 违反 SRS BR-095 / AC-09：未到违规累计第 3 次，应禁约 1 天，实际创建禁约记录 0 条\nE   assert 0 == 1\nE    +  where 0 = len([])"
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00042360000225016847
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_defect_no_show_penalty.py::test_srs_br095_no_show_must_apply_penalty_tier[5-2]",
+      "file": "tests\\units\\test_defect_no_show_penalty.py",
+      "line": 15,
+      "parameters": {
+        "warning_count": "5",
+        "ban_days": "2"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.002171000000089407
+        },
+        {
+          "phase": "call",
+          "outcome": "failed",
+          "duration_seconds": 0.0018110000019078143,
+          "longrepr": "tests\\units\\test_defect_no_show_penalty.py:37: in test_srs_br095_no_show_must_apply_penalty_tier\n    assert len(bans) == 1, (\nE   AssertionError: 违反 SRS BR-095 / AC-09：未到违规累计第 5 次，应禁约 2 天，实际创建禁约记录 0 条\nE   assert 0 == 1\nE    +  where 0 = len([])"
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.00020049999875482172
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_defect_no_show_penalty.py::test_srs_br095_no_show_must_apply_penalty_tier[7-3]",
+      "file": "tests\\units\\test_defect_no_show_penalty.py",
+      "line": 15,
+      "parameters": {
+        "warning_count": "7",
+        "ban_days": "3"
+      },
+      "phases": [
+        {
+          "phase": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.0012752000002365094
+        },
+        {
+          "phase": "call",
+          "outcome": "failed",
+          "duration_seconds": 0.0012018999987049028,
+          "longrepr": "tests\\units\\test_defect_no_show_penalty.py:37: in test_srs_br095_no_show_must_apply_penalty_tier\n    assert len(bans) == 1, (\nE   AssertionError: 违反 SRS BR-095 / AC-09：未到违规累计第 7 次，应禁约 3 天，实际创建禁约记录 0 条\nE   assert 0 == 1\nE    +  where 0 = len([])"
+        },
+        {
+          "phase": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.0003484999979264103
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/units/test_room_search.py::test_room_list_contains_room_information",
+      "file": "tests\\units\\test_room_search.py",
+      "line": 11,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_room_search.py::test_empty_room_list",
+      "file": "tests\\units\\test_room_search.py",
+      "line": 26,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_room_search.py::test_search_unknown_room_fails",
+      "file": "tests\\units\\test_room_search.py",
+      "line": 30,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_room_search.py::test_search_available_only[False-expected0]",
+      "file": "tests\\units\\test_room_search.py",
+      "line": 38,
+      "parameters": {
+        "available_only": "False",
+        "expected": "[11, 12]"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_room_search.py::test_search_available_only[True-expected1]",
+      "file": "tests\\units\\test_room_search.py",
+      "line": 38,
+      "parameters": {
+        "available_only": "True",
+        "expected": "[11]"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_room_search.py::test_search_passes_room_zone_and_facility_filters[True]",
+      "file": "tests\\units\\test_room_search.py",
+      "line": 56,
+      "parameters": {
+        "flag": "True"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_room_search.py::test_search_passes_room_zone_and_facility_filters[False]",
+      "file": "tests\\units\\test_room_search.py",
+      "line": 56,
+      "parameters": {
+        "flag": "False"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_blocked_seat_keeps_status[maintenance]",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 11,
+      "parameters": {
+        "status": "<SeatStatus.MAINTENANCE: 'maintenance'>"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_blocked_seat_keeps_status[closed]",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 11,
+      "parameters": {
+        "status": "<SeatStatus.CLOSED: 'closed'>"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_blocked_seat_keeps_status[disabled]",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 11,
+      "parameters": {
+        "status": "<SeatStatus.DISABLED: 'disabled'>"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_closed_room_or_outside_opening_hours[False-True]",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 18,
+      "parameters": {
+        "room_open": "False",
+        "covered": "True"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_closed_room_or_outside_opening_hours[True-False]",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 18,
+      "parameters": {
+        "room_open": "True",
+        "covered": "False"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_current_booking_determines_status[None-available]",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 27,
+      "parameters": {
+        "status": "None",
+        "expected": "<SeatStatus.AVAILABLE: 'available'>"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_current_booking_determines_status[RESERVED-reserved]",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 27,
+      "parameters": {
+        "status": "<ReservationStatus.RESERVED: 'RESERVED'>",
+        "expected": "<SeatStatus.RESERVED: 'reserved'>"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_current_booking_determines_status[ACTIVE-in_use]",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 27,
+      "parameters": {
+        "status": "<ReservationStatus.ACTIVE: 'ACTIVE'>",
+        "expected": "<SeatStatus.IN_USE: 'in_use'>"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_current_booking_determines_status[TEMP_LEAVE-in_use]",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 27,
+      "parameters": {
+        "status": "<ReservationStatus.TEMP_LEAVE: 'TEMP_LEAVE'>",
+        "expected": "<SeatStatus.IN_USE: 'in_use'>"
+      },
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_future_booking_does_not_occupy_seat_now",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 46,
+      "parameters": {},
+      "phases": []
+    },
+    {
+      "nodeid": "tests/units/test_seat_detail.py::test_detail_contains_facilities_and_qr_payload",
+      "file": "tests\\units\\test_seat_detail.py",
+      "line": 52,
+      "parameters": {},
+      "phases": []
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "backend-regression",
+  "command": [
+    "C:\\Users\\zjb\\AppData\\Local\\Temp\\studyroom-test-evidence-20261126\\venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-vv",
+    "--tb=short",
+    "-p",
+    "defect_evidence_plugin",
+    "-p",
+    "no:cacheprovider",
+    "--junitxml=D:\\DATA\\university\\3_1\\Software Engineering\\11.26\\study-room\\docs\\evidence\\test\\2026-11-26-defect-recheck\\backend-regression-junit.xml"
+  ],
+  "cwd": "C:\\Users\\zjb\\AppData\\Local\\Temp\\studyroom-defect-recheck-20261126\\checkout\\backend",
+  "start": "2026-11-26T21:28:52.787290+08:00",
+  "end": "2026-11-26T21:29:35.203981+08:00",
+  "elapsed_seconds": 42.417,
+  "exit_code": 1,
+  "log": "backend-regression.log"
+}

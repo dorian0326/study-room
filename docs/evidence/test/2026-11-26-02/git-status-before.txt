@@ -1,0 +1,15 @@
+ M backend/pyproject.toml
+ M docs/分阶段实现与测试计划.md
+ M docs/接口与关键设计说明书.md
+ M docs/架构确认与决策记录.md
+ M docs/软件架构设计方案_基线版.md
+?? CODEX_PROMPTS.md
+?? backend/tests/units/
+?? docs/evidence/test/
+?? docs/单元与集成测试案例及执行报告.md
+?? docs/架构设计后确认与分阶段实现操作指引_学生版.md
+?? docs/测试用例表.xlsx
+?? docs/软件架构设计方案_讨论稿.md
+?? docs/软件需求规格说明书.md
+?? outputs/
+?? 附件/

@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-26T21:28:48.162799+08:00",
+  "git_head": "671ca454a8fd4a69e0c7f619a5f540d277b930c0",
+  "source_root": "D:\\DATA\\university\\3_1\\Software Engineering\\11.26\\study-room",
+  "isolated_copy": "C:\\Users\\zjb\\AppData\\Local\\Temp\\studyroom-defect-recheck-20261126\\checkout",
+  "python_executable": "C:\\Users\\zjb\\AppData\\Local\\Temp\\studyroom-test-evidence-20261126\\venv\\Scripts\\python.exe",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "scope": "backend targeted SRS defect tests and complete backend regression; frontend not re-run",
+  "modifications": "No changes to business code, tests or assertions; no xfail added. External plugin only records pytest reports."
+}

@@ -1,0 +1,1007 @@
+[
+  {
+    "path": ".github/CODEOWNERS",
+    "sha256": "42e4184f0cfa453cc5d809b072ecc08c7348196fbc342db29eb336a3991bfff8",
+    "bytes": 15
+  },
+  {
+    "path": ".github/PULL_REQUEST_TEMPLATE.md",
+    "sha256": "e536c3cc32e7eeb53098d3fb2b68e70ce49bfe00504d706145b6b7bea69a4469",
+    "bytes": 434
+  },
+  {
+    "path": ".github/workflows/ci.yml",
+    "sha256": "a79f164ca7c9fdf75204b5a2840945deedae16d9604772e7d900c3d73b034a8d",
+    "bytes": 1007
+  },
+  {
+    "path": ".gitignore",
+    "sha256": "57fb98ef206fd21a6f4b8749cda5f1674133f87f2d31c49affc4fd23c52edb7a",
+    "bytes": 309
+  },
+  {
+    "path": "CODEX_PROMPTS.md",
+    "sha256": "52475dbcf20aba814e8cf4ae3bc84b80fde0dcda432f674338f54b695cd34ecf",
+    "bytes": 44140
+  },
+  {
+    "path": "CONTRIBUTING.md",
+    "sha256": "c9bc582ca32de31c1818d6b68ff0dbe5004f8ce7dff088a62a4141e49e20f08a",
+    "bytes": 1072
+  },
+  {
+    "path": "LICENSE",
+    "sha256": "96b9789208f6f4f3bdda788d66208008098b627dc1b7123d1213eb4a616401a1",
+    "bytes": 1090
+  },
+  {
+    "path": "README.md",
+    "sha256": "abf6f35efd51b85463cc93548686d4da749427f7f1ed292161094b6b8089bbab",
+    "bytes": 14565
+  },
+  {
+    "path": "backend/.env.example",
+    "sha256": "f1ebcd02a892b5dee83f3d4ed5172e1893c1ab7eef2d0bfefcb655d5d2e6b07d",
+    "bytes": 370
+  },
+  {
+    "path": "backend/alembic.ini",
+    "sha256": "f484be683ce94c176a4436c5077ebbbbf865c5ee21565ac9171d6ddc305b0874",
+    "bytes": 570
+  },
+  {
+    "path": "backend/app/__init__.py",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  {
+    "path": "backend/app/api/__init__.py",
+    "sha256": "62ededa9f059775e5c1a53842fb3c7927e32fb19ad7758d29c1a65a7df2b5a55",
+    "bytes": 57
+  },
+  {
+    "path": "backend/app/api/admin_config.py",
+    "sha256": "cb6dd972359e03628c9c65714ff58c5c7e062efecf3dadb4c6a3f926c4fdc084",
+    "bytes": 10610
+  },
+  {
+    "path": "backend/app/api/admin_seats.py",
+    "sha256": "079c9545cc36cce6a24d167c7a3082a19562b72debac48d6a677745ffefdd581",
+    "bytes": 11879
+  },
+  {
+    "path": "backend/app/api/admin_users.py",
+    "sha256": "a6aee7af0d16290b9ae00c24d19a503115e2481f728252ccd80e832ebb7a9d4d",
+    "bytes": 4254
+  },
+  {
+    "path": "backend/app/api/admin_violations.py",
+    "sha256": "bed00e62ecad9e6ad2ca503ddc334f2dc318d2686b2ee2a15063251c226239a6",
+    "bytes": 6237
+  },
+  {
+    "path": "backend/app/api/auth.py",
+    "sha256": "041f180f35ea32702763c02dc3c6404a73e14cbf390834a29b4b3eb2ecef3359",
+    "bytes": 3656
+  },
+  {
+    "path": "backend/app/api/gate.py",
+    "sha256": "8e2b8e350b13011a08de8ca121770b0c6bfcbd227e9f232ab8e3bf30248d4522",
+    "bytes": 3959
+  },
+  {
+    "path": "backend/app/api/health.py",
+    "sha256": "aa4db938ab7878b4feea8cbc62df54711f36047140de16c9da151e4ca9011e8a",
+    "bytes": 582
+  },
+  {
+    "path": "backend/app/api/ops_logs.py",
+    "sha256": "84081d7be84d2fe626f670f4bdff99b62b7f7361cf16983c228d1213e46ef719",
+    "bytes": 3634
+  },
+  {
+    "path": "backend/app/api/ops_system.py",
+    "sha256": "489daa20ff82405f7eac5fd300eded07e55b8ebb42ba6889e22eb69ec4c3282c",
+    "bytes": 2462
+  },
+  {
+    "path": "backend/app/api/reports.py",
+    "sha256": "c7d27ca63fe4f4f594e46ef0c7bf6b709a362758c68114edde4b97b664aeaa75",
+    "bytes": 9954
+  },
+  {
+    "path": "backend/app/api/reservations.py",
+    "sha256": "0cffb251e82353231f63dfc20cc5977b17e4d061aecb2c393229b381f581cf97",
+    "bytes": 14397
+  },
+  {
+    "path": "backend/app/cli.py",
+    "sha256": "e3836a2f1b30e84915f43f11260594c560364aeeeb5765dfd31c2428a37ec960",
+    "bytes": 4016
+  },
+  {
+    "path": "backend/app/config.py",
+    "sha256": "fd505238e10ef854bf527ed7b4a9749c67fe1980c62b2f2b3623ccacdcc7870c",
+    "bytes": 3240
+  },
+  {
+    "path": "backend/app/db.py",
+    "sha256": "f951d2f3112efe1aa83de99df2d1bdc0556d455924ff8f36358fab392bf7e372",
+    "bytes": 2728
+  },
+  {
+    "path": "backend/app/deps.py",
+    "sha256": "b442f9392069c54efb9d9f1092f70ffd7a572f120360c3ea81a3c7c3f480fa74",
+    "bytes": 1959
+  },
+  {
+    "path": "backend/app/main.py",
+    "sha256": "bc8ad8b7fc7a7e6a8d2b406abdc8f42a25123a51e460ec6a43d0dfd6a5d68883",
+    "bytes": 2796
+  },
+  {
+    "path": "backend/app/metrics.py",
+    "sha256": "7aba8d0cc9b3ede5dd658a502009c68d1fce171673c1efa2dc4d1f816aa2c9e1",
+    "bytes": 1354
+  },
+  {
+    "path": "backend/app/mock_data.py",
+    "sha256": "6b87f8d7b80276db396d42b97629d41ac630348970474ca3774c5b868f81f6ca",
+    "bytes": 40414
+  },
+  {
+    "path": "backend/app/models/__init__.py",
+    "sha256": "6ba9bb44c5d26b5ce1f838b1908eda0d69869c64e8a04b95974e096868bd3312",
+    "bytes": 992
+  },
+  {
+    "path": "backend/app/models/auth.py",
+    "sha256": "54d2d595daa24ce82b216c652e1bbee9568e17af1bbd992114388d9d42a47799",
+    "bytes": 1580
+  },
+  {
+    "path": "backend/app/models/base.py",
+    "sha256": "657faa4416a982050d775507787e19bb0cdecd12783f6d0e5acaa044fb8d7fb0",
+    "bytes": 1916
+  },
+  {
+    "path": "backend/app/models/config.py",
+    "sha256": "1ce45766b2e60910b6ba3513aa8a69cbefa997ca1e1634d35996bd19f4cbd926",
+    "bytes": 1120
+  },
+  {
+    "path": "backend/app/models/entities.py",
+    "sha256": "5d0a9fd3a31dc6e61baf233b67fd48be7340cb4bce5e217309ea2cc2ccc05157",
+    "bytes": 16505
+  },
+  {
+    "path": "backend/app/models/enums.py",
+    "sha256": "179ab000f90aa059e1ebcc00d47a084c99a4fd3b4c0eae7383332fcce39329e2",
+    "bytes": 3982
+  },
+  {
+    "path": "backend/app/models/logs.py",
+    "sha256": "539061579d61cdbe26c1bead2524e3c1981482661312129eb902de903c3c9220",
+    "bytes": 1132
+  },
+  {
+    "path": "backend/app/permissions.py",
+    "sha256": "07dd88c781be5c06b48db112781b48bdf13a6ae2df9a8fa0ff153c8245766cfb",
+    "bytes": 2424
+  },
+  {
+    "path": "backend/app/schemas/__init__.py",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  {
+    "path": "backend/app/schemas/admin.py",
+    "sha256": "9b6085fc3c516045f0a174e5063aef205fccd56e3c98d09f1232bb7a5fecac65",
+    "bytes": 3766
+  },
+  {
+    "path": "backend/app/schemas/auth.py",
+    "sha256": "8778f666ed7b5fdef0ae964ceb56792ac1870d2e274cbba082960cadf6193ea6",
+    "bytes": 1317
+  },
+  {
+    "path": "backend/app/schemas/reservations.py",
+    "sha256": "5de7ef221cbc1bb738046d5bfa0fc4a1f8ed46d8558c9a2d8e4dd22d2aaf1c01",
+    "bytes": 3677
+  },
+  {
+    "path": "backend/app/schemas/workflows.py",
+    "sha256": "5dd35248bd091ae13439893afe1c571469336601e757b431f912f515eabd2c62",
+    "bytes": 6560
+  },
+  {
+    "path": "backend/app/security.py",
+    "sha256": "855e85e4904a98eff8dee9efe126ebe49e35b5ff8ae9dbf73748c8e3d7ce6033",
+    "bytes": 1591
+  },
+  {
+    "path": "backend/app/services/__init__.py",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  {
+    "path": "backend/app/services/admin_force_cancel.py",
+    "sha256": "cd7f5d30b6cf73220b4741863803a0bceba5ec76b5ca5cb679d0d03c33c61f51",
+    "bytes": 4033
+  },
+  {
+    "path": "backend/app/services/audit.py",
+    "sha256": "d83c42eff2a4a4b61035c22347fb39e8897a1198ee2a8061570139b1ab56d63d",
+    "bytes": 1105
+  },
+  {
+    "path": "backend/app/services/auth.py",
+    "sha256": "0c0bc90f0c75337be6e5e20e0a3d81d9eb74eab1e20268245c162d362e76fc4b",
+    "bytes": 6797
+  },
+  {
+    "path": "backend/app/services/availability.py",
+    "sha256": "64cde48a35c630d146cbfc9ab520e6144a373b4cc1ea81f2fc352b09c84e69be",
+    "bytes": 6466
+  },
+  {
+    "path": "backend/app/services/backup.py",
+    "sha256": "ab5e8bcdb180d75625b3dbec07483fbb0f9c80863af5f2d4c89962312eb98f46",
+    "bytes": 2099
+  },
+  {
+    "path": "backend/app/services/gate.py",
+    "sha256": "38dda0dfa0d6b3651b56474d9bb92339e17359a6ce377b579467f441de63633b",
+    "bytes": 12012
+  },
+  {
+    "path": "backend/app/services/logs.py",
+    "sha256": "b0b46870da486e131d37a85300cc11a3d1a3e986d328f38eac2f7f9967eb3953",
+    "bytes": 2226
+  },
+  {
+    "path": "backend/app/services/notifications.py",
+    "sha256": "e66411e9668bc84fc905a3accece298d1d1f1bb1c7610da40cc954eadb4de796",
+    "bytes": 1263
+  },
+  {
+    "path": "backend/app/services/ops_worker.py",
+    "sha256": "1ebdf5185f19c4f89bf22653058504c079b8d366c4bfb7db7a22de360c9adf9b",
+    "bytes": 1822
+  },
+  {
+    "path": "backend/app/services/reservation_worker.py",
+    "sha256": "aed05d9f6dc66b9f535185d28c40e5498da4b155b27dccef9e8e15d66ed810bf",
+    "bytes": 1228
+  },
+  {
+    "path": "backend/app/services/reservations.py",
+    "sha256": "1f547f1daf496e33e4b698c86d6e92b819806ca10c905b795a003fc5fbac7fb0",
+    "bytes": 36062
+  },
+  {
+    "path": "backend/app/services/settings.py",
+    "sha256": "b21fecd57a71bb30a4c263d62ff70d7ff5bde50dec505c9137c2a57ce6436d1f",
+    "bytes": 1264
+  },
+  {
+    "path": "backend/app/services/violations.py",
+    "sha256": "75e259f2223104585cf15b3dfd43c841e21c5f15c7ad44b3ae0188e7d335ff14",
+    "bytes": 6185
+  },
+  {
+    "path": "backend/app/timeutil.py",
+    "sha256": "8108f3d4c86f71c703a4ac2eddb1cb7ca909173bb473904171aa55d05dc1c510",
+    "bytes": 404
+  },
+  {
+    "path": "backend/migrations/env.py",
+    "sha256": "0d9d0c4eba1a9bebf6490c6f5a8d7b110a2ae3eb9a1c9dab443f70454ebd7992",
+    "bytes": 1419
+  },
+  {
+    "path": "backend/migrations/script.py.mako",
+    "sha256": "47f0ae0a3546a21ccb8fae20e1e8701b907ec529d31d8d17964d4487a9d25e26",
+    "bytes": 605
+  },
+  {
+    "path": "backend/migrations/versions/.gitkeep",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  {
+    "path": "backend/migrations/versions/0001_initial_schema.py",
+    "sha256": "1520a8c23784ec50d9344e4ab7372fade1c177d7b3d9cfecfa66aa22c1b35c2f",
+    "bytes": 28436
+  },
+  {
+    "path": "backend/migrations/versions/0002_auth_sessions_and_password_reset_tokens.py",
+    "sha256": "9130e71bbde20f94f8613c175482dc4c028bf531a06160ae7f722eed0243e814",
+    "bytes": 3195
+  },
+  {
+    "path": "backend/migrations/versions/0003_seed_permissions.py",
+    "sha256": "6f57e81bc8ad038c35870c4234b1f9cf4161e32b11331be648902fe9988a961b",
+    "bytes": 3462
+  },
+  {
+    "path": "backend/migrations/versions/0004_system_settings_and_calendar_days.py",
+    "sha256": "27562566326ca377b0309a615eef3e359dc80c4512a62451eaab7e7bacc12ac5",
+    "bytes": 1999
+  },
+  {
+    "path": "backend/migrations/versions/0005_login_logs.py",
+    "sha256": "f69bb537dcfa4df318f9cdf22518a9e1ff675250fdb199cb7a0c55f4e6475033",
+    "bytes": 2010
+  },
+  {
+    "path": "backend/migrations/versions/0006_assigned_issue_workflows.py",
+    "sha256": "7d3c2c54bafa5801b7e63763ec28f2990fe77e87b5e4d740c665488998571c65",
+    "bytes": 2605
+  },
+  {
+    "path": "backend/migrations/versions/0007_reservation_flow.py",
+    "sha256": "872055622cdf5f1a6b85edcbe0c15a0a8dba4bc73dcd194c0b79436c5fc8d1d3",
+    "bytes": 828
+  },
+  {
+    "path": "backend/migrations/versions/0008_temp_leave_timeout_violation.py",
+    "sha256": "b8326bb1f90d960c3c2bae6d08d09db0b886d781aeb67b1fc660e561e3334615",
+    "bytes": 1650
+  },
+  {
+    "path": "backend/pyproject.toml",
+    "sha256": "63c7e426153a6bd38680fbc735f3398599101f7a23b10b2968130bf5837dd0f1",
+    "bytes": 943
+  },
+  {
+    "path": "backend/tests/__init__.py",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  {
+    "path": "backend/tests/case_registry.py",
+    "sha256": "e868d3a5ffb560a4b6942e9bf901ba2e4bedb31848c20e8a562436dc75dfedf7",
+    "bytes": 552
+  },
+  {
+    "path": "backend/tests/conftest.py",
+    "sha256": "abb26231ba853f2207a41b3971f29e5eead42b6e3318d19e08ed9057524a07ae",
+    "bytes": 2946
+  },
+  {
+    "path": "backend/tests/test_acceptance_cases.py",
+    "sha256": "c77fa821b9d9fac1ea24df0e5a0d058bc18f428fd3859274658b500c93b3d069",
+    "bytes": 27330
+  },
+  {
+    "path": "backend/tests/test_admin_config.py",
+    "sha256": "77a4c9ef08dcc2b4652f9d136b53b1181620ae62eaeb3560abcc41f11a6fcc52",
+    "bytes": 6048
+  },
+  {
+    "path": "backend/tests/test_assigned_workflows.py",
+    "sha256": "353ac26d8dd36e0fcc32aa4de8f4ca926977242b1775a5ed5650464cd5fd9254",
+    "bytes": 23628
+  },
+  {
+    "path": "backend/tests/test_auth.py",
+    "sha256": "1445cd6d4699dd6a7a3bed4c029c27279d48ba5f71fd1bac3686dc3d03e6a0e6",
+    "bytes": 6176
+  },
+  {
+    "path": "backend/tests/test_backup_monitoring.py",
+    "sha256": "22887816a9d87497b0cd106451b16f844fcf9c5de2f377124f57ba784a5d3a17",
+    "bytes": 2446
+  },
+  {
+    "path": "backend/tests/test_case_traceability.py",
+    "sha256": "7aed7d3a0d82e946872df7e364de244905667f240c591bb4b635c63401c248ba",
+    "bytes": 1154
+  },
+  {
+    "path": "backend/tests/test_gaps.py",
+    "sha256": "275deaab629475caa839cb4ed8094c1e1f9da5319caf3bb1c60e8786d0559de1",
+    "bytes": 9238
+  },
+  {
+    "path": "backend/tests/test_health.py",
+    "sha256": "68ac56d1de356f1affa7f4079b88b56e41bf884ad0933f1aaa04aa7d4bf84dc7",
+    "bytes": 849
+  },
+  {
+    "path": "backend/tests/test_logs.py",
+    "sha256": "c6a0bdde361df6db714215b60ed63455dd5ad33d6ab93b73242ab99b9a6b3b73",
+    "bytes": 4008
+  },
+  {
+    "path": "backend/tests/test_mock_data.py",
+    "sha256": "b2ccda05d14f15d91e1efff649384d9a66c04238d1b53f3cd3cd275531487abe",
+    "bytes": 6389
+  },
+  {
+    "path": "backend/tests/test_models.py",
+    "sha256": "e20aecb76e367c890ba57c8e32ae4bc325b25fa5a4e3c2cbed809e5a650a4991",
+    "bytes": 8175
+  },
+  {
+    "path": "backend/tests/test_permissions.py",
+    "sha256": "a2b5ed6e0cd079eb66eadf435c170e99e582b2c4956cd0bb97892c9453036665",
+    "bytes": 4626
+  },
+  {
+    "path": "backend/tests/test_reservations.py",
+    "sha256": "4ba53f47f0b601c87d15986053bb24d07b27b93e232987e08e0921a76dc3cccc",
+    "bytes": 20554
+  },
+  {
+    "path": "backend/tests/test_units.py",
+    "sha256": "4a80d7f5ac1319a3c069563be21f6f5f4ea9e50b36dddf8fb7b88bf70777b655",
+    "bytes": 2522
+  },
+  {
+    "path": "backend/tests/units/conftest.py",
+    "sha256": "49ea54e01223e96567c7bcdae13513a7da93a6f5ffcea3f8b8cc61d8a0ecb7f7",
+    "bytes": 2571
+  },
+  {
+    "path": "backend/tests/units/test_cancel_reservation.py",
+    "sha256": "b27b8f8f31604437d504af50e69b898e3d75e639cce85db1465c7c20f0ce2841",
+    "bytes": 2362
+  },
+  {
+    "path": "backend/tests/units/test_change_seat.py",
+    "sha256": "a786876de095ab137ee46b27de12033cfd2a5f5e35a8525ccb1a68a836e504f4",
+    "bytes": 2135
+  },
+  {
+    "path": "backend/tests/units/test_checkin_expiry.py",
+    "sha256": "1e29447998bd6a53097fa73e6fd302ab6c6b6ff8a7500dca180a2e45a25d4996",
+    "bytes": 4494
+  },
+  {
+    "path": "backend/tests/units/test_concurrency_idempotency.py",
+    "sha256": "d1a558af46d53e3a4042694ed3a93094231c58808c5e9f41032de6b8452528ff",
+    "bytes": 3511
+  },
+  {
+    "path": "backend/tests/units/test_create_reservation.py",
+    "sha256": "e12684c370d2ead5ba41b969f29c94f9cf1cfca55a6e10590fb87b84887c22c7",
+    "bytes": 3146
+  },
+  {
+    "path": "backend/tests/units/test_room_search.py",
+    "sha256": "5c8004bf14a2c838c83f7ac59e12de3dafc48b11eefd513eff458a4c7ad14c32",
+    "bytes": 2538
+  },
+  {
+    "path": "backend/tests/units/test_seat_detail.py",
+    "sha256": "5bf2f0dacc3d7f096461d0d92fd33aaaa1cece783665972da26ca22804115f84",
+    "bytes": 2309
+  },
+  {
+    "path": "docs/evidence/2026-11-26-tests.md",
+    "sha256": "9bdd01ff605a96e95b16d5720452683770148a9e16a3b5d2b22b3a47b87ce78a",
+    "bytes": 1984
+  },
+  {
+    "path": "docs/evidence/README.md",
+    "sha256": "c6f9441f21ae080778c92a6f79206d8631b58602d975de1a02227e0a33ed98e1",
+    "bytes": 1185
+  },
+  {
+    "path": "docs/limitations.md",
+    "sha256": "19708fb013c5b13049b41c64568432f94f8db41c5acf28508d15422d12242c0b",
+    "bytes": 2147
+  },
+  {
+    "path": "docs/reservation-progress.md",
+    "sha256": "4a7a0e5f8fe1feb8ef7ee1b70564835db0adea11af3c87a507c6b71ace4d4243",
+    "bytes": 5226
+  },
+  {
+    "path": "docs/tasks/任务卡模板.md",
+    "sha256": "bdd58aae97db8bd5f18d37a8c837e142e4728c7ed67e9687a4ac1e5de3ec1924",
+    "bytes": 1018
+  },
+  {
+    "path": "docs/分阶段实现与测试计划.md",
+    "sha256": "7cca6672c175f9a57b4e51534e9afb35c50002b4d07cc6f41a3d2c50d4f96817",
+    "bytes": 8984
+  },
+  {
+    "path": "docs/基线索引.md",
+    "sha256": "101475234b0d049b4f9c23eb12b8ebc72ae579f57ba669cddf548320e139a650",
+    "bytes": 4357
+  },
+  {
+    "path": "docs/接口与关键设计说明书.md",
+    "sha256": "f7ade064a628b527021546a103e3217aba84b941c842b430b127743d203d13de",
+    "bytes": 104191
+  },
+  {
+    "path": "docs/架构确认与决策记录.md",
+    "sha256": "a7d98c69491a39d808e0e611a2d19497d1eeb4cdc098977c54bee69e01454d21",
+    "bytes": 59113
+  },
+  {
+    "path": "docs/架构设计后确认与分阶段实现操作指引_学生版.md",
+    "sha256": "66c439c0f0c9f64c67c4b0eccc953620c03d9f980d9ddf6494b3c401f8c911c2",
+    "bytes": 14972
+  },
+  {
+    "path": "docs/软件架构设计方案_基线版.md",
+    "sha256": "ac3ae66a459e606be2438c99addbe34cd40d646e901657dd0005012cf66be4db",
+    "bytes": 50457
+  },
+  {
+    "path": "docs/软件架构设计方案_讨论稿.md",
+    "sha256": "5a9438f423195df32cb4482cade3c04d7f3095ce328c7743c0bb6051cd5aa110",
+    "bytes": 43488
+  },
+  {
+    "path": "docs/软件需求规格说明书.md",
+    "sha256": "330290800d66a5efc6ae4a77d3f837b2e8a75e5b1b5077777d9495a2a99eac70",
+    "bytes": 106777
+  },
+  {
+    "path": "frontend/.prettierrc.json",
+    "sha256": "fbf2764304ba4ca1d0937cbbdf2ad0fb0a6909037726ba8d4da28bec0f2a4538",
+    "bytes": 59
+  },
+  {
+    "path": "frontend/eslint.config.js",
+    "sha256": "ea5d99f7c16f6f6e68144932ea6745a3aa776cb25fe6ed09f64b3c69ca42771b",
+    "bytes": 717
+  },
+  {
+    "path": "frontend/index.html",
+    "sha256": "634ffa2e615a4f65dc9db63b5c1b0636fbeb0736a3479d8d1da0c713c8b00f09",
+    "bytes": 1063
+  },
+  {
+    "path": "frontend/package-lock.json",
+    "sha256": "87aa4a33c6215974d51be0955e4854c8c3d7222a928c5221e828defac8e4f7cc",
+    "bytes": 118991
+  },
+  {
+    "path": "frontend/package.json",
+    "sha256": "dd50f807673ea7b6e3becd0d77c10a6ad2648805971bc91af0f117ed0ef02d58",
+    "bytes": 806
+  },
+  {
+    "path": "frontend/public/favicon.png",
+    "sha256": "6352d5f47d5d692a16718a8de2effac567b2b31f4b96c0b5933e390716867e16",
+    "bytes": 17193
+  },
+  {
+    "path": "frontend/src/App.vue",
+    "sha256": "b0268a080dcb89592dd9539c8ae23c684d46486acc9b547d8042fbb3eebe82f7",
+    "bytes": 23159
+  },
+  {
+    "path": "frontend/src/api/client.js",
+    "sha256": "4fde1bbff3f8cb38f0a0e5a2b3f0b72bdea8ae1005f3073f38d1236e2d3b6507",
+    "bytes": 1593
+  },
+  {
+    "path": "frontend/src/api/client.test.js",
+    "sha256": "5e8fb44b8e95996856d6eddf81bcdc8ce03ff78e5793e01b5e2e0c1eb51e0de3",
+    "bytes": 2959
+  },
+  {
+    "path": "frontend/src/api/health.js",
+    "sha256": "e4b193147028cb526e0f06cac19c10bf20b62c10b5ea1faead2d66930939bb7b",
+    "bytes": 163
+  },
+  {
+    "path": "frontend/src/assets/fonts.css",
+    "sha256": "54a71e560dd57f5c51f4207a8b9f53d10aee7c40673947c0e56e0c08289d18e6",
+    "bytes": 87538
+  },
+  {
+    "path": "frontend/src/assets/fonts/LICENSE-LXGW-WenKai.txt",
+    "sha256": "a4654e013454eb0ea7b4b35689d235de2452a13737805e2a172761ae110b6905",
+    "bytes": 4541
+  },
+  {
+    "path": "frontend/src/assets/fonts/lxgw-wenkai-700-sc.woff2",
+    "sha256": "9536cf9adcf87344d8f27f313bcbefcee69475b6ec8880d6e6b127e16b0b0e1d",
+    "bytes": 1871500
+  },
+  {
+    "path": "frontend/src/assets/nailong/cover.jpg",
+    "sha256": "9009c1e877db019cd67dadff0aea19617b6f46dfaec3dfe3737e3314f8f1ff8c",
+    "bytes": 67932
+  },
+  {
+    "path": "frontend/src/assets/nailong/nailong-happy.webp",
+    "sha256": "f883bfea36d20d6f0e7e77ca1915340c7d48d2b5582d28ca89a9ab5943a7575a",
+    "bytes": 11652
+  },
+  {
+    "path": "frontend/src/assets/nailong/nailong-hello.webp",
+    "sha256": "521e617924aa38caeaac5ba93d76a16089cc4b03b353bf6b01d3e2ec2cfce152",
+    "bytes": 19342
+  },
+  {
+    "path": "frontend/src/assets/nailong/nailong-jump.webp",
+    "sha256": "e64d0369ce5c5f6656cd75482c093492c132bd792cc7a417013d045087b13ae7",
+    "bytes": 14040
+  },
+  {
+    "path": "frontend/src/assets/nailong/nailong-logo.png",
+    "sha256": "6352d5f47d5d692a16718a8de2effac567b2b31f4b96c0b5933e390716867e16",
+    "bytes": 17193
+  },
+  {
+    "path": "frontend/src/assets/nailong/nailong-silly.webp",
+    "sha256": "77fe1c1dde39b2a6bf998bc64242b4ac6135d3141e9d92c11675b94b50c55446",
+    "bytes": 10310
+  },
+  {
+    "path": "frontend/src/assets/styles.css",
+    "sha256": "afc541ca5bb6a378dad5564f1def989ab8af33bb529c0fdb9969537195f10937",
+    "bytes": 17456
+  },
+  {
+    "path": "frontend/src/assets/theme.css",
+    "sha256": "b4b89ea81db1c9e476928d5ffbfbb2f0952f5cb96990fe27fb2635fecbb3a089",
+    "bytes": 3208
+  },
+  {
+    "path": "frontend/src/auth.js",
+    "sha256": "af76675386b08ddbc4531134ecf6a0d568ef41d0714a6d547726aa4c1422f19f",
+    "bytes": 1079
+  },
+  {
+    "path": "frontend/src/auth.test.js",
+    "sha256": "14480b832a7a24fa48b8ce605195beace6edceaf569a34ab416eaa4784c40afa",
+    "bytes": 1957
+  },
+  {
+    "path": "frontend/src/components/ConfirmDialog.vue",
+    "sha256": "94579275f61615624d53747fe266540c4bbd3fbfbb6a9248c66fefb4209d4841",
+    "bytes": 1896
+  },
+  {
+    "path": "frontend/src/components/EmptyState.test.js",
+    "sha256": "0d367e20631d7266720a3d13309439be115a691096cc3856eaddfb2754c26c60",
+    "bytes": 921
+  },
+  {
+    "path": "frontend/src/components/EmptyState.vue",
+    "sha256": "266aa0b816818fe82894e2e4c873c0259ef5f5cff11d87fcc82e86fc350cc37b",
+    "bytes": 362
+  },
+  {
+    "path": "frontend/src/components/NlLoading.vue",
+    "sha256": "5ebc1dec11f5a215772daa32a1abb6fb7556e2e4dd5726598f6b7b97b75d3155",
+    "bytes": 316
+  },
+  {
+    "path": "frontend/src/components/StatusBadge.test.js",
+    "sha256": "0c65b674731f17272385febffbc09035ad8f66b2f8871c4f65d972ce72e8c9ed",
+    "bytes": 635
+  },
+  {
+    "path": "frontend/src/components/StatusBadge.vue",
+    "sha256": "9c7cbfc1d96055534df7ce838cf706109d1c5c13f352fe3c37e5b514afb99b2c",
+    "bytes": 1133
+  },
+  {
+    "path": "frontend/src/components/XIcon.vue",
+    "sha256": "ac86687b434e41fe3897e36743b52cbae08b39ec8cfbc3ea0f1ba9fbf69f5e4a",
+    "bytes": 2012
+  },
+  {
+    "path": "frontend/src/confirm.js",
+    "sha256": "62ade40437287aea0b5a19bf11968f81a151e69b4797d12e2fb07711e46b3bac",
+    "bytes": 2120
+  },
+  {
+    "path": "frontend/src/confirm.test.js",
+    "sha256": "6f5ce10845df5b618758fddadc263057752433df1f5346d4ac6e25b736b06555",
+    "bytes": 1549
+  },
+  {
+    "path": "frontend/src/labels.js",
+    "sha256": "0f73c716f5b9cf0410bf69a87c70a75e3635ba0133e3b08e1a3ee2ea0fdf03b5",
+    "bytes": 1054
+  },
+  {
+    "path": "frontend/src/labels.test.js",
+    "sha256": "c3a0907bda368153c40462af1458e7df5abeae246f2e4d7949e3761a8e984f8a",
+    "bytes": 1210
+  },
+  {
+    "path": "frontend/src/main.js",
+    "sha256": "2280ba3b14cff7921896b7cf9da10faa15cf5ebfa94b5dfa778d9024fb03ecce",
+    "bytes": 287
+  },
+  {
+    "path": "frontend/src/router/guard.js",
+    "sha256": "e40db96b73290b4e8a013d2e933b09945590ea7144b5485fd9142495fd2bd3ad",
+    "bytes": 526
+  },
+  {
+    "path": "frontend/src/router/guard.test.js",
+    "sha256": "2c9eec70169d4050cae048ddb84bf6ca0435b4a943a4743419145056546885c5",
+    "bytes": 2224
+  },
+  {
+    "path": "frontend/src/router/index.js",
+    "sha256": "d0ab928979332ca20b2ad7b924488688ee9bbba2098e07ce2704005c15c4de70",
+    "bytes": 2997
+  },
+  {
+    "path": "frontend/src/theme.js",
+    "sha256": "8235ac9ba5ca9a17a437c8d0f4fb87558ce9d34d980c3608a1272bd89b60e7cc",
+    "bytes": 1499
+  },
+  {
+    "path": "frontend/src/theme.test.js",
+    "sha256": "6bcb4892c4b680e7a16686f8eecfc03a59b9a315729e37cc868bdd5b508efa6c",
+    "bytes": 1442
+  },
+  {
+    "path": "frontend/src/views/AdminAppealsView.vue",
+    "sha256": "97c8296ae9bd25564edaaee8c08f28ff3740f7af539be48cfc9f4184afd395e8",
+    "bytes": 2850
+  },
+  {
+    "path": "frontend/src/views/AdminConfigView.vue",
+    "sha256": "2842087f3912009e9ee29b529bf314e3263faa2e47be23cc0d4c8e0c647323bb",
+    "bytes": 10877
+  },
+  {
+    "path": "frontend/src/views/AdminGateView.vue",
+    "sha256": "ac7d4a5fb325af41b9950a85ebcbfdf4feb09055fa2982bfc2708dc1ce8066e0",
+    "bytes": 5569
+  },
+  {
+    "path": "frontend/src/views/AdminLogsView.vue",
+    "sha256": "da844cb933b0d5299e6b7979c9f9806fe3244273095bb5b247e3766c12c0b664",
+    "bytes": 8670
+  },
+  {
+    "path": "frontend/src/views/AdminOpsView.vue",
+    "sha256": "eceb93da77d6191b0929a2036c9d643b73329281cda397842985af9d5ad14e31",
+    "bytes": 6097
+  },
+  {
+    "path": "frontend/src/views/AdminReportsView.vue",
+    "sha256": "c19b5fdf70e8e8797c6db084026d5e7cafc18624f67ec93d2d8156cc211005fd",
+    "bytes": 5333
+  },
+  {
+    "path": "frontend/src/views/AdminSeatsView.vue",
+    "sha256": "bc9b34cb8a03652021fe36b031b22d2e211e13450d2bc2b5f19423d932687501",
+    "bytes": 8456
+  },
+  {
+    "path": "frontend/src/views/AdminUsersView.vue",
+    "sha256": "2d7a57f23e2a5dd6895b52cf3dafe602b8bdb8ed3d38e3649a75ab6f36fb823f",
+    "bytes": 4033
+  },
+  {
+    "path": "frontend/src/views/ChangePasswordView.vue",
+    "sha256": "fff48015b84427d12749232b2267f6366c9e1e5de32befbe718196ed6ab6388e",
+    "bytes": 1403
+  },
+  {
+    "path": "frontend/src/views/CheckInView.vue",
+    "sha256": "e13cec6cc15bed417ef33d0f1873f66e9b47d2434dca8ae6094d78689ec7210a",
+    "bytes": 7278
+  },
+  {
+    "path": "frontend/src/views/HomeView.vue",
+    "sha256": "9ef7fc3ae68797bdc18a23404fa4585c0906f4682d7e7bbd44da67051d875106",
+    "bytes": 9265
+  },
+  {
+    "path": "frontend/src/views/LoginView.vue",
+    "sha256": "1fb83bcc4255f14e828b916c7a17adc94fb9c07364cc27487659839ea9e6ac3a",
+    "bytes": 1979
+  },
+  {
+    "path": "frontend/src/views/NotFoundView.vue",
+    "sha256": "7caaf46b6aaae4cd0489e5563bc901194463ee2dddada6d7c6364769249e2537",
+    "bytes": 890
+  },
+  {
+    "path": "frontend/src/views/NotificationsView.vue",
+    "sha256": "103cf6fe25ec57129f846708979c468c596c6a32f184e5d0e01825ee0858033f",
+    "bytes": 3013
+  },
+  {
+    "path": "frontend/src/views/RegisterView.vue",
+    "sha256": "b15aa6a28d5bedbc6416e0e2708f5d1f55784f172fe3e697f5ccbbfc1db8c09b",
+    "bytes": 2483
+  },
+  {
+    "path": "frontend/src/views/ResetPasswordView.vue",
+    "sha256": "4e90655b139e7719de509b9985d6a95309def8fdde238cb6be6abde9554522ce",
+    "bytes": 1535
+  },
+  {
+    "path": "frontend/src/views/ViolationsView.vue",
+    "sha256": "0c4ddc461791d85fdeaecb14754cbe7fad49a53c176d8b1ca923b5bb9f4c3d4a",
+    "bytes": 6985
+  },
+  {
+    "path": "frontend/src/views/WorkflowsView.vue",
+    "sha256": "fb71149495fcab93b7548570ed0ce46980435ad9ff0d93b19d0bfc1c7950a664",
+    "bytes": 30176
+  },
+  {
+    "path": "frontend/vite.config.js",
+    "sha256": "155c396df5fbf06b8c64b2ff223ebaf9a017aae6678eb38c809e5b811d74002a",
+    "bytes": 352
+  },
+  {
+    "path": "scripts/dev.py",
+    "sha256": "494b349420de7594c602b251aaedef5b656cc0ec2346a3d85c9637678ae3c45c",
+    "bytes": 12867
+  },
+  {
+    "path": "附件/02 需求阶段/SRS.md",
+    "sha256": "330290800d66a5efc6ae4a77d3f837b2e8a75e5b1b5077777d9495a2a99eac70",
+    "bytes": 106777
+  },
+  {
+    "path": "附件/02 需求阶段/_工作过程/00_编写契约.md",
+    "sha256": "d6fd019ab3758cbc692fd37c15018b99205c644a67b9dc1a6c11adc536e23713",
+    "bytes": 18207
+  },
+  {
+    "path": "附件/02 需求阶段/_工作过程/01_写作者须知.md",
+    "sha256": "d65bf47ef0e9930c253c3b35015dfcf4fab55bbef3d6840c2f22725606389bdb",
+    "bytes": 17429
+  },
+  {
+    "path": "附件/02 需求阶段/_工作过程/05_编号映射表.md",
+    "sha256": "79263702c1347db6a10055b922d6ac191f9df0a933a89db36ba9ce92243da3b0",
+    "bytes": 22332
+  },
+  {
+    "path": "附件/02 需求阶段/_工作过程/10_代码事实清单.md",
+    "sha256": "3ee79b74ea96fa4344d498267791e2484c0a91b4bb293b2d25f4ae48e582ca4b",
+    "bytes": 75227
+  },
+  {
+    "path": "附件/02 需求阶段/_工作过程/20_SRS勘误清单.md",
+    "sha256": "8883fcfc4feec8ca9a10a3ef7b65c76aa3a63afa06a0e0d1b1155ccf888cda01",
+    "bytes": 39330
+  },
+  {
+    "path": "附件/02 需求阶段/_工作过程/30_SRS_A_总则与整体需求.md",
+    "sha256": "e00643636ad77f58f4df457a041b5135db24905c7ec3930200ff235e5be8d090",
+    "bytes": 42241
+  },
+  {
+    "path": "附件/02 需求阶段/_工作过程/31_SRS_B_规则与数据.md",
+    "sha256": "bb7f19dbc2b7bb3fe7dffde5f4c0940009b3bac8978951c6e31c50a360b457de",
+    "bytes": 48973
+  },
+  {
+    "path": "附件/02 需求阶段/_工作过程/32_SRS_C_质量验收与功能M1-M4.md",
+    "sha256": "a572fcd490aefe76b9d2f987c976e5cdcd33c3dccc6982af4268696ca80e09c5",
+    "bytes": 76868
+  },
+  {
+    "path": "附件/02 需求阶段/_工作过程/33_SRS_D_功能M5-M9与附录.md",
+    "sha256": "53f8f4d1eabc8e7d984cabbd870f7dbaac51ae3f342faf3374e8215ae698366b",
+    "bytes": 64340
+  },
+  {
+    "path": "附件/02 需求阶段/_工作过程/90_验证报告.md",
+    "sha256": "3ca7fece5701f588da06224e142bebf51856584bd0e5d8a5fc72d9aab521e5c0",
+    "bytes": 41430
+  },
+  {
+    "path": "附件/02 需求阶段/需求变更与勘误说明.md",
+    "sha256": "bc9adfd085ac4507ad65d58611befefb0ea349f14e3a526699ed24eb16b991b7",
+    "bytes": 85025
+  },
+  {
+    "path": "附件/02 需求阶段/需求规格说明书 - 模板.docx",
+    "sha256": "3427818c68a6f4549ead3189156e011e102c9926dc154b1384021b424a974a24",
+    "bytes": 176843
+  },
+  {
+    "path": "附件/02 需求阶段/需求规格说明书.md",
+    "sha256": "02ece502704ee28b7d1259577c92e08b9b4ab18bcd3dca9d449536ed8227a0db",
+    "bytes": 235989
+  },
+  {
+    "path": "附件/03 设计阶段/功能设计说明书 - 模板.docx",
+    "sha256": "310b3f212bafb2c8f4242cc546ab8b88fadd2c7bde03682350a550de338c317a",
+    "bytes": 174670
+  },
+  {
+    "path": "附件/03 设计阶段/数据库设计说明书 - 模板.docx",
+    "sha256": "4529af6d8fcaf0d99f0dcc21008a7a965ecca815c4687d81099b9587bbcbc04f",
+    "bytes": 171898
+  },
+  {
+    "path": "附件/04 开发阶段/系统提测申请单 - 模板.xlsx",
+    "sha256": "164e8be022bfcb8cd8737b7f8a30a68858976ff449b184007efe8788b019f003",
+    "bytes": 10579
+  },
+  {
+    "path": "附件/04 开发阶段/系统提测申请单 - 示例.xlsx",
+    "sha256": "16c2b961a60311dde1f0d7d7de19b56c554b2279b12c7f2ffb68d442a39b8fdb",
+    "bytes": 11194
+  },
+  {
+    "path": "附件/05 测试阶段/01 测试用例/测试用例表 - 模板.xlsx",
+    "sha256": "a1e09092cb01b6cce8c4e844679740de01218d5504ccece9be5c3c1827fda1dd",
+    "bytes": 10840
+  },
+  {
+    "path": "附件/05 测试阶段/01 测试用例/测试用例表 - 示例.xlsx",
+    "sha256": "3dafcc0c5f51a04782862dade09597e75e9e0020bef330137a8cbcd818483792",
+    "bytes": 11548
+  },
+  {
+    "path": "附件/05 测试阶段/02 测试报告/系统测试报告 - 模板.docx",
+    "sha256": "e07ebb6304792f720e159b0ec00b0be64bd5a76aec79c68851ac38e928f0b0e8",
+    "bytes": 174228
+  },
+  {
+    "path": "附件/05 测试阶段/02 测试报告/系统测试报告 - 示例.doc",
+    "sha256": "530abf14c32bb0747a812d468edc5895f29ad6783dc36675c0a366090701e6e8",
+    "bytes": 173568
+  },
+  {
+    "path": "附件/05 测试阶段/03 测试计划/测试计划 - 模板.docx",
+    "sha256": "b65ebc63126393ca1695505eccf107c171c0282bdc992cc9aa4a43d35c54a340",
+    "bytes": 185296
+  },
+  {
+    "path": "附件/05 测试阶段/03 测试计划/测试计划 - 示例.docx",
+    "sha256": "f224d3c575dfe1d8fcca731f4d6465787afa0d606e5ce29c1d3a30cbb6e2b67c",
+    "bytes": 281006
+  },
+  {
+    "path": "附件/06 验收阶段/01 系统竣工报告/系统竣工报告 - 模板.docx",
+    "sha256": "ca197b07987c620cefbf9d551c899631673c1dc6a71cc1e282ef3f88bae5a862",
+    "bytes": 170843
+  },
+  {
+    "path": "附件/06 验收阶段/01 系统竣工报告/系统竣工报告 - 示例.docx",
+    "sha256": "20c10ebbec00700d539a555e2172bcb3f3e3f8e1601045eed3a097944d1a5a7f",
+    "bytes": 168297
+  },
+  {
+    "path": "附件/06 验收阶段/02 安装维护手册/安装维护手册 - 模板.docx",
+    "sha256": "2acb49f7ee8308bd6b9006db0acb34ae3e216425b6ce43e60509af713ce71881",
+    "bytes": 173632
+  },
+  {
+    "path": "附件/06 验收阶段/02 安装维护手册/安装维护手册 - 示例.doc",
+    "sha256": "60eeed148144dccd1a32f7d6a0d604b299bf99ba321f699cbb37548d789587c2",
+    "bytes": 471552
+  },
+  {
+    "path": "附件/06 验收阶段/03 培训文档/培训文档 - 模板.pptx",
+    "sha256": "9e66140cb8e059d2e549774ff959b8b93594ed7f67487dd1a532338561586326",
+    "bytes": 678896
+  },
+  {
+    "path": "附件/06 验收阶段/03 培训文档/培训文档 - 示例.pptx",
+    "sha256": "66c45ca2588f445ed960f84e26df2a89a5bc6350211f47525045dda4fd8fd710",
+    "bytes": 187611
+  },
+  {
+    "path": "附件/06 验收阶段/04 使用手册/使用手册 - 模板.docx",
+    "sha256": "1622985c3a006e8ff35ec64d677bd9812529d42e3312592b5870629034d0b5db",
+    "bytes": 170082
+  },
+  {
+    "path": "附件/06 验收阶段/04 使用手册/使用手册 - 示例.doc",
+    "sha256": "ad3be60469b75e1805468f699e352dd137a2963c2bb4dc36b138c89b9bda6d77",
+    "bytes": 256512
+  }
+]
