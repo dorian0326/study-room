@@ -33,3 +33,4 @@ select = ["E", "F", "I", "B", "UP"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = ["case(id): 分阶段测试计划中的 TC-LOCAL 案例编号"]

@@ -3,6 +3,10 @@ import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   plugins: [vue()],
+  test: {
+    environment: 'happy-dom',
+    include: ['src/**/*.test.js'],
+  },
   server: {
     port: 5173,
     // 开发时把 /api 代理到本地 FastAPI

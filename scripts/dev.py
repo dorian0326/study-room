@@ -6,7 +6,7 @@
     python scripts/dev.py              # 同 dev：迁移数据库、自动导入演示数据，再同时启动前后端
     python scripts/dev.py --no-mock    # 不导入演示数据
     python scripts/dev.py --reset-mock # 删除并重建演示数据（日期随当前时间刷新）
-    python scripts/dev.py test         # 后端 ruff + pytest，前端 lint/format/build
+    python scripts/dev.py test         # 后端 ruff + pytest，前端测试、lint、format、build
     python scripts/dev.py create-user --student-no X --name N --role admin --password P
 
 Windows 上用 `py scripts/dev.py ...`。
@@ -137,6 +137,7 @@ def cmd_test(_: argparse.Namespace) -> int:
         ([py, "-m", "ruff", "check", "."], BACKEND),
         ([py, "-m", "ruff", "format", "--check", "."], BACKEND),
         ([py, "-m", "pytest", "-q"], BACKEND),
+        ([npm(), "run", "test"], FRONTEND),
         ([npm(), "run", "lint"], FRONTEND),
         ([npm(), "run", "format:check"], FRONTEND),
         ([npm(), "run", "build"], FRONTEND),

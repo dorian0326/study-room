@@ -167,13 +167,13 @@ npm run dev                        # http://localhost:5173，/api 代理到 8000
 
 ### 测试与检查
 
-一条命令全部跑完：`python3 scripts/dev.py test`（ruff、pytest、前端 lint、format:check、build）。
+一条命令全部跑完：`python3 scripts/dev.py test`（ruff、pytest、前端单元测试、lint、format:check、build）。
 
 也可以分开跑：
 
 ```bash
 cd backend && pytest && ruff check . && ruff format --check .
-cd frontend && npm run lint && npm run format:check && npm run build
+cd frontend && npm test && npm run lint && npm run format:check && npm run build
 ```
 
 ### 常见问题
