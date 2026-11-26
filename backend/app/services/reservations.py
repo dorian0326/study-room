@@ -6,6 +6,7 @@
 
 import hashlib
 import json
+import logging
 from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import datetime, timedelta
@@ -27,6 +28,8 @@ from app.services.availability import BLOCKED_SEAT_STATUSES, BookingError, cover
 from app.services.notifications import create_notification
 from app.services.settings import get_business_settings
 from app.services.violations import archive_expired_violations, record_violation
+
+logger = logging.getLogger(__name__)
 
 
 def now():
@@ -191,7 +194,8 @@ def _record_violation(
         is not None
     ):
         return
-    days = get_business_settings(session).violation_window_days
+    settings = get_business_settings(session)
+    days = settings.violation_window_days
     previous = session.scalar(
         select(ViolationRecord)
         .where(
@@ -202,24 +206,55 @@ def _record_violation(
         )
         .order_by(ViolationRecord.period_start.desc(), ViolationRecord.period_seq.desc())
     )
+    sequence = previous.period_seq + 1 if previous else 1
+    first_threshold = getattr(settings, "penalty_base_threshold", 3)
+    tier_step = max(1, getattr(settings, "penalty_threshold_step", 2))
+    days_per_tier = getattr(settings, "penalty_days_per_tier", 1)
+    restriction = None
+    if sequence >= first_threshold and (sequence - first_threshold) % tier_step == 0:
+        tier = (sequence - first_threshold) // tier_step + 1
+        ban_days = tier * days_per_tier
+        restriction = Restriction(
+            user_id=reservation.user_id,
+            ban_days=ban_days,
+            warning_count=sequence,
+            trigger_condition=f"满{sequence}次",
+            start_at=at,
+            end_at=at + timedelta(days=ban_days),
+            status=E.RestrictionStatus.ACTIVE,
+        )
+        session.add(restriction)
+        session.flush()
     violation = ViolationRecord(
         user_id=reservation.user_id,
         reservation_id=reservation.id,
         violation_type=kind,
         occurred_at=at,
         period_start=previous.period_start if previous else at,
-        period_seq=previous.period_seq + 1 if previous else 1,
+        period_seq=sequence,
         description="开始前15分钟内取消" if kind == E.ViolationType.LATE_CANCEL else "超窗未签到",
+        result=E.ViolationResult.RESTRICTED if restriction else E.ViolationResult.WARNING,
+        restriction_id=restriction.id if restriction else None,
     )
     session.add(violation)
     session.flush()
+    create_notification(
+        session,
+        user_id=reservation.user_id,
+        notification_type=E.NotificationType.VIOLATION,
+        content=(
+            f"你在 14 天累计窗口内达到第 {sequence} 次违规，禁约 {restriction.ban_days} 天。"
+            if restriction
+            else f"你有一条新的违规记录（{kind.value}），当前累计第 {sequence} 次。"
+        ),
+    )
     audit.record(
         session,
         operator=None,
         op_type=E.AuditOpType.VIOLATION,
         target_type="violation_record",
         target_id=violation.id,
-        after={"type": kind, "reservation_id": reservation.id, "warnings": 1},
+        after={"type": kind, "reservation_id": reservation.id, "warnings": sequence},
     )
 
 
@@ -422,13 +457,16 @@ def cancel(source: Session, user_id: int, rid: int) -> ReservationOut:
         reservation.cancel_type = E.CancelType.LATE if late else E.CancelType.NORMAL
         reservation.cancelled_at = at
         reservation.cancel_reason = "本人取消预约"
-        create_notification(
-            session,
-            user_id=user_id,
-            notification_type=E.NotificationType.SYSTEM,
-            content=f"预约 {reservation.reservation_no} 已取消。",
-            idempotency_key=f"reservation:{reservation.id}:cancelled",
-        )
+        try:
+            create_notification(
+                session,
+                user_id=user_id,
+                notification_type=E.NotificationType.SYSTEM,
+                content=f"预约 {reservation.reservation_no} 已取消。",
+                idempotency_key=f"reservation:{reservation.id}:cancelled",
+            )
+        except Exception:
+            logger.exception("预约已取消，但取消通知创建失败")
         if late:
             _record_violation(session, reservation, E.ViolationType.LATE_CANCEL, at)
         _sync_seat(session, reservation.seat, at)
@@ -716,7 +754,7 @@ def sweep_reservations(session: Session, moment: datetime | None = None) -> dict
                 select(Reservation).where(
                     Reservation.status == E.ReservationStatus.RESERVED,
                     Reservation.start_time
-                    <= moment - timedelta(minutes=settings.no_show_after_minutes),
+                    < moment - timedelta(minutes=settings.no_show_after_minutes),
                 )
             )
         )
