@@ -1,0 +1,9 @@
+{
+  "os": "Windows-11-10.0.26300-SP0",
+  "python_for_tests": "3.13.5 (Anaconda base executable used to create isolated venv)",
+  "node": "v22.18.0",
+  "npm": "10.9.3",
+  "artifact_authoring_runtime": "Codex bundled 26.1123.11515; @oai/artifact-tool",
+  "test_environment": "STUDYROOM_ENV=test; per-test temporary file SQLite; sweep/backup/purge disabled; bcrypt_rounds=4",
+  "business_site_access": "No requests to running business server; TestClient in isolated process, frontend mocks"
+}

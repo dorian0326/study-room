@@ -1,0 +1,84 @@
+{
+  "recorded_at": "2026-11-26T21:33:43.901421+08:00",
+  "targeted": {
+    "executed": 6,
+    "failed": 6,
+    "deselected": 68,
+    "exit_code": 1
+  },
+  "backend_regression": {
+    "executed": 226,
+    "passed": 219,
+    "failed": 7,
+    "skipped": 0,
+    "xfail": 0,
+    "exit_code": 1
+  },
+  "business_defects": 4,
+  "business_defect_samples": 6,
+  "additional_asset_failures": [
+    {
+      "id": "ASSET-001",
+      "case_id": "TC-BE-063",
+      "nodeid": "tests/test_case_traceability.py::test_plan_document_lists_every_registered_case",
+      "reason": "Current stage plan no longer lists TC-LOCAL-001 through TC-LOCAL-010; registry consistency assertion fails."
+    }
+  ],
+  "frontend": {
+    "rerun": false,
+    "historical_passed": 30,
+    "evidence": "../2026-11-26-full-suite/frontend-vitest.json"
+  },
+  "historical_run": {
+    "backend_passed": 220,
+    "frontend_passed": 30,
+    "not_rewritten": true
+  },
+  "commands": {
+    "targeted": {
+      "name": "defects-only",
+      "command": [
+        "C:\\Users\\zjb\\AppData\\Local\\Temp\\studyroom-test-evidence-20261126\\venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "tests/units",
+        "-k",
+        "test_srs",
+        "-vv",
+        "--tb=short",
+        "-p",
+        "defect_evidence_plugin",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=D:\\DATA\\university\\3_1\\Software Engineering\\11.26\\study-room\\docs\\evidence\\test\\2026-11-26-defect-recheck\\defects-only-junit.xml"
+      ],
+      "cwd": "C:\\Users\\zjb\\AppData\\Local\\Temp\\studyroom-defect-recheck-20261126\\checkout\\backend",
+      "start": "2026-11-26T21:28:48.349287+08:00",
+      "end": "2026-11-26T21:28:52.785791+08:00",
+      "elapsed_seconds": 4.434,
+      "exit_code": 1,
+      "log": "defects-only.log"
+    },
+    "backend": {
+      "name": "backend-regression",
+      "command": [
+        "C:\\Users\\zjb\\AppData\\Local\\Temp\\studyroom-test-evidence-20261126\\venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-vv",
+        "--tb=short",
+        "-p",
+        "defect_evidence_plugin",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=D:\\DATA\\university\\3_1\\Software Engineering\\11.26\\study-room\\docs\\evidence\\test\\2026-11-26-defect-recheck\\backend-regression-junit.xml"
+      ],
+      "cwd": "C:\\Users\\zjb\\AppData\\Local\\Temp\\studyroom-defect-recheck-20261126\\checkout\\backend",
+      "start": "2026-11-26T21:28:52.787290+08:00",
+      "end": "2026-11-26T21:29:35.203981+08:00",
+      "elapsed_seconds": 42.417,
+      "exit_code": 1,
+      "log": "backend-regression.log"
+    }
+  }
+}

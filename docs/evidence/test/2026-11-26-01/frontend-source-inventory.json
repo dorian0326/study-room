@@ -1,0 +1,554 @@
+[
+  {
+    "file": "frontend/src/api/client.test.js",
+    "title": "writes and clears the session token",
+    "suites": [
+      "token storage"
+    ],
+    "fullName": "token storage writes and clears the session token",
+    "line": 20,
+    "assertions": [
+      "expect(getToken()).toBe('abc')",
+      "expect(getToken()).toBeNull()"
+    ],
+    "steps": [
+      "setToken('abc')",
+      "setToken('')"
+    ],
+    "source": "it('writes and clears the session token', () => {\r\n    setToken('abc')\r\n    expect(getToken()).toBe('abc')\r\n    setToken('')\r\n    expect(getToken()).toBeNull()\r\n  })"
+  },
+  {
+    "file": "frontend/src/api/client.test.js",
+    "title": "sends the bearer token and returns JSON",
+    "suites": [
+      "api"
+    ],
+    "fullName": "api sends the bearer token and returns JSON",
+    "line": 29,
+    "assertions": [
+      "expect(api('/auth/me')).resolves.toEqual({ ok: true })",
+      "expect(url).toBe('/api/auth/me')",
+      "expect(options.headers.Authorization).toBe('Bearer abc')"
+    ],
+    "steps": [
+      "setToken('abc')",
+      "const fetchMock = mockFetch({\r\n      status: 200,\r\n      ok: true,\r\n      json: async () => ({ ok: true }),\r\n    })",
+      "const [url, options] = fetchMock.mock.calls[0]"
+    ],
+    "source": "it('sends the bearer token and returns JSON', async () => {\r\n    setToken('abc')\r\n    const fetchMock = mockFetch({\r\n      status: 200,\r\n      ok: true,\r\n      json: async () => ({ ok: true }),\r\n    })\r\n    await expect(api('/auth/me')).resolves.toEqual({ ok: true })\r\n    const [url, options] = fetchMock.mock.calls[0]\r\n    expect(url).toBe('/api/auth/me')\r\n    expect(options.headers.Authorization).toBe('Bearer abc')\r\n  })"
+  },
+  {
+    "file": "frontend/src/api/client.test.js",
+    "title": "returns null for an empty response",
+    "suites": [
+      "api"
+    ],
+    "fullName": "api returns null for an empty response",
+    "line": 42,
+    "assertions": [
+      "expect(api('/auth/logout', { method: 'POST' })).resolves.toBeNull()"
+    ],
+    "steps": [
+      "mockFetch({ status: 204, ok: true, json: async () => ({}) })"
+    ],
+    "source": "it('returns null for an empty response', async () => {\r\n    mockFetch({ status: 204, ok: true, json: async () => ({}) })\r\n    await expect(api('/auth/logout', { method: 'POST' })).resolves.toBeNull()\r\n  })"
+  },
+  {
+    "file": "frontend/src/api/client.test.js",
+    "title": "surfaces a string error from the backend",
+    "suites": [
+      "api"
+    ],
+    "fullName": "api surfaces a string error from the backend",
+    "line": 47,
+    "assertions": [
+      "expect(api('/auth/login', { method: 'POST', body: { student_no: '1' } })).rejects.toThrow(\r\n      '学号或密码错误',\r\n    )"
+    ],
+    "steps": [
+      "mockFetch({\r\n      status: 401,\r\n      ok: false,\r\n      json: async () => ({ detail: '学号或密码错误' }),\r\n    })"
+    ],
+    "source": "it('surfaces a string error from the backend', async () => {\r\n    mockFetch({\r\n      status: 401,\r\n      ok: false,\r\n      json: async () => ({ detail: '学号或密码错误' }),\r\n    })\r\n    await expect(api('/auth/login', { method: 'POST', body: { student_no: '1' } })).rejects.toThrow(\r\n      '学号或密码错误',\r\n    )\r\n  })"
+  },
+  {
+    "file": "frontend/src/api/client.test.js",
+    "title": "joins field validation messages",
+    "suites": [
+      "api"
+    ],
+    "fullName": "api joins field validation messages",
+    "line": 58,
+    "assertions": [
+      "expect(api('/auth/register', { method: 'POST', body: {} })).rejects.toThrow(\r\n      '太短；缺数字',\r\n    )"
+    ],
+    "steps": [
+      "mockFetch({\r\n      status: 422,\r\n      ok: false,\r\n      json: async () => ({ detail: [{ msg: '太短' }, { message: '缺数字' }] }),\r\n    })"
+    ],
+    "source": "it('joins field validation messages', async () => {\r\n    mockFetch({\r\n      status: 422,\r\n      ok: false,\r\n      json: async () => ({ detail: [{ msg: '太短' }, { message: '缺数字' }] }),\r\n    })\r\n    await expect(api('/auth/register', { method: 'POST', body: {} })).rejects.toThrow(\r\n      '太短；缺数字',\r\n    )\r\n  })"
+  },
+  {
+    "file": "frontend/src/api/client.test.js",
+    "title": "uses an object message and keeps the status code",
+    "suites": [
+      "api"
+    ],
+    "fullName": "api uses an object message and keeps the status code",
+    "line": 69,
+    "assertions": [
+      "expect(error).toMatchObject({\r\n      message: '座位已被占用',\r\n      status: 409,\r\n      detail: { message: '座位已被占用' },\r\n    })"
+    ],
+    "steps": [
+      "mockFetch({\r\n      status: 409,\r\n      ok: false,\r\n      json: async () => ({ detail: { message: '座位已被占用' } }),\r\n    })",
+      "const error = await api('/reservations', { method: 'POST', body: { seat_id: 1 } }).catch(\r\n      (err) => err,\r\n    )"
+    ],
+    "source": "it('uses an object message and keeps the status code', async () => {\r\n    mockFetch({\r\n      status: 409,\r\n      ok: false,\r\n      json: async () => ({ detail: { message: '座位已被占用' } }),\r\n    })\r\n    const error = await api('/reservations', { method: 'POST', body: { seat_id: 1 } }).catch(\r\n      (err) => err,\r\n    )\r\n    expect(error).toMatchObject({\r\n      message: '座位已被占用',\r\n      status: 409,\r\n      detail: { message: '座位已被占用' },\r\n    })\r\n  })"
+  },
+  {
+    "file": "frontend/src/api/client.test.js",
+    "title": "explains a conflict that has no detail",
+    "suites": [
+      "api"
+    ],
+    "fullName": "api explains a conflict that has no detail",
+    "line": 85,
+    "assertions": [
+      "expect(api('/reservations')).rejects.toThrow('资源冲突，请刷新后重试')"
+    ],
+    "steps": [
+      "mockFetch({ status: 409, ok: false, json: async () => ({}) })"
+    ],
+    "source": "it('explains a conflict that has no detail', async () => {\r\n    mockFetch({ status: 409, ok: false, json: async () => ({}) })\r\n    await expect(api('/reservations')).rejects.toThrow('资源冲突，请刷新后重试')\r\n  })"
+  },
+  {
+    "file": "frontend/src/api/client.test.js",
+    "title": "names the HTTP status when the body cannot be read",
+    "suites": [
+      "api"
+    ],
+    "fullName": "api names the HTTP status when the body cannot be read",
+    "line": 90,
+    "assertions": [
+      "expect(api('/health')).rejects.toThrow('请求失败（HTTP 500）')"
+    ],
+    "steps": [
+      "mockFetch({\r\n      status: 500,\r\n      ok: false,\r\n      json: async () => {\r\n        throw new Error('not json')\r\n      },\r\n    })"
+    ],
+    "source": "it('names the HTTP status when the body cannot be read', async () => {\r\n    mockFetch({\r\n      status: 500,\r\n      ok: false,\r\n      json: async () => {\r\n        throw new Error('not json')\r\n      },\r\n    })\r\n    await expect(api('/health')).rejects.toThrow('请求失败（HTTP 500）')\r\n  })"
+  },
+  {
+    "file": "frontend/src/auth.test.js",
+    "title": "stays logged out when there is no token",
+    "suites": [
+      "auth session"
+    ],
+    "fullName": "auth session stays logged out when there is no token",
+    "line": 21,
+    "assertions": [
+      "expect(loadMe()).resolves.toBeNull()",
+      "expect(auth.loaded).toBe(true)",
+      "expect(api).not.toHaveBeenCalled()",
+      "expect(hasRole('user')).toBe(false)",
+      "expect(can('room:read')).toBe(false)"
+    ],
+    "steps": [
+      "getToken.mockReturnValue(null)"
+    ],
+    "source": "it('stays logged out when there is no token', async () => {\r\n    getToken.mockReturnValue(null)\r\n    await expect(loadMe()).resolves.toBeNull()\r\n    expect(auth.loaded).toBe(true)\r\n    expect(api).not.toHaveBeenCalled()\r\n    expect(hasRole('user')).toBe(false)\r\n    expect(can('room:read')).toBe(false)\r\n  })"
+  },
+  {
+    "file": "frontend/src/auth.test.js",
+    "title": "drops a token that the server no longer accepts",
+    "suites": [
+      "auth session"
+    ],
+    "fullName": "auth session drops a token that the server no longer accepts",
+    "line": 30,
+    "assertions": [
+      "expect(setToken).toHaveBeenCalledWith(null)",
+      "expect(auth.user).toBeNull()",
+      "expect(auth.loaded).toBe(true)"
+    ],
+    "steps": [
+      "getToken.mockReturnValue('expired')",
+      "api.mockRejectedValue(new Error('unauthorized'))",
+      "await loadMe()"
+    ],
+    "source": "it('drops a token that the server no longer accepts', async () => {\r\n    getToken.mockReturnValue('expired')\r\n    api.mockRejectedValue(new Error('unauthorized'))\r\n    await loadMe()\r\n    expect(setToken).toHaveBeenCalledWith(null)\r\n    expect(auth.user).toBeNull()\r\n    expect(auth.loaded).toBe(true)\r\n  })"
+  },
+  {
+    "file": "frontend/src/auth.test.js",
+    "title": "stores the user returned by login",
+    "suites": [
+      "auth session"
+    ],
+    "fullName": "auth session stores the user returned by login",
+    "line": 39,
+    "assertions": [
+      "expect(api).toHaveBeenCalledWith('/auth/login', {\r\n      method: 'POST',\r\n      body: { student_no: '20260001', password: 'Demo1234' },\r\n    })",
+      "expect(setToken).toHaveBeenCalledWith('tok')",
+      "expect(hasRole('user')).toBe(true)",
+      "expect(hasRole('admin')).toBe(false)",
+      "expect(can('reservation:own')).toBe(true)",
+      "expect(can('user:manage')).toBe(false)"
+    ],
+    "steps": [
+      "api.mockResolvedValue({ access_token: 'tok', user })",
+      "await login('20260001', 'Demo1234')"
+    ],
+    "source": "it('stores the user returned by login', async () => {\r\n    api.mockResolvedValue({ access_token: 'tok', user })\r\n    await login('20260001', 'Demo1234')\r\n    expect(api).toHaveBeenCalledWith('/auth/login', {\r\n      method: 'POST',\r\n      body: { student_no: '20260001', password: 'Demo1234' },\r\n    })\r\n    expect(setToken).toHaveBeenCalledWith('tok')\r\n    expect(hasRole('user')).toBe(true)\r\n    expect(hasRole('admin')).toBe(false)\r\n    expect(can('reservation:own')).toBe(true)\r\n    expect(can('user:manage')).toBe(false)\r\n  })"
+  },
+  {
+    "file": "frontend/src/auth.test.js",
+    "title": "clears the session even when logout fails",
+    "suites": [
+      "auth session"
+    ],
+    "fullName": "auth session clears the session even when logout fails",
+    "line": 53,
+    "assertions": [
+      "expect(logout()).rejects.toThrow('offline')",
+      "expect(auth.user).toBeNull()",
+      "expect(setToken).toHaveBeenCalledWith(null)"
+    ],
+    "steps": [
+      "auth.user = user",
+      "api.mockRejectedValue(new Error('offline'))"
+    ],
+    "source": "it('clears the session even when logout fails', async () => {\r\n    auth.user = user\r\n    api.mockRejectedValue(new Error('offline'))\r\n    await expect(logout()).rejects.toThrow('offline')\r\n    expect(auth.user).toBeNull()\r\n    expect(setToken).toHaveBeenCalledWith(null)\r\n  })"
+  },
+  {
+    "file": "frontend/src/components/EmptyState.test.js",
+    "title": "shows only the title when there is no action",
+    "suites": [
+      "EmptyState"
+    ],
+    "fullName": "EmptyState shows only the title when there is no action",
+    "line": 11,
+    "assertions": [
+      "expect(wrapper.text()).toBe('还没有预约')",
+      "expect(wrapper.find('a').exists()).toBe(false)"
+    ],
+    "steps": [
+      "const wrapper = mount(EmptyState, {\r\n      props: { title: '还没有预约' },\r\n      global: { stubs },\r\n    })"
+    ],
+    "source": "it('shows only the title when there is no action', () => {\r\n    const wrapper = mount(EmptyState, {\r\n      props: { title: '还没有预约' },\r\n      global: { stubs },\r\n    })\r\n    expect(wrapper.text()).toBe('还没有预约')\r\n    expect(wrapper.find('a').exists()).toBe(false)\r\n  })"
+  },
+  {
+    "file": "frontend/src/components/EmptyState.test.js",
+    "title": "links to the next step when an action is given",
+    "suites": [
+      "EmptyState"
+    ],
+    "fullName": "EmptyState links to the next step when an action is given",
+    "line": 20,
+    "assertions": [
+      "expect(wrapper.get('a').text()).toBe('去预约')",
+      "expect(wrapper.get('a').attributes('href')).toBe('/workflows')"
+    ],
+    "steps": [
+      "const wrapper = mount(EmptyState, {\r\n      props: { title: '还没有预约', actionTo: '/workflows', actionText: '去预约' },\r\n      global: { stubs },\r\n    })"
+    ],
+    "source": "it('links to the next step when an action is given', () => {\r\n    const wrapper = mount(EmptyState, {\r\n      props: { title: '还没有预约', actionTo: '/workflows', actionText: '去预约' },\r\n      global: { stubs },\r\n    })\r\n    expect(wrapper.get('a').text()).toBe('去预约')\r\n    expect(wrapper.get('a').attributes('href')).toBe('/workflows')\r\n  })"
+  },
+  {
+    "file": "frontend/src/components/StatusBadge.test.js",
+    "title": "shows the shared label for a known status",
+    "suites": [
+      "StatusBadge"
+    ],
+    "fullName": "StatusBadge shows the shared label for a known status",
+    "line": 7,
+    "assertions": [
+      "expect(wrapper.text()).toBe('暂离')",
+      "expect(wrapper.classes()).toContain('tone-warn')"
+    ],
+    "steps": [
+      "const wrapper = mount(StatusBadge, { props: { status: 'temp_leave' } })"
+    ],
+    "source": "it('shows the shared label for a known status', () => {\r\n    const wrapper = mount(StatusBadge, { props: { status: 'temp_leave' } })\r\n    expect(wrapper.text()).toBe('暂离')\r\n    expect(wrapper.classes()).toContain('tone-warn')\r\n  })"
+  },
+  {
+    "file": "frontend/src/components/StatusBadge.test.js",
+    "title": "keeps an unknown status readable",
+    "suites": [
+      "StatusBadge"
+    ],
+    "fullName": "StatusBadge keeps an unknown status readable",
+    "line": 13,
+    "assertions": [
+      "expect(wrapper.text()).toBe('—')",
+      "expect(wrapper.classes()).toContain('tone-neutral')"
+    ],
+    "steps": [
+      "const wrapper = mount(StatusBadge, { props: { status: '' } })"
+    ],
+    "source": "it('keeps an unknown status readable', () => {\r\n    const wrapper = mount(StatusBadge, { props: { status: '' } })\r\n    expect(wrapper.text()).toBe('—')\r\n    expect(wrapper.classes()).toContain('tone-neutral')\r\n  })"
+  },
+  {
+    "file": "frontend/src/confirm.test.js",
+    "title": "resolves true only after the user confirms",
+    "suites": [
+      "confirmDialog"
+    ],
+    "fullName": "confirmDialog resolves true only after the user confirms",
+    "line": 6,
+    "assertions": [
+      "expect(confirmState.open).toBe(true)",
+      "expect(confirmState.title).toBe('取消预约')",
+      "expect(confirmState.danger).toBe(true)",
+      "expect(pending).resolves.toBe(true)",
+      "expect(confirmState.open).toBe(false)",
+      "expect(confirmState.resolve).toBeNull()"
+    ],
+    "steps": [
+      "const pending = confirmDialog({ title: '取消预约', message: '确定取消？', danger: true })",
+      "settleConfirm(true)"
+    ],
+    "source": "it('resolves true only after the user confirms', async () => {\r\n    const pending = confirmDialog({ title: '取消预约', message: '确定取消？', danger: true })\r\n    expect(confirmState.open).toBe(true)\r\n    expect(confirmState.title).toBe('取消预约')\r\n    expect(confirmState.danger).toBe(true)\r\n    settleConfirm(true)\r\n    await expect(pending).resolves.toBe(true)\r\n    expect(confirmState.open).toBe(false)\r\n    expect(confirmState.resolve).toBeNull()\r\n  })"
+  },
+  {
+    "file": "frontend/src/confirm.test.js",
+    "title": "cancels the dialog that is already open",
+    "suites": [
+      "confirmDialog"
+    ],
+    "fullName": "confirmDialog cancels the dialog that is already open",
+    "line": 17,
+    "assertions": [
+      "expect(first).resolves.toBe(false)",
+      "expect(confirmState.title).toBe('第二次')",
+      "expect(second).resolves.toBe(false)"
+    ],
+    "steps": [
+      "const first = confirmDialog({ title: '第一次' })",
+      "const second = confirmDialog({ title: '第二次' })",
+      "settleConfirm(false)"
+    ],
+    "source": "it('cancels the dialog that is already open', async () => {\r\n    const first = confirmDialog({ title: '第一次' })\r\n    const second = confirmDialog({ title: '第二次' })\r\n    await expect(first).resolves.toBe(false)\r\n    expect(confirmState.title).toBe('第二次')\r\n    settleConfirm(false)\r\n    await expect(second).resolves.toBe(false)\r\n  })"
+  },
+  {
+    "file": "frontend/src/confirm.test.js",
+    "title": "returns the typed text, or null when cancelled",
+    "suites": [
+      "promptDialog"
+    ],
+    "fullName": "promptDialog returns the typed text, or null when cancelled",
+    "line": 28,
+    "assertions": [
+      "expect(confirmState.input).toBe(true)",
+      "expect(confirmState.placeholder).toBe('请填写')",
+      "expect(pending).resolves.toBe('设备故障')",
+      "expect(cancelled).resolves.toBeNull()"
+    ],
+    "steps": [
+      "const pending = promptDialog({ title: '申诉原因', placeholder: '请填写' })",
+      "confirmState.value = '设备故障'",
+      "settleConfirm(true)",
+      "const cancelled = promptDialog()",
+      "settleConfirm(false)"
+    ],
+    "source": "it('returns the typed text, or null when cancelled', async () => {\r\n    const pending = promptDialog({ title: '申诉原因', placeholder: '请填写' })\r\n    expect(confirmState.input).toBe(true)\r\n    expect(confirmState.placeholder).toBe('请填写')\r\n    confirmState.value = '设备故障'\r\n    settleConfirm(true)\r\n    await expect(pending).resolves.toBe('设备故障')\r\n\r\n    const cancelled = promptDialog()\r\n    settleConfirm(false)\r\n    await expect(cancelled).resolves.toBeNull()\r\n  })"
+  },
+  {
+    "file": "frontend/src/labels.test.js",
+    "title": "translates known zones and keeps unknown values",
+    "suites": [
+      "zoneLabel"
+    ],
+    "fullName": "zoneLabel translates known zones and keeps unknown values",
+    "line": 6,
+    "assertions": [
+      "expect(zoneLabel('quiet')).toBe('静音区')",
+      "expect(zoneLabel('exam_prep')).toBe('考研区')",
+      "expect(zoneLabel('rooftop')).toBe('rooftop')",
+      "expect(zoneLabel('')).toBe('—')",
+      "expect(zoneLabel(null)).toBe('—')"
+    ],
+    "steps": [],
+    "source": "it('translates known zones and keeps unknown values', () => {\r\n    expect(zoneLabel('quiet')).toBe('静音区')\r\n    expect(zoneLabel('exam_prep')).toBe('考研区')\r\n    expect(zoneLabel('rooftop')).toBe('rooftop')\r\n    expect(zoneLabel('')).toBe('—')\r\n    expect(zoneLabel(null)).toBe('—')\r\n  })"
+  },
+  {
+    "file": "frontend/src/labels.test.js",
+    "title": "accepts either case and falls back to the raw value",
+    "suites": [
+      "violationTypeLabel"
+    ],
+    "fullName": "violationTypeLabel accepts either case and falls back to the raw value",
+    "line": 16,
+    "assertions": [
+      "expect(violationTypeLabel('NO_SHOW')).toBe('预约未到（爽约）')",
+      "expect(violationTypeLabel('temp_leave_timeout')).toBe('暂离超时未归')",
+      "expect(violationTypeLabel('other')).toBe('other')",
+      "expect(violationTypeLabel('')).toBe('—')"
+    ],
+    "steps": [],
+    "source": "it('accepts either case and falls back to the raw value', () => {\r\n    expect(violationTypeLabel('NO_SHOW')).toBe('预约未到（爽约）')\r\n    expect(violationTypeLabel('temp_leave_timeout')).toBe('暂离超时未归')\r\n    expect(violationTypeLabel('other')).toBe('other')\r\n    expect(violationTypeLabel('')).toBe('—')\r\n  })"
+  },
+  {
+    "file": "frontend/src/labels.test.js",
+    "title": "joins the facilities a seat actually has",
+    "suites": [
+      "facilityText"
+    ],
+    "fullName": "facilityText joins the facilities a seat actually has",
+    "line": 25,
+    "assertions": [
+      "expect(facilityText(null)).toBe('—')",
+      "expect(facilityText({})).toBe('—')",
+      "expect(facilityText({ has_power: true, by_window: true, accessible: false })).toBe('电源、靠窗')",
+      "expect(facilityText({ accessible: true })).toBe('无障碍')"
+    ],
+    "steps": [],
+    "source": "it('joins the facilities a seat actually has', () => {\r\n    expect(facilityText(null)).toBe('—')\r\n    expect(facilityText({})).toBe('—')\r\n    expect(facilityText({ has_power: true, by_window: true, accessible: false })).toBe('电源、靠窗')\r\n    expect(facilityText({ accessible: true })).toBe('无障碍')\r\n  })"
+  },
+  {
+    "file": "frontend/src/router/guard.test.js",
+    "title": "sends an anonymous visitor to login and keeps the target",
+    "suites": [
+      "authorizeNavigation"
+    ],
+    "fullName": "authorizeNavigation sends an anonymous visitor to login and keeps the target",
+    "line": 10,
+    "assertions": [
+      "expect(result).toEqual({ path: '/login', query: { next: '/workflows' } })",
+      "expect(loadMe).not.toHaveBeenCalled()"
+    ],
+    "steps": [
+      "const loadMe = vi.fn()",
+      "const result = await authorizeNavigation(\r\n      { fullPath: '/workflows', meta: { auth: true } },\r\n      authState(null),\r\n      loadMe,\r\n    )"
+    ],
+    "source": "it('sends an anonymous visitor to login and keeps the target', async () => {\r\n    const loadMe = vi.fn()\r\n    const result = await authorizeNavigation(\r\n      { fullPath: '/workflows', meta: { auth: true } },\r\n      authState(null),\r\n      loadMe,\r\n    )\r\n    expect(result).toEqual({ path: '/login', query: { next: '/workflows' } })\r\n    expect(loadMe).not.toHaveBeenCalled()\r\n  })"
+  },
+  {
+    "file": "frontend/src/router/guard.test.js",
+    "title": "loads the session once before deciding",
+    "suites": [
+      "authorizeNavigation"
+    ],
+    "fullName": "authorizeNavigation loads the session once before deciding",
+    "line": 21,
+    "assertions": [
+      "expect(loadMe).toHaveBeenCalledOnce()",
+      "expect(result).toBe(true)"
+    ],
+    "steps": [
+      "const auth = { loaded: false, user: null }",
+      "const loadMe = vi.fn(async () => {\r\n      auth.loaded = true\r\n      auth.user = { permissions: ['room:read'] }\r\n    })",
+      "const result = await authorizeNavigation({ fullPath: '/', meta: { auth: true } }, auth, loadMe)"
+    ],
+    "source": "it('loads the session once before deciding', async () => {\r\n    const auth = { loaded: false, user: null }\r\n    const loadMe = vi.fn(async () => {\r\n      auth.loaded = true\r\n      auth.user = { permissions: ['room:read'] }\r\n    })\r\n    const result = await authorizeNavigation({ fullPath: '/', meta: { auth: true } }, auth, loadMe)\r\n    expect(loadMe).toHaveBeenCalledOnce()\r\n    expect(result).toBe(true)\r\n  })"
+  },
+  {
+    "file": "frontend/src/router/guard.test.js",
+    "title": "blocks a page the signed-in user cannot access",
+    "suites": [
+      "authorizeNavigation"
+    ],
+    "fullName": "authorizeNavigation blocks a page the signed-in user cannot access",
+    "line": 32,
+    "assertions": [
+      "expect(missing).toBe('/')",
+      "expect(neither).toBe('/')"
+    ],
+    "steps": [
+      "const user = { permissions: ['room:read'] }",
+      "const missing = await authorizeNavigation(\r\n      { fullPath: '/admin/users', meta: { auth: true, perm: 'user:manage' } },\r\n      authState(user),\r\n      vi.fn(),\r\n    )",
+      "const neither = await authorizeNavigation(\r\n      {\r\n        fullPath: '/admin/logs',\r\n        meta: { auth: true, anyPerm: ['audit_log:read', 'system_log:read'] },\r\n      },\r\n      authState(user),\r\n      vi.fn(),\r\n    )"
+    ],
+    "source": "it('blocks a page the signed-in user cannot access', async () => {\r\n    const user = { permissions: ['room:read'] }\r\n    const missing = await authorizeNavigation(\r\n      { fullPath: '/admin/users', meta: { auth: true, perm: 'user:manage' } },\r\n      authState(user),\r\n      vi.fn(),\r\n    )\r\n    expect(missing).toBe('/')\r\n    const neither = await authorizeNavigation(\r\n      {\r\n        fullPath: '/admin/logs',\r\n        meta: { auth: true, anyPerm: ['audit_log:read', 'system_log:read'] },\r\n      },\r\n      authState(user),\r\n      vi.fn(),\r\n    )\r\n    expect(neither).toBe('/')\r\n  })"
+  },
+  {
+    "file": "frontend/src/router/guard.test.js",
+    "title": "allows a page when any required permission matches",
+    "suites": [
+      "authorizeNavigation"
+    ],
+    "fullName": "authorizeNavigation allows a page when any required permission matches",
+    "line": 51,
+    "assertions": [
+      "expect(result).toBe(true)"
+    ],
+    "steps": [
+      "const user = { permissions: ['system_log:read'] }",
+      "const result = await authorizeNavigation(\r\n      {\r\n        fullPath: '/admin/ops',\r\n        meta: { auth: true, anyPerm: ['system:backup', 'system_log:read'] },\r\n      },\r\n      authState(user),\r\n      vi.fn(),\r\n    )"
+    ],
+    "source": "it('allows a page when any required permission matches', async () => {\r\n    const user = { permissions: ['system_log:read'] }\r\n    const result = await authorizeNavigation(\r\n      {\r\n        fullPath: '/admin/ops',\r\n        meta: { auth: true, anyPerm: ['system:backup', 'system_log:read'] },\r\n      },\r\n      authState(user),\r\n      vi.fn(),\r\n    )\r\n    expect(result).toBe(true)\r\n  })"
+  },
+  {
+    "file": "frontend/src/router/guard.test.js",
+    "title": "leaves public pages open",
+    "suites": [
+      "authorizeNavigation"
+    ],
+    "fullName": "authorizeNavigation leaves public pages open",
+    "line": 64,
+    "assertions": [
+      "expect(result).toBe(true)"
+    ],
+    "steps": [
+      "const result = await authorizeNavigation(\r\n      { fullPath: '/login', meta: {} },\r\n      authState(null),\r\n      vi.fn(),\r\n    )"
+    ],
+    "source": "it('leaves public pages open', async () => {\r\n    const result = await authorizeNavigation(\r\n      { fullPath: '/login', meta: {} },\r\n      authState(null),\r\n      vi.fn(),\r\n    )\r\n    expect(result).toBe(true)\r\n  })"
+  },
+  {
+    "file": "frontend/src/theme.test.js",
+    "title": "uses a saved choice instead of the system theme",
+    "suites": [
+      "theme"
+    ],
+    "fullName": "theme uses a saved choice instead of the system theme",
+    "line": 21,
+    "assertions": [
+      "expect(theme.followSystem).toBe(false)",
+      "expect(theme.name).toBe('dark')",
+      "expect(document.documentElement.dataset.theme).toBe('dark')"
+    ],
+    "steps": [
+      "localStorage.setItem('studyroom_theme', 'dark')",
+      "mockSystem(false)",
+      "initTheme()"
+    ],
+    "source": "it('uses a saved choice instead of the system theme', () => {\r\n    localStorage.setItem('studyroom_theme', 'dark')\r\n    mockSystem(false)\r\n    initTheme()\r\n    expect(theme.followSystem).toBe(false)\r\n    expect(theme.name).toBe('dark')\r\n    expect(document.documentElement.dataset.theme).toBe('dark')\r\n  })"
+  },
+  {
+    "file": "frontend/src/theme.test.js",
+    "title": "follows the system when nothing valid is saved",
+    "suites": [
+      "theme"
+    ],
+    "fullName": "theme follows the system when nothing valid is saved",
+    "line": 30,
+    "assertions": [
+      "expect(theme.followSystem).toBe(true)",
+      "expect(theme.name).toBe('dark')",
+      "expect(document.documentElement.style.colorScheme).toBe('dark')"
+    ],
+    "steps": [
+      "localStorage.setItem('studyroom_theme', 'blue')",
+      "mockSystem(true)",
+      "initTheme()"
+    ],
+    "source": "it('follows the system when nothing valid is saved', () => {\r\n    localStorage.setItem('studyroom_theme', 'blue')\r\n    mockSystem(true)\r\n    initTheme()\r\n    expect(theme.followSystem).toBe(true)\r\n    expect(theme.name).toBe('dark')\r\n    expect(document.documentElement.style.colorScheme).toBe('dark')\r\n  })"
+  },
+  {
+    "file": "frontend/src/theme.test.js",
+    "title": "toggle stores the choice and stops following the system",
+    "suites": [
+      "theme"
+    ],
+    "fullName": "theme toggle stores the choice and stops following the system",
+    "line": 39,
+    "assertions": [
+      "expect(theme.name).toBe('dark')",
+      "expect(theme.followSystem).toBe(false)",
+      "expect(localStorage.getItem('studyroom_theme')).toBe('dark')",
+      "expect(theme.name).toBe('light')"
+    ],
+    "steps": [
+      "mockSystem(false)",
+      "initTheme()",
+      "toggleTheme()",
+      "toggleTheme()"
+    ],
+    "source": "it('toggle stores the choice and stops following the system', () => {\r\n    mockSystem(false)\r\n    initTheme()\r\n    toggleTheme()\r\n    expect(theme.name).toBe('dark')\r\n    expect(theme.followSystem).toBe(false)\r\n    expect(localStorage.getItem('studyroom_theme')).toBe('dark')\r\n    toggleTheme()\r\n    expect(theme.name).toBe('light')\r\n  })"
+  }
+]

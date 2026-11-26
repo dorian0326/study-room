@@ -1,0 +1,956 @@
+{
+  "recorded_at": "2026-11-26T19:20:10.431225+08:00",
+  "exitstatus": 0,
+  "capture": "TestClient request/response from actual isolated pytest run; secrets redacted, arrays sampled to 8, long strings truncated at 3000",
+  "cases": [
+    {
+      "nodeid": "tests/test_reservations.py::test_100_competing_users_only_one_reservation",
+      "file": "tests\\test_reservations.py",
+      "line": 431,
+      "function": "test_100_competing_users_only_one_reservation",
+      "parameters": {},
+      "fixtures": [
+        "tmp_path_factory",
+        "api_db",
+        "tmp_path",
+        "request",
+        "seats",
+        "clock",
+        "monkeypatch"
+      ],
+      "case_marker": null,
+      "phases": [
+        {
+          "when": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.2604615999989619
+        },
+        {
+          "when": "call",
+          "outcome": "passed",
+          "duration_seconds": 1.1564030000008643
+        },
+        {
+          "when": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.001660400001128437
+        }
+      ],
+      "http": [],
+      "service_create": [
+        {
+          "user_id": 100,
+          "outcome": "success",
+          "reservation_id": 1,
+          "replay": false,
+          "status": "RESERVED"
+        },
+        {
+          "user_id": 14,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 17,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 19,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 18,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 8,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 21,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 23,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 22,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 25,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 26,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 24,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 27,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 29,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 28,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 31,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 15,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 33,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 32,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 34,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 30,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 35,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 36,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 38,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 37,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 39,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 40,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 41,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 13,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 47,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 44,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 48,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 46,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 49,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 50,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 51,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 52,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 53,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 55,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 54,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 56,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 43,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 57,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 81,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 82,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 79,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 88,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 75,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 58,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 71,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 83,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 63,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 70,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 69,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 84,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 62,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 68,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 96,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 67,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 61,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 94,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 90,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 60,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 89,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 97,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 59,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 98,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 99,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 64,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 80,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 78,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 77,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 7,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 65,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 93,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 91,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 87,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 85,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 74,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 95,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 73,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 72,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 86,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 76,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 92,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 45,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 16,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 66,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 20,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 42,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 3,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 10,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 12,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 11,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 4,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 6,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 5,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 2,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 9,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        },
+        {
+          "user_id": 1,
+          "outcome": "error",
+          "exception": "BookingError",
+          "status_code": 409,
+          "message": "该座位在所选时段已被预约，请重新选择"
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_reservations.py::test_concurrent_retries_return_same_id",
+      "file": "tests\\test_reservations.py",
+      "line": 462,
+      "function": "test_concurrent_retries_return_same_id",
+      "parameters": {},
+      "fixtures": [
+        "tmp_path_factory",
+        "api_db",
+        "tmp_path",
+        "request",
+        "seats",
+        "clock",
+        "monkeypatch",
+        "actors",
+        "client",
+        "make_user",
+        "login"
+      ],
+      "case_marker": null,
+      "phases": [
+        {
+          "when": "setup",
+          "outcome": "passed",
+          "duration_seconds": 0.8813845000004221
+        },
+        {
+          "when": "call",
+          "outcome": "passed",
+          "duration_seconds": 0.5706739999986894
+        },
+        {
+          "when": "teardown",
+          "outcome": "passed",
+          "duration_seconds": 0.002434400001220638
+        }
+      ],
+      "http": [
+        {
+          "method": "POST",
+          "url": "/api/auth/login",
+          "status": 200,
+          "request_json": {
+            "student_no": "20260001",
+            "password": "[redacted]"
+          },
+          "response": {
+            "access_token": "[redacted]",
+            "token_type": "[redacted]",
+            "expires_in": 43200,
+            "user": {
+              "id": 1,
+              "student_no": "20260001",
+              "name": "测试用户",
+              "department": null,
+              "contact": null,
+              "status": "normal",
+              "roles": [
+                "user"
+              ],
+              "permissions": [
+                "reservation:own",
+                "room:read"
+              ]
+            }
+          }
+        },
+        {
+          "method": "POST",
+          "url": "/api/auth/login",
+          "status": 200,
+          "request_json": {
+            "student_no": "20260002",
+            "password": "[redacted]"
+          },
+          "response": {
+            "access_token": "[redacted]",
+            "token_type": "[redacted]",
+            "expires_in": 43200,
+            "user": {
+              "id": 2,
+              "student_no": "20260002",
+              "name": "测试用户",
+              "department": null,
+              "contact": null,
+              "status": "normal",
+              "roles": [
+                "user"
+              ],
+              "permissions": [
+                "reservation:own",
+                "room:read"
+              ]
+            }
+          }
+        }
+      ],
+      "service_create": [
+        {
+          "user_id": 1,
+          "outcome": "success",
+          "reservation_id": 1,
+          "replay": false,
+          "status": "RESERVED"
+        },
+        {
+          "user_id": 1,
+          "outcome": "success",
+          "reservation_id": 1,
+          "replay": true,
+          "status": "RESERVED"
+        },
+        {
+          "user_id": 1,
+          "outcome": "success",
+          "reservation_id": 1,
+          "replay": true,
+          "status": "RESERVED"
+        },
+        {
+          "user_id": 1,
+          "outcome": "success",
+          "reservation_id": 1,
+          "replay": true,
+          "status": "RESERVED"
+        },
+        {
+          "user_id": 1,
+          "outcome": "success",
+          "reservation_id": 1,
+          "replay": true,
+          "status": "RESERVED"
+        },
+        {
+          "user_id": 1,
+          "outcome": "success",
+          "reservation_id": 1,
+          "replay": true,
+          "status": "RESERVED"
+        },
+        {
+          "user_id": 1,
+          "outcome": "success",
+          "reservation_id": 1,
+          "replay": true,
+          "status": "RESERVED"
+        },
+        {
+          "user_id": 1,
+          "outcome": "success",
+          "reservation_id": 1,
+          "replay": true,
+          "status": "RESERVED"
+        },
+        {
+          "user_id": 1,
+          "outcome": "success",
+          "reservation_id": 1,
+          "replay": true,
+          "status": "RESERVED"
+        },
+        {
+          "user_id": 1,
+          "outcome": "success",
+          "reservation_id": 1,
+          "replay": true,
+          "status": "RESERVED"
+        },
+        {
+          "user_id": 1,
+          "outcome": "success",
+          "reservation_id": 1,
+          "replay": true,
+          "status": "RESERVED"
+        },
+        {
+          "user_id": 1,
+          "outcome": "success",
+          "reservation_id": 1,
+          "replay": true,
+          "status": "RESERVED"
+        },
+        {
+          "user_id": 1,
+          "outcome": "success",
+          "reservation_id": 1,
+          "replay": true,
+          "status": "RESERVED"
+        },
+        {
+          "user_id": 1,
+          "outcome": "success",
+          "reservation_id": 1,
+          "replay": true,
+          "status": "RESERVED"
+        },
+        {
+          "user_id": 1,
+          "outcome": "success",
+          "reservation_id": 1,
+          "replay": true,
+          "status": "RESERVED"
+        },
+        {
+          "user_id": 1,
+          "outcome": "success",
+          "reservation_id": 1,
+          "replay": true,
+          "status": "RESERVED"
+        }
+      ]
+    }
+  ]
+}

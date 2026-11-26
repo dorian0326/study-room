@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="6" skipped="0" tests="6" time="0.855" timestamp="2026-11-26T21:28:51.544637+08:00" hostname="LAPTOP-VP3SEMHL"><testcase classname="tests.units.test_defect_cancel_notification_failure" name="test_srs_uc009_notification_failure_must_not_rollback_cancel" time="0.027"><failure message="Failed: 违反 SRS UC-009 异常流程 E1 / EX-06：通知失败应保持取消生效，实际通知异常向外传播，取消事务已 rollback，未 commit">tests\units\test_defect_cancel_notification_failure.py:23: in test_srs_uc009_notification_failure_must_not_rollback_cancel
+    result = service.cancel(session, booking.user_id, booking.id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app\services\reservations.py:425: in cancel
+    create_notification(
+D:\develop\anaconda3\Lib\unittest\mock.py:1169: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\develop\anaconda3\Lib\unittest\mock.py:1173: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\develop\anaconda3\Lib\unittest\mock.py:1228: in _execute_mock_call
+    raise effect
+E   RuntimeError: 模拟站内通知创建失败
+
+During handling of the above exception, another exception occurred:
+tests\units\test_defect_cancel_notification_failure.py:28: in test_srs_uc009_notification_failure_must_not_rollback_cancel
+    pytest.fail(
+E   Failed: 违反 SRS UC-009 异常流程 E1 / EX-06：通知失败应保持取消生效，实际通知异常向外传播，取消事务已 rollback，未 commit</failure></testcase><testcase classname="tests.units.test_defect_checkin_boundary" name="test_srs_ac02_sweep_must_keep_exact_checkin_deadline" time="0.004"><failure message="AssertionError: 违反 SRS AC-02 / BR-020：开始后恰好 15 分钟仍应允许签到，但后台未到扫描的真实查询已将该预约纳入失效候选&#10;assert True is False">tests\units\test_defect_checkin_boundary.py:36: in test_srs_ac02_sweep_must_keep_exact_checkin_deadline
+    assert selected_as_no_show is False, (
+E   AssertionError: 违反 SRS AC-02 / BR-020：开始后恰好 15 分钟仍应允许签到，但后台未到扫描的真实查询已将该预约纳入失效候选
+E   assert True is False</failure></testcase><testcase classname="tests.units.test_defect_no_show_notification" name="test_srs_ac03_no_show_expiry_must_notify_user" time="0.003"><failure message="AssertionError: 违反 SRS AC-03：超窗未签到预约已失效、座位已释放并记录违规，但没有给用户 7 创建站内通知（实际通知数=0）&#10;assert False&#10; +  where False = any(&lt;generator object test_srs_ac03_no_show_expiry_must_notify_user.&lt;locals&gt;.&lt;genexpr&gt; at 0x0000024F21872F60&gt;)">tests\units\test_defect_no_show_notification.py:47: in test_srs_ac03_no_show_expiry_must_notify_user
+    assert any(item.user_id == booking.user_id for item in notices), (
+E   AssertionError: 违反 SRS AC-03：超窗未签到预约已失效、座位已释放并记录违规，但没有给用户 7 创建站内通知（实际通知数=0）
+E   assert False
+E    +  where False = any(&lt;generator object test_srs_ac03_no_show_expiry_must_notify_user.&lt;locals&gt;.&lt;genexpr&gt; at 0x0000024F21872F60&gt;)</failure></testcase><testcase classname="tests.units.test_defect_no_show_penalty" name="test_srs_br095_no_show_must_apply_penalty_tier[3-1]" time="0.003"><failure message="AssertionError: 违反 SRS BR-095 / AC-09：未到违规累计第 3 次，应禁约 1 天，实际创建禁约记录 0 条&#10;assert 0 == 1&#10; +  where 0 = len([])">tests\units\test_defect_no_show_penalty.py:37: in test_srs_br095_no_show_must_apply_penalty_tier
+    assert len(bans) == 1, (
+E   AssertionError: 违反 SRS BR-095 / AC-09：未到违规累计第 3 次，应禁约 1 天，实际创建禁约记录 0 条
+E   assert 0 == 1
+E    +  where 0 = len([])</failure></testcase><testcase classname="tests.units.test_defect_no_show_penalty" name="test_srs_br095_no_show_must_apply_penalty_tier[5-2]" time="0.004"><failure message="AssertionError: 违反 SRS BR-095 / AC-09：未到违规累计第 5 次，应禁约 2 天，实际创建禁约记录 0 条&#10;assert 0 == 1&#10; +  where 0 = len([])">tests\units\test_defect_no_show_penalty.py:37: in test_srs_br095_no_show_must_apply_penalty_tier
+    assert len(bans) == 1, (
+E   AssertionError: 违反 SRS BR-095 / AC-09：未到违规累计第 5 次，应禁约 2 天，实际创建禁约记录 0 条
+E   assert 0 == 1
+E    +  where 0 = len([])</failure></testcase><testcase classname="tests.units.test_defect_no_show_penalty" name="test_srs_br095_no_show_must_apply_penalty_tier[7-3]" time="0.003"><failure message="AssertionError: 违反 SRS BR-095 / AC-09：未到违规累计第 7 次，应禁约 3 天，实际创建禁约记录 0 条&#10;assert 0 == 1&#10; +  where 0 = len([])">tests\units\test_defect_no_show_penalty.py:37: in test_srs_br095_no_show_must_apply_penalty_tier
+    assert len(bans) == 1, (
+E   AssertionError: 违反 SRS BR-095 / AC-09：未到违规累计第 7 次，应禁约 3 天，实际创建禁约记录 0 条
+E   assert 0 == 1
+E    +  where 0 = len([])</failure></testcase></testsuite></testsuites>

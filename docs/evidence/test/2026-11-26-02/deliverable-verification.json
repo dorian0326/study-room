@@ -1,0 +1,23 @@
+{
+  "junit_reconciled": {
+    "defects-only": {
+      "tests": 6,
+      "failed": 6,
+      "skipped": 0
+    },
+    "backend-regression": {
+      "tests": 226,
+      "failed": 7,
+      "skipped": 0
+    }
+  },
+  "new_defect_cases": 6,
+  "current_backend_cases": 226,
+  "historical_detail_cases_preserved": 250,
+  "missing_local_links": [],
+  "run_input_files_unchanged": 95,
+  "old_evidence_files_verified_unchanged": 45,
+  "report_version": "TEST-REPORT-1.1",
+  "excel_updated": false,
+  "business_code_or_tests_modified": false
+}

@@ -1,0 +1,2260 @@
+[
+  {
+    "id": "TC-BE-001",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_001_overlapping_slot_conflicts_and_adjacent_slot_succeeds",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 116,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-002",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_001_idempotency_key_replays_same_reservation",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 127,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-003",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_002_unauthenticated_requests_are_rejected",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 141,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-004",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_002_missing_permission_returns_403",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 148,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-005",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_002_other_users_reservation_is_invisible",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 161,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-006",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_003_invalid_times_are_rejected[2026-11-02T05:59:00+08:00-2026-11-02T08:00:00+08:00]",
+    "result": "通过",
+    "parameters": {
+      "start": "'2026-11-02T05:59:00+08:00'",
+      "end": "'2026-11-02T08:00:00+08:00'"
+    },
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 194,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-007",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_003_invalid_times_are_rejected[2026-11-02T22:00:00+08:00-2026-11-02T23:31:00+08:00]",
+    "result": "通过",
+    "parameters": {
+      "start": "'2026-11-02T22:00:00+08:00'",
+      "end": "'2026-11-02T23:31:00+08:00'"
+    },
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 194,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-008",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_003_invalid_times_are_rejected[2026-11-02T23:00:00+08:00-2026-11-03T01:00:00+08:00]",
+    "result": "通过",
+    "parameters": {
+      "start": "'2026-11-02T23:00:00+08:00'",
+      "end": "'2026-11-03T01:00:00+08:00'"
+    },
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 194,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-009",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_003_invalid_times_are_rejected[2026-11-01T09:00:00+08:00-2026-11-01T10:00:00+08:00]",
+    "result": "通过",
+    "parameters": {
+      "start": "'2026-11-01T09:00:00+08:00'",
+      "end": "'2026-11-01T10:00:00+08:00'"
+    },
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 194,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-010",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_003_invalid_times_are_rejected[2026-11-02T09:00:00+08:00-2026-11-02T09:00:00+08:00]",
+    "result": "通过",
+    "parameters": {
+      "start": "'2026-11-02T09:00:00+08:00'",
+      "end": "'2026-11-02T09:00:00+08:00'"
+    },
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 194,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-011",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_003_invalid_times_are_rejected[2026-11-02T09:00:00-2026-11-02T10:00:00]",
+    "result": "通过",
+    "parameters": {
+      "start": "'2026-11-02T09:00:00'",
+      "end": "'2026-11-02T10:00:00'"
+    },
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 194,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-012",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_003_short_but_valid_interval_is_allowed",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 213,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-013",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_004_temp_leave_timeout_releases_once_with_one_violation",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 221,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-014",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_005_cancel_boundary_records_late_violation[16-False]",
+    "result": "通过",
+    "parameters": {
+      "minutes": "16",
+      "late": "False"
+    },
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 251,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-015",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_005_cancel_boundary_records_late_violation[15-True]",
+    "result": "通过",
+    "parameters": {
+      "minutes": "15",
+      "late": "True"
+    },
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 251,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-016",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_005_cancel_boundary_records_late_violation[1-True]",
+    "result": "通过",
+    "parameters": {
+      "minutes": "1",
+      "late": "True"
+    },
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 251,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-017",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_005_restricted_user_may_cancel_but_not_book",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 270,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-018",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_005_appeal_is_owner_only_and_within_deadline",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 296,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-019",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_005_approved_appeal_lifts_restriction_and_notifies",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 338,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-020",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_006_maintenance_cancels_pending_but_not_active",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 380,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-021",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_007_only_admin_can_change_config_and_invalid_input_is_noop",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 421,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-022",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_008_report_json_and_xlsx_share_the_same_scope",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 456,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-023",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_009_backup_requires_ops_role",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 516,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-024",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_009_backup_rotation_restore_and_status",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 537,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-025",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_010_duplicate_gate_event_is_not_counted_twice",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 586,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-026",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_010_delayed_and_unmatched_events_need_manual_review",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 617,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-027",
+    "nodeid": "tests/test_acceptance_cases.py::test_case_010_entry_after_temp_leave_window_is_not_applied",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_acceptance_cases.py",
+    "line": 656,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-028",
+    "nodeid": "tests/test_admin_config.py::test_non_admin_forbidden",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_admin_config.py",
+    "line": 27,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-029",
+    "nodeid": "tests/test_admin_config.py::test_room_crud_and_close",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_admin_config.py",
+    "line": 36,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-030",
+    "nodeid": "tests/test_admin_config.py::test_room_with_seats_cannot_be_deleted",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_admin_config.py",
+    "line": 57,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-031",
+    "nodeid": "tests/test_admin_config.py::test_opening_schedules",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_admin_config.py",
+    "line": 66,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-032",
+    "nodeid": "tests/test_admin_config.py::test_calendar_days",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_admin_config.py",
+    "line": 94,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-033",
+    "nodeid": "tests/test_admin_config.py::test_business_settings",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_admin_config.py",
+    "line": 105,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-034",
+    "nodeid": "tests/test_assigned_workflows.py::test_reservation_idempotency_ownership_and_user_limit",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_assigned_workflows.py",
+    "line": 80,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-035",
+    "nodeid": "tests/test_assigned_workflows.py::test_temporary_leave_timeout_creates_one_violation",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_assigned_workflows.py",
+    "line": 139,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-036",
+    "nodeid": "tests/test_assigned_workflows.py::test_late_cancellation_records_violation_and_notice",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_assigned_workflows.py",
+    "line": 170,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-037",
+    "nodeid": "tests/test_assigned_workflows.py::test_late_gate_event_is_linked_not_applied_and_notifies_user",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_assigned_workflows.py",
+    "line": 199,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-038",
+    "nodeid": "tests/test_assigned_workflows.py::test_gate_entry_cannot_reactivate_completed_reservation",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_assigned_workflows.py",
+    "line": 243,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-039",
+    "nodeid": "tests/test_assigned_workflows.py::test_approved_appeal_lifts_restriction_and_notifies_user",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_assigned_workflows.py",
+    "line": 277,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-040",
+    "nodeid": "tests/test_assigned_workflows.py::test_maintenance_cancels_pending_reservation_and_notifies",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_assigned_workflows.py",
+    "line": 332,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-041",
+    "nodeid": "tests/test_assigned_workflows.py::test_full_seat_update_to_maintenance_also_cancels_bookings",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_assigned_workflows.py",
+    "line": 360,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-042",
+    "nodeid": "tests/test_assigned_workflows.py::test_report_endpoint_returns_supply_hours_and_excel",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_assigned_workflows.py",
+    "line": 386,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-043",
+    "nodeid": "tests/test_assigned_workflows.py::test_gate_exit_while_active_without_leave_times_out_with_violation",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_assigned_workflows.py",
+    "line": 430,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-044",
+    "nodeid": "tests/test_assigned_workflows.py::test_gate_exit_during_temp_leave_keeps_seat_and_entry_resumes",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_assigned_workflows.py",
+    "line": 461,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-045",
+    "nodeid": "tests/test_assigned_workflows.py::test_gate_entry_after_temp_leave_window_is_not_applied",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_assigned_workflows.py",
+    "line": 512,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-046",
+    "nodeid": "tests/test_assigned_workflows.py::test_current_scope_excludes_cancelled_future_reservation",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_assigned_workflows.py",
+    "line": 538,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-047",
+    "nodeid": "tests/test_assigned_workflows.py::test_default_gate_secret_rejected_outside_dev",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_assigned_workflows.py",
+    "line": 553,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-048",
+    "nodeid": "tests/test_auth.py::test_register_then_login_and_me",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_auth.py",
+    "line": 18,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-049",
+    "nodeid": "tests/test_auth.py::test_password_is_stored_hashed",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_auth.py",
+    "line": 31,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-050",
+    "nodeid": "tests/test_auth.py::test_register_rejects_duplicate_and_bad_input",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_auth.py",
+    "line": 38,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-051",
+    "nodeid": "tests/test_auth.py::test_login_failures_have_clear_messages",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_auth.py",
+    "line": 55,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-052",
+    "nodeid": "tests/test_auth.py::test_login_lockout_after_failures",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_auth.py",
+    "line": 68,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-053",
+    "nodeid": "tests/test_auth.py::test_disabled_account_cannot_login",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_auth.py",
+    "line": 84,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-054",
+    "nodeid": "tests/test_auth.py::test_logout_revokes_token",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_auth.py",
+    "line": 90,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-055",
+    "nodeid": "tests/test_auth.py::test_unauthenticated_and_expired",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_auth.py",
+    "line": 97,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-056",
+    "nodeid": "tests/test_auth.py::test_change_password",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_auth.py",
+    "line": 107,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-057",
+    "nodeid": "tests/test_auth.py::test_reset_password_with_code",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_auth.py",
+    "line": 127,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-058",
+    "nodeid": "tests/test_auth.py::test_reset_code_expires_and_reissue_invalidates_old",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_auth.py",
+    "line": 142,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-059",
+    "nodeid": "tests/test_backup_monitoring.py::test_backup_api_ops_only",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_backup_monitoring.py",
+    "line": 18,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-060",
+    "nodeid": "tests/test_backup_monitoring.py::test_backup_rotation_and_restore",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_backup_monitoring.py",
+    "line": 33,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-061",
+    "nodeid": "tests/test_backup_monitoring.py::test_status",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_backup_monitoring.py",
+    "line": 53,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-062",
+    "nodeid": "tests/test_case_traceability.py::test_every_registered_case_has_at_least_one_test",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_case_traceability.py",
+    "line": 19,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-063",
+    "nodeid": "tests/test_case_traceability.py::test_plan_document_lists_every_registered_case",
+    "result": "失败",
+    "parameters": {},
+    "source": "backend/tests/test_case_traceability.py",
+    "line": 26,
+    "failure": "tests\\test_case_traceability.py:30: in test_plan_document_lists_every_registered_case\n    assert missing == []\nE   AssertionError: assert ['TC-LOCAL-001', 'TC-LOCAL-002', 'TC-LOCAL-003', 'TC-LOCAL-004', 'TC-LOCAL-005', 'TC-LOCAL-006', 'TC-LOCAL-007', 'TC-LOCAL-008', 'TC-LOCAL-009', 'TC-LOCAL-010'] == []\nE     \nE     Left contains 10 more items, first extra item: 'TC-LOCAL-001'\nE     \nE     Full diff: (-: missing in left side, +: extra in left side)\nE     - []\nE     + [\nE     +     'TC-LOCAL-001',\nE     +     'TC-LOCAL-002',\nE     +     'TC-LOCAL-003',\nE     +     'TC-LOCAL-004',\nE     +     'TC-LOCAL-005',\nE     +     'TC-LOCAL-006',\nE     +     'TC-LOCAL-007',\nE     +     'TC-LOCAL-008',\nE     +     'TC-LOCAL-009',\nE     +     'TC-LOCAL-010',\nE     + ]"
+  },
+  {
+    "id": "TC-BE-064",
+    "nodeid": "tests/test_gaps.py::test_br093_no_checkout_merge",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_gaps.py",
+    "line": 62,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-065",
+    "nodeid": "tests/test_gaps.py::test_temp_leave_timeout_type",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_gaps.py",
+    "line": 114,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-066",
+    "nodeid": "tests/test_gaps.py::test_archive_expired_violations",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_gaps.py",
+    "line": 144,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-067",
+    "nodeid": "tests/test_gaps.py::test_zone_auto_assign",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_gaps.py",
+    "line": 167,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-068",
+    "nodeid": "tests/test_gaps.py::test_facility_filters",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_gaps.py",
+    "line": 188,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-069",
+    "nodeid": "tests/test_gaps.py::test_close_room_cancels_reservations",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_gaps.py",
+    "line": 210,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-070",
+    "nodeid": "tests/test_gaps.py::test_schedule_change_cancels_conflicting",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_gaps.py",
+    "line": 239,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-071",
+    "nodeid": "tests/test_health.py::test_health_ok",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_health.py",
+    "line": 10,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-072",
+    "nodeid": "tests/test_health.py::test_server_time_is_utc_plus_8",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_health.py",
+    "line": 19,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-073",
+    "nodeid": "tests/test_health.py::test_sqlite_pragmas_enabled",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_health.py",
+    "line": 25,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-074",
+    "nodeid": "tests/test_logs.py::test_login_events_are_logged",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_logs.py",
+    "line": 18,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-075",
+    "nodeid": "tests/test_logs.py::test_login_logs_only_for_ops",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_logs.py",
+    "line": 35,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-076",
+    "nodeid": "tests/test_logs.py::test_audit_logs_query_filters",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_logs.py",
+    "line": 55,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-077",
+    "nodeid": "tests/test_logs.py::test_purge_expired_logs",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_logs.py",
+    "line": 82,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-078",
+    "nodeid": "tests/test_mock_data.py::test_seed_is_idempotent_and_reset_rebuilds",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_mock_data.py",
+    "line": 42,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-079",
+    "nodeid": "tests/test_mock_data.py::test_counts_and_states",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_mock_data.py",
+    "line": 51,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-080",
+    "nodeid": "tests/test_mock_data.py::test_no_overlaps_and_within_opening_hours",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_mock_data.py",
+    "line": 78,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-081",
+    "nodeid": "tests/test_mock_data.py::test_sweeper_finds_nothing_due",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_mock_data.py",
+    "line": 110,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-082",
+    "nodeid": "tests/test_mock_data.py::test_demo_accounts_can_log_in",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_mock_data.py",
+    "line": 118,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-083",
+    "nodeid": "tests/test_mock_data.py::test_refuses_outside_dev",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_mock_data.py",
+    "line": 127,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-084",
+    "nodeid": "tests/test_mock_data.py::test_dev_script_prepare_db",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_mock_data.py",
+    "line": 140,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-085",
+    "nodeid": "tests/test_mock_data.py::test_dev_script_flags",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_mock_data.py",
+    "line": 160,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-086",
+    "nodeid": "tests/test_models.py::test_all_tables_created",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_models.py",
+    "line": 76,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-087",
+    "nodeid": "tests/test_models.py::test_migration_rerunnable_and_reversible",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_models.py",
+    "line": 83,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-088",
+    "nodeid": "tests/test_models.py::test_migration_matches_models",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_models.py",
+    "line": 96,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-089",
+    "nodeid": "tests/test_models.py::test_roles_seeded",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_models.py",
+    "line": 101,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-090",
+    "nodeid": "tests/test_models.py::test_student_no_unique",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_models.py",
+    "line": 109,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-091",
+    "nodeid": "tests/test_models.py::test_foreign_keys_enforced",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_models.py",
+    "line": 117,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-092",
+    "nodeid": "tests/test_models.py::test_seat_code_unique_within_room",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_models.py",
+    "line": 123,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-093",
+    "nodeid": "tests/test_models.py::test_enum_check_constraint",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_models.py",
+    "line": 130,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-094",
+    "nodeid": "tests/test_models.py::test_invalid_enum_rejected_by_orm",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_models.py",
+    "line": 140,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-095",
+    "nodeid": "tests/test_models.py::test_reservation_time_order",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_models.py",
+    "line": 145,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-096",
+    "nodeid": "tests/test_models.py::test_one_active_reservation_per_seat_slot",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_models.py",
+    "line": 156,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-097",
+    "nodeid": "tests/test_models.py::test_entry_exit_dedup",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_models.py",
+    "line": 176,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-098",
+    "nodeid": "tests/test_models.py::test_datetime_stored_as_utc8",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_models.py",
+    "line": 194,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-099",
+    "nodeid": "tests/test_models.py::test_naive_datetime_rejected",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_models.py",
+    "line": 208,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-100",
+    "nodeid": "tests/test_models.py::test_transaction_rolls_back_all_changes_on_error",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_models.py",
+    "line": 219,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-101",
+    "nodeid": "tests/test_models.py::test_transaction_rolls_back_on_constraint_violation",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_models.py",
+    "line": 231,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-102",
+    "nodeid": "tests/test_models.py::test_transaction_commits_on_success",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_models.py",
+    "line": 241,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-103",
+    "nodeid": "tests/test_models.py::test_immediate_transaction_takes_write_lock",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_models.py",
+    "line": 248,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-104",
+    "nodeid": "tests/test_permissions.py::test_db_permission_matrix_matches_code",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_permissions.py",
+    "line": 11,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-105",
+    "nodeid": "tests/test_permissions.py::test_me_lists_permissions",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_permissions.py",
+    "line": 22,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-106",
+    "nodeid": "tests/test_permissions.py::test_only_admin_can_manage_users",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_permissions.py",
+    "line": 29,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-107",
+    "nodeid": "tests/test_permissions.py::test_admin_promotes_user_and_change_is_logged",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_permissions.py",
+    "line": 39,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-108",
+    "nodeid": "tests/test_permissions.py::test_admin_cannot_demote_or_disable_self",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_permissions.py",
+    "line": 59,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-109",
+    "nodeid": "tests/test_permissions.py::test_disable_account_logs_out_and_blocks_login",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_permissions.py",
+    "line": 69,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-110",
+    "nodeid": "tests/test_permissions.py::test_admin_issues_reset_code",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_permissions.py",
+    "line": 85,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-111",
+    "nodeid": "tests/test_permissions.py::test_cli_create_admin",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_permissions.py",
+    "line": 101,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-112",
+    "nodeid": "tests/test_reservations.py::test_room_search_detail_and_interval_states",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_reservations.py",
+    "line": 94,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-113",
+    "nodeid": "tests/test_reservations.py::test_search_invalid_inputs[date=2026-11-02]",
+    "result": "通过",
+    "parameters": {
+      "query": "'date=2026-11-02'"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 137,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-114",
+    "nodeid": "tests/test_reservations.py::test_search_invalid_inputs[start_time=09:00&end_time=10:00]",
+    "result": "通过",
+    "parameters": {
+      "query": "'start_time=09:00&end_time=10:00'"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 137,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-115",
+    "nodeid": "tests/test_reservations.py::test_search_invalid_inputs[date=2026-11-02&start_time=23:00&end_time=01:00]",
+    "result": "通过",
+    "parameters": {
+      "query": "'date=2026-11-02&start_time=23:00&end_time=01:00'"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 137,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-116",
+    "nodeid": "tests/test_reservations.py::test_search_invalid_inputs[zone_type=unknown]",
+    "result": "通过",
+    "parameters": {
+      "query": "'zone_type=unknown'"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 137,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-117",
+    "nodeid": "tests/test_reservations.py::test_calendar_priority_effective_dates_and_closed_room",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_reservations.py",
+    "line": 150,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-118",
+    "nodeid": "tests/test_reservations.py::test_create_rejects_invalid_times[2026-11-02T05:59:00+08:00-2026-11-02T08:00:00+08:00]",
+    "result": "通过",
+    "parameters": {
+      "start": "'2026-11-02T05:59:00+08:00'",
+      "end": "'2026-11-02T08:00:00+08:00'"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 170,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-119",
+    "nodeid": "tests/test_reservations.py::test_create_rejects_invalid_times[2026-11-02T22:00:00+08:00-2026-11-02T23:31:00+08:00]",
+    "result": "通过",
+    "parameters": {
+      "start": "'2026-11-02T22:00:00+08:00'",
+      "end": "'2026-11-02T23:31:00+08:00'"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 170,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-120",
+    "nodeid": "tests/test_reservations.py::test_create_rejects_invalid_times[2026-11-02T23:00:00+08:00-2026-11-03T01:00:00+08:00]",
+    "result": "通过",
+    "parameters": {
+      "start": "'2026-11-02T23:00:00+08:00'",
+      "end": "'2026-11-03T01:00:00+08:00'"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 170,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-121",
+    "nodeid": "tests/test_reservations.py::test_create_rejects_invalid_times[2026-11-04T09:00:00+08:00-2026-11-04T10:00:00+08:00]",
+    "result": "通过",
+    "parameters": {
+      "start": "'2026-11-04T09:00:00+08:00'",
+      "end": "'2026-11-04T10:00:00+08:00'"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 170,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-122",
+    "nodeid": "tests/test_reservations.py::test_create_rejects_invalid_times[2026-11-02T09:00:00+08:00-2026-11-02T09:00:00+08:00]",
+    "result": "通过",
+    "parameters": {
+      "start": "'2026-11-02T09:00:00+08:00'",
+      "end": "'2026-11-02T09:00:00+08:00'"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 170,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-123",
+    "nodeid": "tests/test_reservations.py::test_create_rejects_invalid_times[2026-11-02T09:00:00-2026-11-02T10:00:00]",
+    "result": "通过",
+    "parameters": {
+      "start": "'2026-11-02T09:00:00'",
+      "end": "'2026-11-02T10:00:00'"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 170,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-124",
+    "nodeid": "tests/test_reservations.py::test_today_tomorrow_short_duration_and_full_opening_day",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_reservations.py",
+    "line": 187,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-125",
+    "nodeid": "tests/test_reservations.py::test_overlap_person_overlap_adjacent_and_utc_conversion",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_reservations.py",
+    "line": 196,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-126",
+    "nodeid": "tests/test_reservations.py::test_idempotency_key_required_and_scoped_to_payload_and_user",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_reservations.py",
+    "line": 208,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-127",
+    "nodeid": "tests/test_reservations.py::test_change_seat_rechecks_conflicts_and_preserves_original_on_failure",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_reservations.py",
+    "line": 236,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-128",
+    "nodeid": "tests/test_reservations.py::test_cancel_exact_boundary_and_no_show_mutual_exclusion[16-False]",
+    "result": "通过",
+    "parameters": {
+      "minutes": "16",
+      "late": "False"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 255,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-129",
+    "nodeid": "tests/test_reservations.py::test_cancel_exact_boundary_and_no_show_mutual_exclusion[15-True]",
+    "result": "通过",
+    "parameters": {
+      "minutes": "15",
+      "late": "True"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 255,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-130",
+    "nodeid": "tests/test_reservations.py::test_cancel_exact_boundary_and_no_show_mutual_exclusion[1-True]",
+    "result": "通过",
+    "parameters": {
+      "minutes": "1",
+      "late": "True"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 255,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-131",
+    "nodeid": "tests/test_reservations.py::test_restricted_user_can_cancel_but_cannot_create_or_change",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_reservations.py",
+    "line": 276,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-132",
+    "nodeid": "tests/test_reservations.py::test_checkin_early_boundary[44-59-False]",
+    "result": "通过",
+    "parameters": {
+      "minute": "44",
+      "second": "59",
+      "success": "False"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 302,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-133",
+    "nodeid": "tests/test_reservations.py::test_checkin_early_boundary[45-0-True]",
+    "result": "通过",
+    "parameters": {
+      "minute": "45",
+      "second": "0",
+      "success": "True"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 302,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-134",
+    "nodeid": "tests/test_reservations.py::test_checkin_late_boundary_no_penalty_inside_window[0-0-True]",
+    "result": "通过",
+    "parameters": {
+      "minute": "0",
+      "microsecond": "0",
+      "success": "True"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 312,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-135",
+    "nodeid": "tests/test_reservations.py::test_checkin_late_boundary_no_penalty_inside_window[15-0-True]",
+    "result": "通过",
+    "parameters": {
+      "minute": "15",
+      "microsecond": "0",
+      "success": "True"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 312,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-136",
+    "nodeid": "tests/test_reservations.py::test_checkin_late_boundary_no_penalty_inside_window[15-1-False]",
+    "result": "通过",
+    "parameters": {
+      "minute": "15",
+      "microsecond": "1",
+      "success": "False"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 312,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-137",
+    "nodeid": "tests/test_reservations.py::test_checkin_late_boundary_no_penalty_inside_window[16-0-False]",
+    "result": "通过",
+    "parameters": {
+      "minute": "16",
+      "microsecond": "0",
+      "success": "False"
+    },
+    "source": "backend/tests/test_reservations.py",
+    "line": 312,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-138",
+    "nodeid": "tests/test_reservations.py::test_checkin_identity_seat_repeat_and_state_transitions",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_reservations.py",
+    "line": 332,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-139",
+    "nodeid": "tests/test_reservations.py::test_unattended_expiry_worker_and_dedup",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_reservations.py",
+    "line": 353,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-140",
+    "nodeid": "tests/test_reservations.py::test_lazy_expiry_and_maintenance_preserved",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_reservations.py",
+    "line": 382,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-141",
+    "nodeid": "tests/test_reservations.py::test_owner_privacy_and_ops_permissions",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_reservations.py",
+    "line": 393,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-142",
+    "nodeid": "tests/test_reservations.py::test_cancel_audit_failure_rolls_back_violation_and_release",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_reservations.py",
+    "line": 414,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-143",
+    "nodeid": "tests/test_reservations.py::test_100_competing_users_only_one_reservation",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_reservations.py",
+    "line": 431,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-144",
+    "nodeid": "tests/test_reservations.py::test_concurrent_retries_return_same_id",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_reservations.py",
+    "line": 462,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-145",
+    "nodeid": "tests/test_reservations.py::test_write_lock_error_is_retryable_and_same_key_can_recover",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_reservations.py",
+    "line": 476,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-146",
+    "nodeid": "tests/test_units.py::test_password_policy_rejects_short_or_single_class",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_units.py",
+    "line": 18,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-147",
+    "nodeid": "tests/test_units.py::test_student_no_pattern",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_units.py",
+    "line": 26,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-148",
+    "nodeid": "tests/test_units.py::test_password_hash_verifies_and_hides_plaintext",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_units.py",
+    "line": 34,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-149",
+    "nodeid": "tests/test_units.py::test_token_digest_is_stable_and_not_the_token",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_units.py",
+    "line": 42,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-150",
+    "nodeid": "tests/test_units.py::test_permission_projection_matches_role_matrix",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_units.py",
+    "line": 49,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-151",
+    "nodeid": "tests/test_units.py::test_now_is_shanghai_aware",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_units.py",
+    "line": 61,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-152",
+    "nodeid": "tests/test_units.py::test_gate_user_key_does_not_expose_student_no",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/test_units.py",
+    "line": 67,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-153",
+    "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_classifies_fifteen_minute_boundary[901-False]",
+    "result": "通过",
+    "parameters": {
+      "seconds": "901",
+      "late": "False"
+    },
+    "source": "backend/tests/units/test_cancel_reservation.py",
+    "line": 12,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-154",
+    "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_classifies_fifteen_minute_boundary[900-True]",
+    "result": "通过",
+    "parameters": {
+      "seconds": "900",
+      "late": "True"
+    },
+    "source": "backend/tests/units/test_cancel_reservation.py",
+    "line": 12,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-155",
+    "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_classifies_fifteen_minute_boundary[899-True]",
+    "result": "通过",
+    "parameters": {
+      "seconds": "899",
+      "late": "True"
+    },
+    "source": "backend/tests/units/test_cancel_reservation.py",
+    "line": 12,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-156",
+    "nodeid": "tests/units/test_cancel_reservation.py::test_repeated_cancel_does_not_repeat_violation_or_notification",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_cancel_reservation.py",
+    "line": 33,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-157",
+    "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_rejects_non_reserved_booking[ACTIVE]",
+    "result": "通过",
+    "parameters": {
+      "status": "<ReservationStatus.ACTIVE: 'ACTIVE'>"
+    },
+    "source": "backend/tests/units/test_cancel_reservation.py",
+    "line": 46,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-158",
+    "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_rejects_non_reserved_booking[EXPIRED]",
+    "result": "通过",
+    "parameters": {
+      "status": "<ReservationStatus.EXPIRED: 'EXPIRED'>"
+    },
+    "source": "backend/tests/units/test_cancel_reservation.py",
+    "line": 46,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-159",
+    "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_rejects_started_booking[0]",
+    "result": "通过",
+    "parameters": {
+      "seconds": "0"
+    },
+    "source": "backend/tests/units/test_cancel_reservation.py",
+    "line": 55,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-160",
+    "nodeid": "tests/units/test_cancel_reservation.py::test_cancel_rejects_started_booking[-1]",
+    "result": "通过",
+    "parameters": {
+      "seconds": "-1"
+    },
+    "source": "backend/tests/units/test_cancel_reservation.py",
+    "line": 55,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-161",
+    "nodeid": "tests/units/test_change_seat.py::test_change_seat_preserves_reservation_times",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_change_seat.py",
+    "line": 15,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-162",
+    "nodeid": "tests/units/test_change_seat.py::test_only_reserved_booking_can_change[ACTIVE]",
+    "result": "通过",
+    "parameters": {
+      "status": "<ReservationStatus.ACTIVE: 'ACTIVE'>"
+    },
+    "source": "backend/tests/units/test_change_seat.py",
+    "line": 30,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-163",
+    "nodeid": "tests/units/test_change_seat.py::test_only_reserved_booking_can_change[CANCELLED]",
+    "result": "通过",
+    "parameters": {
+      "status": "<ReservationStatus.CANCELLED: 'CANCELLED'>"
+    },
+    "source": "backend/tests/units/test_change_seat.py",
+    "line": 30,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-164",
+    "nodeid": "tests/units/test_change_seat.py::test_overdue_booking_cannot_change",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_change_seat.py",
+    "line": 39,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-165",
+    "nodeid": "tests/units/test_change_seat.py::test_conflicting_target_preserves_original_seat",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_change_seat.py",
+    "line": 46,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-166",
+    "nodeid": "tests/units/test_change_seat.py::test_change_request_rejects_time_modification",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_change_seat.py",
+    "line": 55,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-167",
+    "nodeid": "tests/units/test_checkin_expiry.py::test_qr_checkin_within_window[-900-early-False]",
+    "result": "通过",
+    "parameters": {
+      "offset": "-900",
+      "arrival_status": "<ArrivalStatus.EARLY: 'early'>",
+      "use_code": "False"
+    },
+    "source": "backend/tests/units/test_checkin_expiry.py",
+    "line": 15,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-168",
+    "nodeid": "tests/units/test_checkin_expiry.py::test_qr_checkin_within_window[-900-early-True]",
+    "result": "通过",
+    "parameters": {
+      "offset": "-900",
+      "arrival_status": "<ArrivalStatus.EARLY: 'early'>",
+      "use_code": "True"
+    },
+    "source": "backend/tests/units/test_checkin_expiry.py",
+    "line": 15,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-169",
+    "nodeid": "tests/units/test_checkin_expiry.py::test_qr_checkin_within_window[0-on_time-False]",
+    "result": "通过",
+    "parameters": {
+      "offset": "0",
+      "arrival_status": "<ArrivalStatus.ON_TIME: 'on_time'>",
+      "use_code": "False"
+    },
+    "source": "backend/tests/units/test_checkin_expiry.py",
+    "line": 15,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-170",
+    "nodeid": "tests/units/test_checkin_expiry.py::test_qr_checkin_within_window[0-on_time-True]",
+    "result": "通过",
+    "parameters": {
+      "offset": "0",
+      "arrival_status": "<ArrivalStatus.ON_TIME: 'on_time'>",
+      "use_code": "True"
+    },
+    "source": "backend/tests/units/test_checkin_expiry.py",
+    "line": 15,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-171",
+    "nodeid": "tests/units/test_checkin_expiry.py::test_qr_checkin_within_window[900-late-False]",
+    "result": "通过",
+    "parameters": {
+      "offset": "900",
+      "arrival_status": "<ArrivalStatus.LATE: 'late'>",
+      "use_code": "False"
+    },
+    "source": "backend/tests/units/test_checkin_expiry.py",
+    "line": 15,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-172",
+    "nodeid": "tests/units/test_checkin_expiry.py::test_qr_checkin_within_window[900-late-True]",
+    "result": "通过",
+    "parameters": {
+      "offset": "900",
+      "arrival_status": "<ArrivalStatus.LATE: 'late'>",
+      "use_code": "True"
+    },
+    "source": "backend/tests/units/test_checkin_expiry.py",
+    "line": 15,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-173",
+    "nodeid": "tests/units/test_checkin_expiry.py::test_qr_seat_must_match_booking",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_checkin_expiry.py",
+    "line": 37,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-174",
+    "nodeid": "tests/units/test_checkin_expiry.py::test_checkin_before_window_fails",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_checkin_expiry.py",
+    "line": 44,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-175",
+    "nodeid": "tests/units/test_checkin_expiry.py::test_repeated_qr_checkin_is_idempotent",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_checkin_expiry.py",
+    "line": 51,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-176",
+    "nodeid": "tests/units/test_checkin_expiry.py::test_no_show_grace_boundary[900-False]",
+    "result": "通过",
+    "parameters": {
+      "offset": "900",
+      "expected": "False"
+    },
+    "source": "backend/tests/units/test_checkin_expiry.py",
+    "line": 57,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-177",
+    "nodeid": "tests/units/test_checkin_expiry.py::test_no_show_grace_boundary[901-True]",
+    "result": "通过",
+    "parameters": {
+      "offset": "901",
+      "expected": "True"
+    },
+    "source": "backend/tests/units/test_checkin_expiry.py",
+    "line": 57,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-178",
+    "nodeid": "tests/units/test_checkin_expiry.py::test_booking_end_is_overdue_even_within_grace",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_checkin_expiry.py",
+    "line": 62,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-179",
+    "nodeid": "tests/units/test_checkin_expiry.py::test_late_checkin_expires_booking",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_checkin_expiry.py",
+    "line": 67,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-180",
+    "nodeid": "tests/units/test_checkin_expiry.py::test_expiry_records_no_show_and_releases_seat",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_checkin_expiry.py",
+    "line": 77,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-181",
+    "nodeid": "tests/units/test_checkin_expiry.py::test_expiry_preserves_maintenance_status",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_checkin_expiry.py",
+    "line": 91,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-182",
+    "nodeid": "tests/units/test_checkin_expiry.py::test_expiry_sweep_processes_candidates[0]",
+    "result": "通过",
+    "parameters": {
+      "count": "0"
+    },
+    "source": "backend/tests/units/test_checkin_expiry.py",
+    "line": 98,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-183",
+    "nodeid": "tests/units/test_checkin_expiry.py::test_expiry_sweep_processes_candidates[2]",
+    "result": "通过",
+    "parameters": {
+      "count": "2"
+    },
+    "source": "backend/tests/units/test_checkin_expiry.py",
+    "line": 98,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-184",
+    "nodeid": "tests/units/test_concurrency_idempotency.py::test_same_key_and_payload_replays_without_writing",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_concurrency_idempotency.py",
+    "line": 14,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-185",
+    "nodeid": "tests/units/test_concurrency_idempotency.py::test_key_cannot_be_reused_for_different_request[True-False]",
+    "result": "通过",
+    "parameters": {
+      "other_user": "True",
+      "other_payload": "False"
+    },
+    "source": "backend/tests/units/test_concurrency_idempotency.py",
+    "line": 32,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-186",
+    "nodeid": "tests/units/test_concurrency_idempotency.py::test_key_cannot_be_reused_for_different_request[False-True]",
+    "result": "通过",
+    "parameters": {
+      "other_user": "False",
+      "other_payload": "True"
+    },
+    "source": "backend/tests/units/test_concurrency_idempotency.py",
+    "line": 32,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-187",
+    "nodeid": "tests/units/test_concurrency_idempotency.py::test_write_transaction_requests_immediate_lock",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_concurrency_idempotency.py",
+    "line": 48,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-188",
+    "nodeid": "tests/units/test_concurrency_idempotency.py::test_write_errors_become_booking_errors[failure0-503]",
+    "result": "通过",
+    "parameters": {
+      "failure": "OperationalError('(builtins.Exception) database is locked')",
+      "code": "503"
+    },
+    "source": "backend/tests/units/test_concurrency_idempotency.py",
+    "line": 63,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-189",
+    "nodeid": "tests/units/test_concurrency_idempotency.py::test_write_errors_become_booking_errors[failure1-503]",
+    "result": "通过",
+    "parameters": {
+      "failure": "OperationalError('(builtins.Exception) database is busy')",
+      "code": "503"
+    },
+    "source": "backend/tests/units/test_concurrency_idempotency.py",
+    "line": 63,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-190",
+    "nodeid": "tests/units/test_concurrency_idempotency.py::test_write_errors_become_booking_errors[failure2-409]",
+    "result": "通过",
+    "parameters": {
+      "failure": "IntegrityError('(builtins.Exception) unique constraint')",
+      "code": "409"
+    },
+    "source": "backend/tests/units/test_concurrency_idempotency.py",
+    "line": 63,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-191",
+    "nodeid": "tests/units/test_concurrency_idempotency.py::test_unrelated_database_error_is_preserved",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_concurrency_idempotency.py",
+    "line": 79,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-192",
+    "nodeid": "tests/units/test_create_reservation.py::test_create_saves_booking_and_arrival",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_create_reservation.py",
+    "line": 14,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-193",
+    "nodeid": "tests/units/test_create_reservation.py::test_create_rejects_past_or_too_distant_start[offset0]",
+    "result": "通过",
+    "parameters": {
+      "offset": "datetime.timedelta(days=-1, seconds=86340)"
+    },
+    "source": "backend/tests/units/test_create_reservation.py",
+    "line": 32,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-194",
+    "nodeid": "tests/units/test_create_reservation.py::test_create_rejects_past_or_too_distant_start[offset1]",
+    "result": "通过",
+    "parameters": {
+      "offset": "datetime.timedelta(days=2)"
+    },
+    "source": "backend/tests/units/test_create_reservation.py",
+    "line": 32,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-195",
+    "nodeid": "tests/units/test_create_reservation.py::test_slot_rejects_closed_hours_or_conflicts[False-False-False-422]",
+    "result": "通过",
+    "parameters": {
+      "covered": "False",
+      "overlaps": "False",
+      "own_conflict": "False",
+      "code": "422"
+    },
+    "source": "backend/tests/units/test_create_reservation.py",
+    "line": 42,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-196",
+    "nodeid": "tests/units/test_create_reservation.py::test_slot_rejects_closed_hours_or_conflicts[True-True-False-409]",
+    "result": "通过",
+    "parameters": {
+      "covered": "True",
+      "overlaps": "True",
+      "own_conflict": "False",
+      "code": "409"
+    },
+    "source": "backend/tests/units/test_create_reservation.py",
+    "line": 42,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-197",
+    "nodeid": "tests/units/test_create_reservation.py::test_slot_rejects_closed_hours_or_conflicts[True-False-True-409]",
+    "result": "通过",
+    "parameters": {
+      "covered": "True",
+      "overlaps": "False",
+      "own_conflict": "True",
+      "code": "409"
+    },
+    "source": "backend/tests/units/test_create_reservation.py",
+    "line": 42,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-198",
+    "nodeid": "tests/units/test_create_reservation.py::test_slot_ignores_the_booking_being_modified",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_create_reservation.py",
+    "line": 57,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-199",
+    "nodeid": "tests/units/test_create_reservation.py::test_invalid_time_range_is_rejected[0]",
+    "result": "通过",
+    "parameters": {
+      "minutes": "0"
+    },
+    "source": "backend/tests/units/test_create_reservation.py",
+    "line": 63,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-200",
+    "nodeid": "tests/units/test_create_reservation.py::test_invalid_time_range_is_rejected[-1]",
+    "result": "通过",
+    "parameters": {
+      "minutes": "-1"
+    },
+    "source": "backend/tests/units/test_create_reservation.py",
+    "line": 63,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-201",
+    "nodeid": "tests/units/test_create_reservation.py::test_invalid_time_range_is_rejected[1440]",
+    "result": "通过",
+    "parameters": {
+      "minutes": "1440"
+    },
+    "source": "backend/tests/units/test_create_reservation.py",
+    "line": 63,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-202",
+    "nodeid": "tests/units/test_create_reservation.py::test_valid_slot_passes",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_create_reservation.py",
+    "line": 69,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-226",
+    "nodeid": "tests/units/test_defect_cancel_notification_failure.py::test_srs_uc009_notification_failure_must_not_rollback_cancel",
+    "result": "失败",
+    "parameters": {},
+    "source": "backend/tests/units/test_defect_cancel_notification_failure.py",
+    "line": 13,
+    "failure": "tests\\units\\test_defect_cancel_notification_failure.py:23: in test_srs_uc009_notification_failure_must_not_rollback_cancel\n    result = service.cancel(session, booking.user_id, booking.id)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\napp\\services\\reservations.py:425: in cancel\n    create_notification(\nD:\\develop\\anaconda3\\Lib\\unittest\\mock.py:1169: in __call__\n    return self._mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nD:\\develop\\anaconda3\\Lib\\unittest\\mock.py:1173: in _mock_call\n    return self._execute_mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nD:\\develop\\anaconda3\\Lib\\unittest\\mock.py:1228: in _execute_mock_call\n    raise effect\nE   RuntimeError: 模拟站内通知创建失败\n\nDuring handling of the above exception, another exception occurred:\ntests\\units\\test_defect_cancel_notification_failure.py:28: in test_srs_uc009_notification_failure_must_not_rollback_cancel\n    pytest.fail(\nE   Failed: 违反 SRS UC-009 异常流程 E1 / EX-06：通知失败应保持取消生效，实际通知异常向外传播，取消事务已 rollback，未 commit"
+  },
+  {
+    "id": "TC-BE-222",
+    "nodeid": "tests/units/test_defect_checkin_boundary.py::test_srs_ac02_sweep_must_keep_exact_checkin_deadline",
+    "result": "失败",
+    "parameters": {},
+    "source": "backend/tests/units/test_defect_checkin_boundary.py",
+    "line": 14,
+    "failure": "tests\\units\\test_defect_checkin_boundary.py:36: in test_srs_ac02_sweep_must_keep_exact_checkin_deadline\n    assert selected_as_no_show is False, (\nE   AssertionError: 违反 SRS AC-02 / BR-020：开始后恰好 15 分钟仍应允许签到，但后台未到扫描的真实查询已将该预约纳入失效候选\nE   assert True is False"
+  },
+  {
+    "id": "TC-BE-221",
+    "nodeid": "tests/units/test_defect_no_show_notification.py::test_srs_ac03_no_show_expiry_must_notify_user",
+    "result": "失败",
+    "parameters": {},
+    "source": "backend/tests/units/test_defect_no_show_notification.py",
+    "line": 17,
+    "failure": "tests\\units\\test_defect_no_show_notification.py:47: in test_srs_ac03_no_show_expiry_must_notify_user\n    assert any(item.user_id == booking.user_id for item in notices), (\nE   AssertionError: 违反 SRS AC-03：超窗未签到预约已失效、座位已释放并记录违规，但没有给用户 7 创建站内通知（实际通知数=0）\nE   assert False\nE    +  where False = any(<generator object test_srs_ac03_no_show_expiry_must_notify_user.<locals>.<genexpr> at 0x000001B9082672A0>)"
+  },
+  {
+    "id": "TC-BE-223",
+    "nodeid": "tests/units/test_defect_no_show_penalty.py::test_srs_br095_no_show_must_apply_penalty_tier[3-1]",
+    "result": "失败",
+    "parameters": {
+      "warning_count": "3",
+      "ban_days": "1"
+    },
+    "source": "backend/tests/units/test_defect_no_show_penalty.py",
+    "line": 15,
+    "failure": "tests\\units\\test_defect_no_show_penalty.py:37: in test_srs_br095_no_show_must_apply_penalty_tier\n    assert len(bans) == 1, (\nE   AssertionError: 违反 SRS BR-095 / AC-09：未到违规累计第 3 次，应禁约 1 天，实际创建禁约记录 0 条\nE   assert 0 == 1\nE    +  where 0 = len([])"
+  },
+  {
+    "id": "TC-BE-224",
+    "nodeid": "tests/units/test_defect_no_show_penalty.py::test_srs_br095_no_show_must_apply_penalty_tier[5-2]",
+    "result": "失败",
+    "parameters": {
+      "warning_count": "5",
+      "ban_days": "2"
+    },
+    "source": "backend/tests/units/test_defect_no_show_penalty.py",
+    "line": 15,
+    "failure": "tests\\units\\test_defect_no_show_penalty.py:37: in test_srs_br095_no_show_must_apply_penalty_tier\n    assert len(bans) == 1, (\nE   AssertionError: 违反 SRS BR-095 / AC-09：未到违规累计第 5 次，应禁约 2 天，实际创建禁约记录 0 条\nE   assert 0 == 1\nE    +  where 0 = len([])"
+  },
+  {
+    "id": "TC-BE-225",
+    "nodeid": "tests/units/test_defect_no_show_penalty.py::test_srs_br095_no_show_must_apply_penalty_tier[7-3]",
+    "result": "失败",
+    "parameters": {
+      "warning_count": "7",
+      "ban_days": "3"
+    },
+    "source": "backend/tests/units/test_defect_no_show_penalty.py",
+    "line": 15,
+    "failure": "tests\\units\\test_defect_no_show_penalty.py:37: in test_srs_br095_no_show_must_apply_penalty_tier\n    assert len(bans) == 1, (\nE   AssertionError: 违反 SRS BR-095 / AC-09：未到违规累计第 7 次，应禁约 3 天，实际创建禁约记录 0 条\nE   assert 0 == 1\nE    +  where 0 = len([])"
+  },
+  {
+    "id": "TC-BE-203",
+    "nodeid": "tests/units/test_room_search.py::test_room_list_contains_room_information",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_room_search.py",
+    "line": 11,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-204",
+    "nodeid": "tests/units/test_room_search.py::test_empty_room_list",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_room_search.py",
+    "line": 26,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-205",
+    "nodeid": "tests/units/test_room_search.py::test_search_unknown_room_fails",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_room_search.py",
+    "line": 30,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-206",
+    "nodeid": "tests/units/test_room_search.py::test_search_available_only[False-expected0]",
+    "result": "通过",
+    "parameters": {
+      "available_only": "False",
+      "expected": "[11, 12]"
+    },
+    "source": "backend/tests/units/test_room_search.py",
+    "line": 38,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-207",
+    "nodeid": "tests/units/test_room_search.py::test_search_available_only[True-expected1]",
+    "result": "通过",
+    "parameters": {
+      "available_only": "True",
+      "expected": "[11]"
+    },
+    "source": "backend/tests/units/test_room_search.py",
+    "line": 38,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-208",
+    "nodeid": "tests/units/test_room_search.py::test_search_passes_room_zone_and_facility_filters[True]",
+    "result": "通过",
+    "parameters": {
+      "flag": "True"
+    },
+    "source": "backend/tests/units/test_room_search.py",
+    "line": 56,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-209",
+    "nodeid": "tests/units/test_room_search.py::test_search_passes_room_zone_and_facility_filters[False]",
+    "result": "通过",
+    "parameters": {
+      "flag": "False"
+    },
+    "source": "backend/tests/units/test_room_search.py",
+    "line": 56,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-210",
+    "nodeid": "tests/units/test_seat_detail.py::test_blocked_seat_keeps_status[maintenance]",
+    "result": "通过",
+    "parameters": {
+      "status": "<SeatStatus.MAINTENANCE: 'maintenance'>"
+    },
+    "source": "backend/tests/units/test_seat_detail.py",
+    "line": 11,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-211",
+    "nodeid": "tests/units/test_seat_detail.py::test_blocked_seat_keeps_status[closed]",
+    "result": "通过",
+    "parameters": {
+      "status": "<SeatStatus.CLOSED: 'closed'>"
+    },
+    "source": "backend/tests/units/test_seat_detail.py",
+    "line": 11,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-212",
+    "nodeid": "tests/units/test_seat_detail.py::test_blocked_seat_keeps_status[disabled]",
+    "result": "通过",
+    "parameters": {
+      "status": "<SeatStatus.DISABLED: 'disabled'>"
+    },
+    "source": "backend/tests/units/test_seat_detail.py",
+    "line": 11,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-213",
+    "nodeid": "tests/units/test_seat_detail.py::test_closed_room_or_outside_opening_hours[False-True]",
+    "result": "通过",
+    "parameters": {
+      "room_open": "False",
+      "covered": "True"
+    },
+    "source": "backend/tests/units/test_seat_detail.py",
+    "line": 18,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-214",
+    "nodeid": "tests/units/test_seat_detail.py::test_closed_room_or_outside_opening_hours[True-False]",
+    "result": "通过",
+    "parameters": {
+      "room_open": "True",
+      "covered": "False"
+    },
+    "source": "backend/tests/units/test_seat_detail.py",
+    "line": 18,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-215",
+    "nodeid": "tests/units/test_seat_detail.py::test_current_booking_determines_status[None-available]",
+    "result": "通过",
+    "parameters": {
+      "status": "None",
+      "expected": "<SeatStatus.AVAILABLE: 'available'>"
+    },
+    "source": "backend/tests/units/test_seat_detail.py",
+    "line": 27,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-216",
+    "nodeid": "tests/units/test_seat_detail.py::test_current_booking_determines_status[RESERVED-reserved]",
+    "result": "通过",
+    "parameters": {
+      "status": "<ReservationStatus.RESERVED: 'RESERVED'>",
+      "expected": "<SeatStatus.RESERVED: 'reserved'>"
+    },
+    "source": "backend/tests/units/test_seat_detail.py",
+    "line": 27,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-217",
+    "nodeid": "tests/units/test_seat_detail.py::test_current_booking_determines_status[ACTIVE-in_use]",
+    "result": "通过",
+    "parameters": {
+      "status": "<ReservationStatus.ACTIVE: 'ACTIVE'>",
+      "expected": "<SeatStatus.IN_USE: 'in_use'>"
+    },
+    "source": "backend/tests/units/test_seat_detail.py",
+    "line": 27,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-218",
+    "nodeid": "tests/units/test_seat_detail.py::test_current_booking_determines_status[TEMP_LEAVE-in_use]",
+    "result": "通过",
+    "parameters": {
+      "status": "<ReservationStatus.TEMP_LEAVE: 'TEMP_LEAVE'>",
+      "expected": "<SeatStatus.IN_USE: 'in_use'>"
+    },
+    "source": "backend/tests/units/test_seat_detail.py",
+    "line": 27,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-219",
+    "nodeid": "tests/units/test_seat_detail.py::test_future_booking_does_not_occupy_seat_now",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_seat_detail.py",
+    "line": 46,
+    "failure": null
+  },
+  {
+    "id": "TC-BE-220",
+    "nodeid": "tests/units/test_seat_detail.py::test_detail_contains_facilities_and_qr_payload",
+    "result": "通过",
+    "parameters": {},
+    "source": "backend/tests/units/test_seat_detail.py",
+    "line": 52,
+    "failure": null
+  }
+]

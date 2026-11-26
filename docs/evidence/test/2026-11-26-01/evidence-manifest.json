@@ -1,0 +1,227 @@
+[
+  {
+    "path": "backend-case-results.json",
+    "bytes": 612713,
+    "sha256": "33b069b69cd66388c9e0949c93c04a22757dcfcfaab3152dfae3c96364cd872a"
+  },
+  {
+    "path": "backend-environment-command.json",
+    "bytes": 475,
+    "sha256": "c44025e34cd56a3d0f6bff50cab2802ec67174a61e0305ddced140607bec5baf"
+  },
+  {
+    "path": "backend-environment.log",
+    "bytes": 971,
+    "sha256": "dec47775541f7bff6cbcd686c0654f1473c617d6cc686e81417509f9547475d4"
+  },
+  {
+    "path": "backend-install-command.json",
+    "bytes": 730,
+    "sha256": "64cdb4767d551c12b4e5c25c49453c92ce0b66413b06a8a9162285984922f916"
+  },
+  {
+    "path": "backend-install.log",
+    "bytes": 11039,
+    "sha256": "7f9d33191c6ab0c7a9e464b0dd4fe0cf585efbb4c91a360e4b0a4049c6c2f23c"
+  },
+  {
+    "path": "backend-junit.xml",
+    "bytes": 25950,
+    "sha256": "c44489583ff6919688430f4d94276ab88257797e5aa47c57cf4577609a7bbdb5"
+  },
+  {
+    "path": "backend-source-inventory.json",
+    "bytes": 287509,
+    "sha256": "67f62779421bf9abca559932da50fa70c6815f60c3c09f82aec84f34605bc7aa"
+  },
+  {
+    "path": "backend-tests-command.json",
+    "bytes": 810,
+    "sha256": "091ebef230fa4ba9f5e459a9c221629745d548c04a49849bfde465bb8f23be54"
+  },
+  {
+    "path": "backend-tests.log",
+    "bytes": 22869,
+    "sha256": "16fc01515529ccee55b80256b6349fad98d672f1064eaf383f95ab47f6240516"
+  },
+  {
+    "path": "concurrency-case-results.json",
+    "bytes": 29558,
+    "sha256": "84befb0f965cb5bad3e2c9b97917798cc0b8f82e1ce07612b950abac21ff0e04"
+  },
+  {
+    "path": "concurrency-evidence-command.json",
+    "bytes": 945,
+    "sha256": "a4c18e739bf12beba40b5e9c1ada54c199ee6f1e993659117d40d0d0f7c8eea0"
+  },
+  {
+    "path": "concurrency-evidence.log",
+    "bytes": 2080,
+    "sha256": "efe0113f052745aee95ebaaf4f371c104109d88da0d83d5904fface517cf8f93"
+  },
+  {
+    "path": "concurrency-junit.xml",
+    "bytes": 472,
+    "sha256": "2c88c1f728d9fb6f30f5397cbd907b2752acfcb3102e290773ff0983c54eeec1"
+  },
+  {
+    "path": "copy-exclusions.json",
+    "bytes": 510,
+    "sha256": "aea87c9013adc4af5484eedd19ca9f3fcd70a76ddbf92f76f7804bf8cd64b1b0"
+  },
+  {
+    "path": "deliverable-verification.json",
+    "bytes": 1047,
+    "sha256": "323af8b0dd0e205bb7832b7a76ce2ac0b8fb9be84b183ba308f7e24c38b2bdcc"
+  },
+  {
+    "path": "environment-overview.json",
+    "bytes": 497,
+    "sha256": "4df77630b0f6aa0c02cb90ae903ca3774b441dd70335f648018bb597f2cbdeff"
+  },
+  {
+    "path": "frontend-checks-command.json",
+    "bytes": 398,
+    "sha256": "0f35db57bc3ff936b31552f354b97bbd7b70d024cc11cab77c472d0b62b92637"
+  },
+  {
+    "path": "frontend-checks.log",
+    "bytes": 264,
+    "sha256": "6fd88bad1128a19de79c7c41654a2ca124f0dc24df192acb84f6029504fffa5f"
+  },
+  {
+    "path": "frontend-environment-command.json",
+    "bytes": 427,
+    "sha256": "015a4d08b0b1b0502e3cce8ccba6ac303fe9fd4891cb83b5fbf3e7c3aa8cf6ef"
+  },
+  {
+    "path": "frontend-environment.log",
+    "bytes": 2391,
+    "sha256": "808f6dd7de560b0748e0ce55570fcec5447116acb61ca988411684f50e18aefd"
+  },
+  {
+    "path": "frontend-install-command.json",
+    "bytes": 424,
+    "sha256": "bca0550f6a59fb26b756dcd8211af15601bec06396d7dcc9f57a1f2faa197242"
+  },
+  {
+    "path": "frontend-install.log",
+    "bytes": 888,
+    "sha256": "b6871c030c298f24a12e08ecfe74b6fad6adcb0d9c59bcc1f719374aec29c2a9"
+  },
+  {
+    "path": "frontend-source-inventory.json",
+    "bytes": 28758,
+    "sha256": "b595891c671aea62dbb75eca2b377f963349753a27eb893a225088d1b17c262c"
+  },
+  {
+    "path": "frontend-tests-command.json",
+    "bytes": 595,
+    "sha256": "b44b2db7870474f27980daf17e515490624c9cce4b2783678857b991e58e36e2"
+  },
+  {
+    "path": "frontend-tests.log",
+    "bytes": 1355,
+    "sha256": "bf3aea591125c1e7accf8774c13eeef3ce14ad673f44fbfa7f7f03683475d7f9"
+  },
+  {
+    "path": "frontend-vitest.json",
+    "bytes": 10075,
+    "sha256": "4f56e958dfa6841e96ceb4e54c2bd654678f65b324d246370c46f45a6004ae5a"
+  },
+  {
+    "path": "git-status-before.txt",
+    "bytes": 400,
+    "sha256": "07536b199bd018a002d87b672b7364fb11226718e1f9d7fd317f6baac55e74dd"
+  },
+  {
+    "path": "README.md",
+    "bytes": 2630,
+    "sha256": "eb6127cf6c80f6647cb19f033b8728acc42155b603ef35eba9a8c1a0e26973fe"
+  },
+  {
+    "path": "run-metadata.json",
+    "bytes": 443,
+    "sha256": "63f2234101ab340f470444021fd4c0435100dfb2db8d041add132ef49ea70610"
+  },
+  {
+    "path": "source-comparison-after.json",
+    "bytes": 1243,
+    "sha256": "152cc992af04b7e5b9f3dc2f8c5fbb27ac771c1602c2c0c6c6eb069b3b92371b"
+  },
+  {
+    "path": "source-manifest.json",
+    "bytes": 33614,
+    "sha256": "08e159fa89b6ffdfdf0e41968f11dc09b0d7e25f6e2d9236b1f8784fff16c548"
+  },
+  {
+    "path": "summary.json",
+    "bytes": 3762,
+    "sha256": "226265fe8fe13b01a9f6194f3e0e3c688acadeab1060659afd2d221f06a1e073"
+  },
+  {
+    "path": "test-cases.json",
+    "bytes": 739405,
+    "sha256": "ad0120391c65261a02a8ea00431832a4c03faa065e91995fe8c2bd9f3f884b05"
+  },
+  {
+    "path": "tooling/build_workbook.mjs",
+    "bytes": 7263,
+    "sha256": "4ab9704e629b995889eecf6dd332182b88f6725021d80ab3280d2a75622cff3c"
+  },
+  {
+    "path": "tooling/compile_report.py",
+    "bytes": 37130,
+    "sha256": "f9656ad98cb6f076500ed7fe15883bdab67049fa96d073cc22ba24c0f87c92c1"
+  },
+  {
+    "path": "tooling/evidence_pytest_plugin.py",
+    "bytes": 4342,
+    "sha256": "7f77475891263c2a83a2ab6e1ad77f4d93f3c7c48a51b9049805a4d103af3c62"
+  },
+  {
+    "path": "tooling/frontend_inventory.mjs",
+    "bytes": 2313,
+    "sha256": "97cdf6e840c3a6e250e4987f5ff694bbdf06dbc48ceb5b0bb46eb4af93323359"
+  },
+  {
+    "path": "tooling/prepare.py",
+    "bytes": 2131,
+    "sha256": "4f647a30a07421a52c1b594681a26b77f2b9a85024ceded78b3ca99ae479d98a"
+  },
+  {
+    "path": "tooling/run_command.py",
+    "bytes": 1277,
+    "sha256": "d3f2debddefdbab884cad5170b4785d76a7086fde3f4c8fa142db71362f85327"
+  },
+  {
+    "path": "tooling/verify_and_finalize.py",
+    "bytes": 5025,
+    "sha256": "b333a05359ecd460888cf7e900edb49e1405a2eb5a67dab347f1ae3776872567"
+  },
+  {
+    "path": "workbook-cases-preview.png",
+    "bytes": 155180,
+    "sha256": "cce24a743b44c29d89429dbae12a3c4c188fabebcb2d38076e66d0fb74129037"
+  },
+  {
+    "path": "workbook-formula-scan.ndjson",
+    "bytes": 60,
+    "sha256": "acc0111e19cf44d2753fc9ecd164bf1b27fbd65597463a25cf48bd1c65e90146"
+  },
+  {
+    "path": "workbook-index-preview.png",
+    "bytes": 67789,
+    "sha256": "cc4febaacdc10c46426a9739f5259d43a5e47dc5a02f46caeb640b3ecc1cf281"
+  },
+  {
+    "path": "workbook-inspection.ndjson",
+    "bytes": 3687,
+    "sha256": "e7430bac684b6464a6cddf62a08e6145a2faa651c3faa2f655b38d9a92663dd7"
+  },
+  {
+    "path": "working-tree-before.patch",
+    "bytes": 259404,
+    "sha256": "ee19fe355858d2ae76118020c701a9750b5bfef2c70f4090236b8b09a944bcd4"
+  }
+]

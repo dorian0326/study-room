@@ -1,0 +1,17 @@
+{
+  "name": "frontend-tests",
+  "command": [
+    "C:/Program Files/nodejs/npm.cmd",
+    "test",
+    "--",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile.json=D:/DATA/university/3_1/Software Engineering/11.26/study-room/docs/evidence/test/2026-11-26-full-suite/frontend-vitest.json"
+  ],
+  "cwd": "C:\\Users\\zjb\\AppData\\Local\\Temp\\studyroom-test-evidence-20261126\\checkout\\frontend",
+  "start": "2026-11-26T19:18:22.847015+08:00",
+  "end": "2026-11-26T19:18:26.375857+08:00",
+  "elapsed_seconds": 3.529,
+  "exit_code": 0,
+  "log": "frontend-tests.log"
+}

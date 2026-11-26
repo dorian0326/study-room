@@ -1,0 +1,177 @@
+[
+  {
+    "path": "backend-regression-case-results.json",
+    "bytes": 155362,
+    "sha256": "22a4c5c905ec81b9c0dc197c1f941e66644ed1790e17d674683f82ac75bb1281"
+  },
+  {
+    "path": "backend-regression-command.json",
+    "bytes": 746,
+    "sha256": "dc62eb850b8aa559b4f9bb50573623ad2ca316021efb53e5083aaefce37a0493"
+  },
+  {
+    "path": "backend-regression-junit.xml",
+    "bytes": 32501,
+    "sha256": "f04ee1324be4cdbcf1e4f39b93c1a704082b5df95bc2d12a8a45c81f01e5aa66"
+  },
+  {
+    "path": "backend-regression.log",
+    "bytes": 30339,
+    "sha256": "9aeef2e80b91cd849396f5ad61ba9c3cab4f0204686383873e5d56f7172ef1fe"
+  },
+  {
+    "path": "current-backend-results.json",
+    "bytes": 70835,
+    "sha256": "58a39548b142ee0614d31eabd12ed8beb461dd0cdbf244781ed9e29b34dc07f7"
+  },
+  {
+    "path": "defect-cases.json",
+    "bytes": 11896,
+    "sha256": "84eb40d4320f2690a286cfe95665da43d658c780c417e3b7c6ea0a39499d2b9b"
+  },
+  {
+    "path": "defects-only-case-results.json",
+    "bytes": 27217,
+    "sha256": "fcbb1689394bf448fed251694a7950b403fa60577d97560c01d2c835813fe759"
+  },
+  {
+    "path": "defects-only-command.json",
+    "bytes": 775,
+    "sha256": "1c2e0991056baec0df57beccb12c9c829b9d1baf5163920a2cf56f477e18e15b"
+  },
+  {
+    "path": "defects-only-junit.xml",
+    "bytes": 5406,
+    "sha256": "991f020199d9f82d7b1e0ec5efd53dbec0b98b660e9d3b37242c9195f9ca7c99"
+  },
+  {
+    "path": "defects-only.log",
+    "bytes": 7742,
+    "sha256": "ac49d993bdf97f4c88773a74605a6a8f1de71cb4f6736e338a79ea90cfad5466"
+  },
+  {
+    "path": "deliverable-verification.json",
+    "bytes": 551,
+    "sha256": "5824f9528775256eb415bf16ad7f1aca4c785e5171bf819be843ddb583e81d87"
+  },
+  {
+    "path": "environment.log",
+    "bytes": 726,
+    "sha256": "a76eed6f854e7085fa4e4fecfc4a26f5f21daf71c02eb3acdaebcd7e4a33b0d9"
+  },
+  {
+    "path": "git-status-before.txt",
+    "bytes": 541,
+    "sha256": "fb1abe8616527b3f8d37072e9dba1b0e1ab86382e831e3d5310605f9509e8ccc"
+  },
+  {
+    "path": "README.md",
+    "bytes": 3713,
+    "sha256": "80d9cb5f2d3c09bffc49c5619ba5b525c1a1e58b2aa7259526c87622704ab749"
+  },
+  {
+    "path": "report-before-update.md",
+    "bytes": 499369,
+    "sha256": "9ff34df5359464501386455c170863d65483139630d6b20a078ba2e3c883d8c7"
+  },
+  {
+    "path": "run-metadata.json",
+    "bytes": 707,
+    "sha256": "13ae94238985ae0af137ae5a33c5593496cc903ee1f58174e698906ba4af3184"
+  },
+  {
+    "path": "source-manifest.json",
+    "bytes": 15539,
+    "sha256": "c91df49fa22e5bfed9b1cf96295a9eaa2b5e64159ce4c5f805ef161aba3b68aa"
+  },
+  {
+    "path": "sources/backend/app/db.py",
+    "bytes": 2728,
+    "sha256": "f951d2f3112efe1aa83de99df2d1bdc0556d455924ff8f36358fab392bf7e372"
+  },
+  {
+    "path": "sources/backend/app/services/reservations.py",
+    "bytes": 36062,
+    "sha256": "1f547f1daf496e33e4b698c86d6e92b819806ca10c905b795a003fc5fbac7fb0"
+  },
+  {
+    "path": "sources/backend/tests/case_registry.py",
+    "bytes": 552,
+    "sha256": "e868d3a5ffb560a4b6942e9bf901ba2e4bedb31848c20e8a562436dc75dfedf7"
+  },
+  {
+    "path": "sources/backend/tests/conftest.py",
+    "bytes": 2946,
+    "sha256": "abb26231ba853f2207a41b3971f29e5eead42b6e3318d19e08ed9057524a07ae"
+  },
+  {
+    "path": "sources/backend/tests/test_case_traceability.py",
+    "bytes": 1154,
+    "sha256": "7aed7d3a0d82e946872df7e364de244905667f240c591bb4b635c63401c248ba"
+  },
+  {
+    "path": "sources/backend/tests/units/conftest.py",
+    "bytes": 2571,
+    "sha256": "49ea54e01223e96567c7bcdae13513a7da93a6f5ffcea3f8b8cc61d8a0ecb7f7"
+  },
+  {
+    "path": "sources/backend/tests/units/test_defect_cancel_notification_failure.py",
+    "bytes": 1447,
+    "sha256": "e5cdfcb5db9479da516f34332febc1e0fe8c9da7daf81d7b07510df1b5ed94de"
+  },
+  {
+    "path": "sources/backend/tests/units/test_defect_checkin_boundary.py",
+    "bytes": 1759,
+    "sha256": "ba2f8a8972c76cd9d4d45e7e7a844c644b59168f9a7a0ac333ef8761e59e88dc"
+  },
+  {
+    "path": "sources/backend/tests/units/test_defect_no_show_notification.py",
+    "bytes": 2384,
+    "sha256": "3a9ea98d0048221364236cfc55e276185169b84d1a3c917863280851edd7ff0c"
+  },
+  {
+    "path": "sources/backend/tests/units/test_defect_no_show_penalty.py",
+    "bytes": 1910,
+    "sha256": "62f9602cfbc7b4a199e3c567b8695ee33783373d0fa6fb96b4790f47a43c4a55"
+  },
+  {
+    "path": "sources/backend/tests/units/缺陷复现说明.md",
+    "bytes": 5576,
+    "sha256": "91c9a6b8758a17f945725d0f15bafb9099844eda2ff358dcdaf91b379399d3b5"
+  },
+  {
+    "path": "sources/docs/分阶段实现与测试计划.md",
+    "bytes": 21970,
+    "sha256": "ec4a5049476e4c93998056bc62331ec64a4c6745cd8ac241d21f4235c1fd978c"
+  },
+  {
+    "path": "sources/docs/软件需求规格说明书.md",
+    "bytes": 106777,
+    "sha256": "330290800d66a5efc6ae4a77d3f837b2e8a75e5b1b5077777d9495a2a99eac70"
+  },
+  {
+    "path": "summary.json",
+    "bytes": 2710,
+    "sha256": "844ad012a4f326c3006f1b5c90b8a52dd54f5025829dc9124a17a640cee0701b"
+  },
+  {
+    "path": "tooling/defect_evidence_plugin.py",
+    "bytes": 828,
+    "sha256": "217f8b2d11f8ec75669b610ce7c8fc397cc5c13147478f822f684c4df79fbbce"
+  },
+  {
+    "path": "tooling/prepare_and_run.py",
+    "bytes": 5372,
+    "sha256": "5bbb5d21e95b441505e1f47d1ebad9e767ab01b5bca318d4894461cc198a2466"
+  },
+  {
+    "path": "tooling/update_report.py",
+    "bytes": 25851,
+    "sha256": "912f86ced428f37599f9be01ef2ae4f1c1417bc97002c437bfecde0eeedd9395"
+  },
+  {
+    "path": "working-tree-before.patch",
+    "bytes": 289599,
+    "sha256": "d06b53eea21a94fd3e701edf04bb9f73ce789d2c439b6755585f8ae4eb33c334"
+  }
+]
