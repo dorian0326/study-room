@@ -26,8 +26,7 @@ def test_srs_ac02_sweep_must_keep_exact_checkin_deadline(monkeypatch, session, b
     predicates = [
         node
         for node in visitors.iterate(pending_query.whereclause)
-        if isinstance(node, BinaryExpression)
-        and getattr(node.left, "name", None) == "start_time"
+        if isinstance(node, BinaryExpression) and getattr(node.left, "name", None) == "start_time"
     ]
     assert len(predicates) == 1
     predicate = predicates[0]

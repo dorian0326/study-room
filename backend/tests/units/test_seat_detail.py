@@ -17,7 +17,12 @@ def test_blocked_seat_keeps_status(session, seat, moment, status):
 
 @pytest.mark.parametrize("room_open, covered", [(False, True), (True, False)])
 def test_closed_room_or_outside_opening_hours(
-    monkeypatch, session, seat, moment, room_open, covered,
+    monkeypatch,
+    session,
+    seat,
+    moment,
+    room_open,
+    covered,
 ):
     seat.room.status = E.RoomStatus.OPEN if room_open else E.RoomStatus.CLOSED
     monkeypatch.setattr(catalog, "covers", lambda *_: covered)
@@ -34,7 +39,13 @@ def test_closed_room_or_outside_opening_hours(
     ],
 )
 def test_current_booking_determines_status(
-    monkeypatch, session, seat, booking, moment, status, expected,
+    monkeypatch,
+    session,
+    seat,
+    booking,
+    moment,
+    status,
+    expected,
 ):
     monkeypatch.setattr(catalog, "covers", lambda *_: True)
     booking.start_time = moment - timedelta(minutes=5)
