@@ -19,7 +19,8 @@ def test_room_list_contains_room_information(monkeypatch, session, seat, moment)
     assert (room.id, room.name, room.floor, room.capacity) == (1, "一号自习室", "3", 20)
     assert room.date == moment.date()
     assert (room.opening_hours[0].open_time, room.opening_hours[0].close_time) == (
-        time(8), time(22),
+        time(8),
+        time(22),
     )
 
 
@@ -41,7 +42,8 @@ def test_search_available_only(monkeypatch, session, seat, moment, available_onl
 
     session.scalars.return_value = [seat, SimpleNamespace(id=12)]
     monkeypatch.setattr(
-        catalog, "seat_out",
+        catalog,
+        "seat_out",
         lambda _, item, *_times: SimpleNamespace(
             id=item.id,
             status=E.SeatStatus.AVAILABLE if item.id == 11 else E.SeatStatus.RESERVED,
@@ -58,8 +60,15 @@ def test_search_passes_room_zone_and_facility_filters(session, seat, moment, fla
     session.get.return_value = seat.room
 
     catalog.seat_list(
-        session, moment, None, 1, E.ZoneType.QUIET, False,
-        has_power=flag, by_window=flag, accessible=flag,
+        session,
+        moment,
+        None,
+        1,
+        E.ZoneType.QUIET,
+        False,
+        has_power=flag,
+        by_window=flag,
+        accessible=flag,
     )
 
     # 检查生成的筛选条件；数据库执行不属于本单元测试的范围。

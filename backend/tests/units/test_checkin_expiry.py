@@ -18,7 +18,14 @@ from app.services.availability import BookingError
     [(-900, E.ArrivalStatus.EARLY), (0, E.ArrivalStatus.ON_TIME), (900, E.ArrivalStatus.LATE)],
 )
 def test_qr_checkin_within_window(
-    monkeypatch, session, booking, moment, service_env, use_code, offset, arrival_status,
+    monkeypatch,
+    session,
+    booking,
+    moment,
+    service_env,
+    use_code,
+    offset,
+    arrival_status,
 ):
     booking.start_time = moment - timedelta(seconds=offset)
     arrival = SimpleNamespace()
@@ -98,7 +105,9 @@ def test_expiry_preserves_maintenance_status(monkeypatch, session, booking, mome
 @pytest.mark.parametrize("count", [0, 2])
 def test_expiry_sweep_processes_candidates(monkeypatch, session, booking, moment, count):
     monkeypatch.setattr(
-        service, "get_business_settings", lambda _: SimpleNamespace(no_show_after_minutes=15),
+        service,
+        "get_business_settings",
+        lambda _: SimpleNamespace(no_show_after_minutes=15),
     )
     candidates = [booking, SimpleNamespace(id=22)][:count]
     session.scalars.return_value = candidates

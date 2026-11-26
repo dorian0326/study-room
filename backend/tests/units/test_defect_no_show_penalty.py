@@ -14,11 +14,17 @@ from app.services import reservations as service
 
 @pytest.mark.parametrize("warning_count, ban_days", [(3, 1), (5, 2), (7, 3)])
 def test_srs_br095_no_show_must_apply_penalty_tier(
-    monkeypatch, session, booking, moment, warning_count, ban_days,
+    monkeypatch,
+    session,
+    booking,
+    moment,
+    warning_count,
+    ban_days,
 ):
     booking.start_time = moment - timedelta(hours=1)
     previous = SimpleNamespace(
-        period_start=moment - timedelta(days=1), period_seq=warning_count - 1,
+        period_start=moment - timedelta(days=1),
+        period_seq=warning_count - 1,
     )
     monkeypatch.setattr(service, "get_business_settings", lambda _: BusinessSettings())
     monkeypatch.setattr(service.audit, "record", Mock())
